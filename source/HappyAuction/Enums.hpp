@@ -32,6 +32,8 @@ namespace HappyAuction
 
         SCRIPT_HASETTINGSLISTDELAY,
 
+        SCRIPT_HASETTINGSNEXTDELAY,
+
         SCRIPT_COUNT,
     };
 }

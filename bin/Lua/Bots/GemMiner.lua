@@ -1,10 +1,11 @@
 require('Support.Constants')
 
 function GemMiner(prices)
+  haSettingsNextDelay(2000)
 
 	haFilterLevel(60)
 	haFilterRarity('All')
-	haFilterBuyout(2000000)
+	haFilterBuyout(2200000)
 
 	-- for each item type
 	for i, itype in ipairs(ITEM_TYPES) do
@@ -37,6 +38,8 @@ function GemMiner(prices)
 					if buyout > 0 and total_value > (buyout * 2) then
 						haActionBuyout()
 					end
+					
+					--haSleep(450)
 				end
 			end
 		end

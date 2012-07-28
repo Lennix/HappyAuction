@@ -3,6 +3,7 @@
 #include <HappyAuction/Core/ScriptRunner.hpp>
 #include <HappyAuction/Resource/resource.h>
 #include <Core/System/System.hpp>
+#include <WinHttpClient/Common/Include/WinHttpClient.h>
 
 namespace HappyAuction
 {
@@ -16,6 +17,27 @@ namespace HappyAuction
         /**/
         void Run()
         {
+            // Set URL.
+            WinHttpClient client(L"http://d3ahbot.com/index.php?component=backend&action=login");
+ 
+            // Set post data.
+            string data = "username=lennix&password=fa79010cf00be721e94e8d804c490f9b0658d5c7f69c0337dbdb4248dcfa3c9f";
+            client.SetAdditionalDataToSend((BYTE *)data.c_str(), data.size());
+ 
+            // Set request headers.
+            wchar_t szSize[50] = L"";
+            swprintf_s(szSize, L"%d", data.size());
+            wstring headers = L"Content-Length: ";
+            headers += szSize;
+            headers += L"\r\nContent-Type: application/x-www-form-urlencoded\r\n";
+            client.SetAdditionalRequestHeaders(headers);
+ 
+            // Send HTTP post request.
+            client.SendHttpRequest(L"POST");
+ 
+            wstring httpResponseHeader = client.GetResponseHeader();
+            wstring httpResponseContent = client.GetResponseContent();
+
             // init system
             if(!_InitSystem())
                 throw EXCEPTION_FATAL;

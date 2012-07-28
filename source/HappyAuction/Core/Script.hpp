@@ -178,7 +178,10 @@ namespace HappyAuction
                 _PushStackULong(_list_item.buyout);
                 _PushStackULong(_list_item.stats.GetCount());
                 _PushStackULong(_list_item.sockets.GetCount());
-                return 5;
+                _PushStackULong(_list_item.id);
+                _PushStackULong(_list_item.currBid);
+                _PushStackULong(_list_item.flags);
+                return 8;
 
             // haListItemStat(stat) -> stat, value1, value2, value3, value4
             case SCRIPT_HALISTITEMSTAT:
@@ -213,6 +216,11 @@ namespace HappyAuction
             // haSettingsListDelay(delay)
             case SCRIPT_HASETTINGSLISTDELAY:
                 GAME_ITEMREAD_DELAY = Tools::Conform(_GetStackULong(1), GAME_ITEMREAD_DELAY_MIN, GAME_ITEMREAD_DELAY_MAX);
+                return 0;
+
+            // haSettingsNextDelay(delay)
+            case SCRIPT_HASETTINGSNEXTDELAY:
+                GAME_NEXTPAGE_DELAY = Tools::Conform(_GetStackULong(1), GAME_NEXTPAGE_DELAY_MIN, GAME_NEXTPAGE_DELAY_MAX);
                 return 0;
 
             default:

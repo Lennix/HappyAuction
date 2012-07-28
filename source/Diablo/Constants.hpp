@@ -10,6 +10,11 @@ namespace Diablo
     static const ULong          GAME_ITEMREAD_DELAY_MAX = 60000;    // ms
 
     //------------------------------------------------------------------------
+    extern ULong                GAME_NEXTPAGE_DELAY;
+    static const ULong          GAME_NEXTPAGE_DELAY_MIN = 0;        // ms
+    static const ULong          GAME_NEXTPAGE_DELAY_MAX = 60000;    // ms
+
+    //------------------------------------------------------------------------
     extern const Char*          GAME_WINDOW_TITLE;
     extern const Char*          GAME_WINDOW_CLASS;
     static const ULong          GAME_COORDINATE_SPREAD = 2;

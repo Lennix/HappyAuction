@@ -8,7 +8,7 @@ function LogItem()
 
 	while haListNext() do
 		local dps, bid, buyout, nstats, nsockets = haListItem()
-		haLog('DPS:' .. dps .. ' BID:' .. bid .. ' BUYOUT:' .. buyout)
+		haLog('asdDPS:' .. dps .. ' BID:' .. bid .. ' BUYOUT:' .. buyout)
 
 		for i = 1, nstats do
 			local stat, value1 = haListItemStat(i)

@@ -1,10 +1,10 @@
-#include <Core/Root.hpp>
-#include <Core/Tools.hpp>
-#include <Core/Thread.hpp>
-#include <Core/Array.hpp>
-#include <Diablo/Types.hpp>
-#include <Diablo/Game.hpp>
-#include <Core/System/Process.hpp>
+#include <../Core/Root.hpp>
+#include <../Core/Tools.hpp>
+#include <../Core/System/Thread.hpp>
+#include <../Core/Array.hpp>
+#include <../Diablo/Types.hpp>
+#include <../Diablo/Core/Game.hpp>
+#include <../Core/System/Process.hpp>
 #include <windows.h>
 #include <stdio.h>
 using namespace Core;

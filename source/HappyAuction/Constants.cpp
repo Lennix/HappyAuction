@@ -47,5 +47,7 @@ namespace HappyAuction
         "haAlert",
 
         "haSettingsListDelay",
+        
+        "haSettingsNextDelay",
     };
 }

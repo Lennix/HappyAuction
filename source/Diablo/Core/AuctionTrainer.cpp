@@ -78,12 +78,32 @@ namespace Diablo
         Char    d3item  [0x008];    // 024
         Byte    _2      [0x064];
         Char    d3gold  [0x008];    // 090
+        Byte    _3      [0x028];
+        ULong   id;                 // 0C0
+        Byte    _4      [0x00C];
+        ULong   currBid;
+        Byte    _5      [0x004];
+        ULong   buyout;             // 0D8
+        Byte    _6      [0x004];
+        ULong   bid;                // 0E0
+        Byte    _7      [0x004];
+        ULong   flags;
+        Byte    _8      [0x02C];
+    };
+
+    /*
+    struct _AhListItem
+    {
+        Byte    _1      [0x024];
+        Char    d3item  [0x008];    // 024
+        Byte    _2      [0x064];
+        Char    d3gold  [0x008];    // 090
         Byte    _3      [0x040];
         ULong   buyout;             // 0D8
         Byte    _4      [0x004];
         ULong   bid;                // 0DC
         Byte    _5      [0x034];
-    };
+    };*/
 
 
     // public
@@ -250,8 +270,12 @@ namespace Diablo
             return false;
 
         // get values
-        item.bid = item_object.bid;
-        item.buyout = item_object.buyout;
+        item.bid =      item_object.bid;
+        item.buyout =   item_object.buyout;
+
+        item.currBid =  item_object.currBid;
+        item.id =       item_object.id;
+        item.flags =    item_object.flags;
 
         return true;
     }

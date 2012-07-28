@@ -30,12 +30,19 @@ namespace Diablo
         ULong               bid;
         ULong               buyout;
 
+        ULong               id;
+        ULong               currBid;
+        ULong               flags;
+
     public:
         /**/
         Item():
             dpsarmor(0),
             bid(0),
-            buyout(0)
+            buyout(0),
+            id(0),
+            currBid(0),
+            flags(0)
         {
         }
 

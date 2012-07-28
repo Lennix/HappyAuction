@@ -4,11 +4,27 @@ require('Bots.LogResults')
 require('Bots.GemMiner')
 --require('Bots.Test1')
 
+LogResults()
+
+--[[
+local prices =
+{
+	0,0,0,0,0,0,0,0,0,
+	205000,		-- rank 10: radiant square
+	696000,   -- rank 11: star
+	2250000,	-- rank 12: flawless star
+	7000000,	-- rank 13: perfect star
+	21313000,	-- rank 14: radiant star
+}
+
+GemMiner(prices)
+]]--
+
 --[[
 	Simple traditional buyout bot that will buyout loop first item.
 	Example is set to buyout at 200 gold + small random margin.
 ]]--
-SnipeBuyout(200)
+--SnipeBuyout(200)
 
 
 --[[

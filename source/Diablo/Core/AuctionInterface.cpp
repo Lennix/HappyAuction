@@ -211,6 +211,9 @@ namespace Diablo
         // check listing status
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
+            // wait before clicking next
+            Sleep(GAME_NEXTPAGE_DELAY);
+
             // hit next page button
             _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, 50);
 

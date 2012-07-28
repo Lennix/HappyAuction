@@ -2,7 +2,7 @@ function LogResults()
 
 	haFilterType('All Armor')
 	haFilterLevel(60)
-	haFilterRarity('All')
+	haFilterRarity('Legendary')
 	haFilterStat(1, 'Has Sockets', 1)
 
 	local found = 0
@@ -14,8 +14,8 @@ function LogResults()
 		while haListNext() do
 
 			-- get item information
-			local dps, bid, buyout, nstats, nsockets = haListItem()
-			haLog('DPS:' .. dps .. ' BID:' .. bid .. ' BUYOUT:' .. buyout)
+			local dps, bid, buyout, nstats, nsockets,id,currBid,flags = haListItem()
+			haLog('ID: ' .. id .. ' DPS: ' .. dps .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags)
 
 
 			-- for each stat log stat information
