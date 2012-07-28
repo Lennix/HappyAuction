@@ -1,6 +1,4 @@
 #pragma once
-#include <Core/LocalList.hpp>
-#include <Core/System/MemoryFile.hpp>
 #include <Core/System/Process.hpp>
 
 namespace Core
@@ -9,27 +7,14 @@ namespace Core
     class MemoryScanner
     {
     public:
+        /**/
         struct IScanHandler
         {
-            virtual Bool OnScan( ULong address, const Byte* memory ) = 0;
+            virtual Bool OnScan( ULong address, const Byte* memory, ULong length ) = 0;
         };
 
     private:
-        struct Segment:
-            public LocalList<Segment>::Node
-        {
-            ULong   address;
-            ULong   length;
-            Byte*   memory;
-        };
-
-        typedef LocalList<Segment>          SegmentCollection;
-        typedef SegmentCollection::Iterator SegmentIterator;
-
-    private:
-        Process&            _process;
-        MemoryFile          _memory_file;
-        LocalList<Segment>  _segments;
+        Process& _process;
 
     public:
         /**/
@@ -39,71 +24,41 @@ namespace Core
         }
 
         /**/
-        ~MemoryScanner()
+        Bool Scan( IScanHandler& handler )
         {
-            End();
-        }
+            Byte*   buffer = new Byte[0];
+            ULong   buffer_length = 0;
+            ULong   query_length;
+            Bool    status = true;
 
-        /**/
-        Bool Begin()
-        {
-            ULong length;
-
-            if(!_memory_file.Open(_process.GetHigh() - _process.GetLow()))
-                return false;
-
-            for( ULong address = _process.GetLow(); _process.QueryMemory(address, length) && (address + length) <= _process.GetHigh(); address += length )
+            for( ULong address = _process.GetLow(); _process.QueryMemory(address, query_length) && (address + query_length) <= _process.GetHigh(); address += query_length )
             {
-                Byte* memory = _memory_file[address - _process.GetLow()];
-
-                if(_process.ReadMemory((ULong)address, memory, length))
+                // update buffer
+                if(query_length > buffer_length)
                 {
-                    Segment& segment = *(new Segment);
+                    delete[] buffer;
+                    buffer = new Byte[query_length];
+                    buffer_length = query_length;
+                }
 
-                    segment.address = address;
-                    segment.length = length;
-                    segment.memory = memory;
-
-                    _segments.Push(segment);
+                // read memory
+                if(_process.ReadMemory((ULong)address, buffer, query_length))
+                {
+                    // iterator scan handler
+                    for( ULong offset = 0; offset < query_length; offset += Process::ALIGNMENT )
+                    {
+                        if(!handler.OnScan( address + offset, buffer + offset, query_length - offset ))
+                        {
+                            status = false;
+                            break;
+                        }
+                    }
                 }
             }
 
-            return true;
-        }
+            delete[] buffer;
 
-        /**/
-        Bool Scan( IScanHandler& handler )
-        {
-            for( SegmentIterator i = _segments.Begin(); i != _segments.End(); ++i )
-            {
-                const Byte* memory = i->memory;
-                ULong       address = i->address;
-                ULong       end = address + i->length;
-
-                for( ; address < end; address += sizeof(ULong), memory += sizeof(ULong))
-                    if(!handler.OnScan( address, memory ))
-                        return false;
-            }
-
-            return true;
-        }
-
-        /**/
-        void End()
-        {
-            _memory_file.Close();
-            for( Segment* segment; (segment = _segments.Pop()); )
-                delete segment;
-        }
-
-        /**/
-        template<typename TYPE>
-        TYPE* Access( ULong address, ULong limit=sizeof(TYPE) )
-        {
-            if( address < _process.GetLow() || (address + limit) > _process.GetHigh() )
-                return NULL;
-
-            return reinterpret_cast<TYPE*>(_memory_file[address - _process.GetLow()]);
+            return status;
         }
     };
 }

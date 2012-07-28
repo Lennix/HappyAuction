@@ -154,10 +154,6 @@
 			Name="System"
 			>
 			<File
-				RelativePath="..\..\source\Core\System\MemoryFile.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\source\Core\System\MemoryScanner.hpp"
 				>
 			</File>

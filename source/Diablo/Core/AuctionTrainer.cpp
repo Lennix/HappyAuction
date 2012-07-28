@@ -126,22 +126,16 @@ namespace Diablo
         if(_base_address == 0)
             return false;
 
-        // build memory map
-        if(_memory.Begin())
+        // scan memory
+        if(_memory.Scan(*this))
         {
-            // scan memory
-            if(_memory.Scan(*this))
-            {
-                Index i;
+            Index i;
 
-                // verify all addresses
-                for( i = 0; i < ID_COUNT && _address[i] != 0; i++ );
+            // verify all addresses
+            for( i = 0; i < ID_COUNT && _address[i] != 0; i++ );
 
-                // ready when no null addresses
-                _trained = (i == ID_COUNT);
-            }
-
-            _memory.End();
+            // ready when no null addresses
+            _trained = (i == ID_COUNT);
         }
 
         return _trained;
@@ -529,11 +523,11 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionTrainer::OnScan( ULong address, const Byte* memory )
+    Bool AuctionTrainer::OnScan( ULong address, const Byte* memory, ULong length )
     {
-        const _UiObject& object = *_memory.Access<_UiObject>(address);
+        const _UiObject& object = *reinterpret_cast<const _UiObject*>(memory);
 
-        if(_IsValidUiObject(object))
+        if(sizeof(_UiObject) <= length && _IsValidUiObject(object))
         {
             for( Id id = 0; id < ACOUNT(_HINT_UIOBJECT_PATH); id++ )
             {
