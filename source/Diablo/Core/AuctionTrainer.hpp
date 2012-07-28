@@ -115,6 +115,6 @@ namespace Diablo
         const Char* _ParseItemStatText( const Char* text, Item::Stat& stat, Bool is_socket ) const;
 
         /**/
-        Bool OnScan( ULong address, const Byte* memory );
+        Bool OnScan( ULong address, const Byte* memory, ULong length );
     };
 }

@@ -30,10 +30,6 @@ namespace Diablo
                 // get process
                 if(_process.FromWindow(_window))
                 {
-                    // initialize process to match diablo
-                    _process.SetLow(0x00400000);
-                    _process.SetHigh(0x32000000);
-
                     // ensure input enabled
                     InputEnable(true);
 

@@ -21,7 +21,6 @@ namespace Core
         typedef Chain::Iterator ChainIterator;
 
     private:
-//        static const ULong _READABLE_BITS = PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY | PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY;
         static const ULong _READABLE_BITS = PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY;
 
     protected:
@@ -33,7 +32,7 @@ namespace Core
         /**/
         Process():
             _handle(NULL),
-            _low(0x0010000),
+            _low(0x00400000),
             _high(0x7fffffff)
         {
         }
@@ -146,7 +145,12 @@ namespace Core
             DWORD process_id = 0;
             
             GetWindowThreadProcessId(window.GetHandle(), &process_id);
-            _handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, process_id);
+            _handle = OpenProcess(
+                PROCESS_QUERY_INFORMATION|
+                PROCESS_VM_OPERATION|
+                PROCESS_VM_READ|
+                PROCESS_VM_WRITE,
+                FALSE, process_id);
 
             return (_handle != NULL);
         }

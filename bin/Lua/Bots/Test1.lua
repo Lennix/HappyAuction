@@ -1,7 +1,3 @@
-haActionSearch()
-haActionSortBuyout()
-
-
 local prices =
 {
 	0,0,0,0,0,0,0,
@@ -14,26 +10,32 @@ local prices =
 	18000000,	-- rank 14: radiant star
 }
 
-
+-- set filters
 haFilterType('Helm')
-haFilterRarity('Magic')
+haFilterRarity('Rare')
 haFilterStat(1, 'Has Sockets', 1)
+haFilterStat(2, 'Magic Find',  20)
+
+-- set buyout to avoid bid onlys
 haFilterBuyout(2000000)
 
+for level = 25, 60 do
 
-for level = 20, 60 do
-
+	-- set level filter
 	haFilterLevel(level)
-	haFilterStat(1, 'Magic Find', 20)
 
+	-- search
 	if haActionSearch() then
 
+		-- sort
 		haActionSortBuyout()
 
+		-- for every item
 		while haListNext() do
 			local total_value = 0
 			local dps, bid, buyout, nstats, nsockets = haListItem()
 
+			-- calculate total gem value
 			for j = 1, nsockets do
 				local stat, gtype, rank, value = haListItemSocket(j)
 				if rank > 0 then
@@ -41,7 +43,8 @@ for level = 20, 60 do
 				end
 			end
 
-			if buyout > 0 and total_value > (buyout * 1.2) then
+			-- buy if total value is over buyout times X
+			if buyout > 0 and total_value > (buyout * 1.3) then
 				haActionBuyout()
 			end
 		end
