@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyAuction", "HappyAuction\HappyAuction.vcproj", "{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Etc", "Etc", "{F1308CAC-CDEF-421D-B5A1-12D5EE9605A4}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\notes.txt = ..\doc\notes.txt
+		..\readme.txt = ..\readme.txt
+		..\bin\User.log = ..\bin\User.log
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyMemory", "HappyMemory\HappyMemory.vcproj", "{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcproj", "{3FAD6019-260B-4E68-B56F-426D419F4A79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{ACFBAF4F-E0E1-48B8-9075-6823D2E9CD6A}"
+	ProjectSection(SolutionItems) = preProject
+		..\bin\Lua\Main.lua = ..\bin\Lua\Main.lua
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcproj", "{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Diablo3", "Diablo3\Diablo3.vcproj", "{1139D600-A05C-4756-AD5B-4E40CA28AC60}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bots", "Bots", "{731DD03F-5FAC-4ED2-87DE-7C2CACC0EFA4}"
+	ProjectSection(SolutionItems) = preProject
+		..\bin\Lua\Bots\GemMiner.lua = ..\bin\Lua\Bots\GemMiner.lua
+		..\bin\Lua\Bots\LogResults.lua = ..\bin\Lua\Bots\LogResults.lua
+		..\bin\Lua\Bots\SnipeBuyout.lua = ..\bin\Lua\Bots\SnipeBuyout.lua
+		..\bin\Lua\Bots\SnipeDps.lua = ..\bin\Lua\Bots\SnipeDps.lua
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{BEBB7AF7-E0F1-43D1-ACEB-6BD56CA94018}"
+	ProjectSection(SolutionItems) = preProject
+		..\bin\Lua\Support\Constants.lua = ..\bin\Lua\Support\Constants.lua
+		..\bin\Lua\Support\LogItem.lua = ..\bin\Lua\Support\LogItem.lua
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}.Debug|Win32.ActiveCfg = Debug|Win32
+		{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}.Debug|Win32.Build.0 = Debug|Win32
+		{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}.Release|Win32.ActiveCfg = Release|Win32
+		{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}.Release|Win32.Build.0 = Release|Win32
+		{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}.Debug|Win32.Build.0 = Debug|Win32
+		{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}.Release|Win32.ActiveCfg = Release|Win32
+		{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}.Release|Win32.Build.0 = Release|Win32
+		{3FAD6019-260B-4E68-B56F-426D419F4A79}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3FAD6019-260B-4E68-B56F-426D419F4A79}.Debug|Win32.Build.0 = Debug|Win32
+		{3FAD6019-260B-4E68-B56F-426D419F4A79}.Release|Win32.ActiveCfg = Release|Win32
+		{3FAD6019-260B-4E68-B56F-426D419F4A79}.Release|Win32.Build.0 = Release|Win32
+		{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}.Debug|Win32.Build.0 = Debug|Win32
+		{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}.Release|Win32.ActiveCfg = Release|Win32
+		{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}.Release|Win32.Build.0 = Release|Win32
+		{1139D600-A05C-4756-AD5B-4E40CA28AC60}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1139D600-A05C-4756-AD5B-4E40CA28AC60}.Debug|Win32.Build.0 = Debug|Win32
+		{1139D600-A05C-4756-AD5B-4E40CA28AC60}.Release|Win32.ActiveCfg = Release|Win32
+		{1139D600-A05C-4756-AD5B-4E40CA28AC60}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{731DD03F-5FAC-4ED2-87DE-7C2CACC0EFA4} = {ACFBAF4F-E0E1-48B8-9075-6823D2E9CD6A}
+		{BEBB7AF7-E0F1-43D1-ACEB-6BD56CA94018} = {ACFBAF4F-E0E1-48B8-9075-6823D2E9CD6A}
+	EndGlobalSection
+EndGlobal
