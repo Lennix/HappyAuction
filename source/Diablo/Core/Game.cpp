@@ -111,11 +111,18 @@ namespace Diablo
         // select input
         MouseClick(x, y, 50);
 
-        // send special to select-all old text to be replaced by new text
-        SendInput("^CA^c", true, 50);
+        // if not empty string
+        if(*out)
+        {
+            // send special to select-all old text to be replaced by new text
+            SendInput("^CA^c", true, 50);
 
-        // send new text
-        SendInput(out, false, 50);
+            // send new text
+            SendInput(out, false, 50);
+        }
+        // else send special to select-all old text and delete
+        else
+            SendInput("^CA^D^c", true, 50);
 
         // enable input
         InputEnable(true);
@@ -145,7 +152,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     void Game::Sleep( ULong min, ULong max )
     {
-        if(max == 0)
+        if(max <= min)
             Thread::Sleep(min);
         else
         {

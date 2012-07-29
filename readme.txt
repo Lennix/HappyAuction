@@ -1,4 +1,4 @@
-HappyAuction v0.9
+HappyAuction v0.9.1
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ INSTRUCTIONS
 INCLUDED BOTS
 ------------------------------------------------------------------------------
 - SnipeBuyout:  Traditional buyout bot that will buyout loop first item.
-- SnipeDps:     Will buyout loop first item reaching desired DPS.
+- SnipeDps:     Will buyout loop first item if when desired DPS.
 - LogResults:	Sets filters and scans all results logging all items to a file
 - GemMiner:	    More complex bot that searches across multiple filters finding
                 and buying cheap items with expensive gems.
@@ -105,25 +105,28 @@ AUCTION FILTERS:
     - value:    minimum value for this filter. range: 0-999
     - status:   true if successful
 
+- haFilterBuyout(amount) -> status
 - haFilterBuyout(amount, randomize) -> status
-    Sets the buyout amount filter.
-    - amount:       buyout amount
-    - randomize:    (optional) if true adds a small random value to
+- haFilterBuyout() -> amount
+    Sets or gets the buyout amount filter.
+    - amount:       buyout amount. -1 to empty input.
+    - randomize:    if true adds a small random value to
                     amount to avoid cached search results and detection.
     - status:       true if successful
 
 - haFilterUnique(name) -> status
-    Sets legendary or set item filter.
+- haFilterUnique() -> name
+    Sets or gets legendary or set item filter.
     - name:     string idenfiying a legendary or set item.
     - status:   true if successful
 
+
+AUCTION SEARCH LIST:
 - haListSelect(index) -> status
     Selects the current item given a row index from search results.
     - index:    index of item to select. range: 1-11
     - status:   true if successful
 
-
-AUCTION SEARCH LIST:
 - haListNext() -> status
     Iterates through the entire search results list selecting every item
     until it reaches the last item of the last page.
@@ -161,9 +164,10 @@ AUCTION SEARCH LIST:
 
 
 AUCTION ACTIONS:
+- haActionBid() -> status
 - haActionBid(bid) -> status
     Bids on current item and sets an optional bid price.
-    - bid:      (optional) your max bid price.
+    - bid:      your max bid price.
     - status:   true if successful
 
 - haActionBuyout() -> status
@@ -192,8 +196,11 @@ UTILITIES:
     Beep!
 
 - haSleep(delay)
+- haSleep(low, high)
     Delays execution for the specified time.
     - delay:    delay in milliseconds
+    - low:      random delay minimum.
+    - high:     random delay maximum.
 
 - haAlert(message)
     Opens popup message with specified message.

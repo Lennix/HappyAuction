@@ -127,8 +127,7 @@ namespace HappyAuction
 
         const Char* _GetStackString( Index index )
         {
-            const Char* string = lua_tostring( _lua, index );
-            return string != NULL ? string : "";
+            return lua_tostring( _lua, index );
         }
 
         /**/
