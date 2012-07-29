@@ -29,9 +29,10 @@ namespace Diablo
         AuctionTrainer& GetTrainer();
 
         /**/
-        Bool    WriteBuyout( ULong buyout, Bool randomize=false );
-        ULong   ReadBuyout();
+        Bool    WriteBuyout( Long buyout, Bool randomize=false );
+        Bool    ReadBuyout( Long& value );
         Bool    WriteUnique( const Char* string );
+        Bool    ReadUnique( TextString& string );
 
         /**/
         Bool    WriteFilterCharacter( FilterCharId id );

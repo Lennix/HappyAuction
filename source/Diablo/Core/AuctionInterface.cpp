@@ -63,16 +63,21 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteBuyout( ULong buyout, Bool randomize )
+    Bool AuctionInterface::WriteBuyout( Long buyout, Bool randomize )
     {
-        if(randomize)
-            buyout += rand() % (60 + buyout / 100);
-        _game.SendInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, "%u", buyout);
+        if(buyout < 0)
+            _game.SendInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, "");
+        else
+        {
+            if(randomize)
+                buyout += rand() % (60 + buyout / 100);
+            _game.SendInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, "%u", buyout);
+        }
         return true;
     }
 
     //------------------------------------------------------------------------
-    ULong AuctionInterface::ReadBuyout()
+    Bool AuctionInterface::ReadBuyout( Long& value )
     {
         TextString buyout_text;
 
@@ -80,7 +85,9 @@ namespace Diablo
         _game.GetInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, buyout_text, sizeof(buyout_text));
 
         // convert
-        return atoi(buyout_text);
+        value = atoi(buyout_text);
+
+        return true;
     }
 
     //------------------------------------------------------------------------
@@ -90,6 +97,15 @@ namespace Diablo
         return true;
     }
     
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::ReadUnique( TextString& string )
+    {
+        // read unique text
+        _game.GetInputText(AH_INPUT_UNIQUE.x, AH_INPUT_UNIQUE.y, string, sizeof(TextString));
+
+        return true;
+    }
+
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterCharacter( FilterCharId id )
     {
