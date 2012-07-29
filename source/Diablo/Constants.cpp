@@ -306,6 +306,8 @@ namespace Diablo
 
     extern ULong        GAME_NEXTPAGE_DELAY = 50; // ms
 
+    extern Double       GAME_QUERIES_PER_HOUR = 800;
+
     const Char*         GAME_WINDOW_TITLE = "Diablo III";
     const Char*         GAME_WINDOW_CLASS = "D3 Main Window Class";
 

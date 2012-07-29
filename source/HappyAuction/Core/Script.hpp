@@ -21,6 +21,8 @@ namespace HappyAuction
         Index               _list_index;
         Item                _list_item;
 
+        SYSTEMTIME          GAME_LAST_QUERY;
+
     public:
         /**/
         Script():

@@ -2,6 +2,7 @@
 #include <Diablo/Root.hpp>
 #include <Diablo/Core/Game.hpp>
 #include <Diablo/Core/AuctionTrainer.hpp>
+#include <time.h>
 
 namespace Diablo
 {
@@ -16,6 +17,9 @@ namespace Diablo
         Game&           _game;
         AuctionTrainer  _trainer;
         ULong           _search_delay;
+
+        clock_t init;
+        ULong           queries;
 
     public:
         /**/

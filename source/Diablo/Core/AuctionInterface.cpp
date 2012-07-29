@@ -35,8 +35,10 @@ namespace Diablo
     //------------------------------------------------------------------------
     AuctionInterface::AuctionInterface( Game& game ):
         _game(game),
-        _trainer(game.GetProcess())
+        _trainer(game.GetProcess()),
+        queries(0)
     {
+        init = clock();
     }
 
     //------------------------------------------------------------------------
@@ -211,8 +213,17 @@ namespace Diablo
         // check listing status
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
+            clock_t currTime = clock();
+
+            GAME_QUERIES_PER_HOUR = ((float)queries/((currTime - init)/1000))*60*60;
+
+            while (GAME_QUERIES_PER_HOUR > 800)
+            {
+                _game.Sleep(25);
+                GAME_QUERIES_PER_HOUR = ((float)queries/((clock() - init)/1000))*60*60;
+            }
             // wait before clicking next
-            Sleep(GAME_NEXTPAGE_DELAY);
+            //Sleep(GAME_NEXTPAGE_DELAY);
 
             // hit next page button
             _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, 50);
@@ -510,7 +521,10 @@ namespace Diablo
 
             // success if listing found
             if(count > 0)
+            {
+                queries++;
                 return true;
+            }
 
             // fail if no longer busy but no listing read
             if(!_trainer.ReadListBusyStatus(busy) || !busy)

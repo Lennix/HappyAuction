@@ -15,6 +15,9 @@ namespace Diablo
     static const ULong          GAME_NEXTPAGE_DELAY_MAX = 60000;    // ms
 
     //------------------------------------------------------------------------
+    extern Double               GAME_QUERIES_PER_HOUR;
+
+    //------------------------------------------------------------------------
     extern const Char*          GAME_WINDOW_TITLE;
     extern const Char*          GAME_WINDOW_CLASS;
     static const ULong          GAME_COORDINATE_SPREAD = 2;
