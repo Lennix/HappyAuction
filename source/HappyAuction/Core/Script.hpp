@@ -197,7 +197,9 @@ namespace HappyAuction
                 _PushStackULong(_list_item.id);
                 _PushStackULong(_list_item.currBid);
                 _PushStackULong(_list_item.flags);
-                return 8;
+                _PushStackString(_list_item.timeleft);
+                _PushStackString(_list_item.name);
+                return 10;
 
             // haListItemStat(stat) -> stat, value1, value2, value3, value4
             case SCRIPT_HALISTITEMSTAT:

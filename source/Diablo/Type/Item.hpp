@@ -34,6 +34,9 @@ namespace Diablo
         ULong               currBid;
         ULong               flags;
 
+        TextString          timeleft;
+        TextString          name;
+
     public:
         /**/
         Item():

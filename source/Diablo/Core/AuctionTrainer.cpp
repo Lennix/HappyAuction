@@ -38,6 +38,10 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.SearchButton",
 
         "Root.TopLayer.BattleNetLightBox_main.LayoutRoot.LightBox",
+
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SellTabContent.Inventory.GoldAmount",
+
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchItemList.ItemListContainer.ItemList",
     };
 
     static const Process::Link _chain_listroot[] =
@@ -239,6 +243,82 @@ namespace Diablo
 
         // sockets
         if(!_ClearHoverItemSockets())
+            return false;
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionTrainer::ReadListTimeLeft( Index index, Item& item )
+    {
+        // must be trained
+        if(!_trained)
+            return false;
+
+        ULong itemList[11];
+
+        // Get root item list
+        if(!_ReadItemListRoot(0, itemList))
+            return false;
+
+        _UiObject ui_object;
+        // get items list
+        if(!_ReadItemListRoot(itemList[index], itemList))
+            return false;
+        /*
+        if(!_ReadUiObjectFromAddress(, ui_object))
+            return false;
+
+        if(!_process.ReadMemory(ui_object.addr_child1, &itemList, sizeof(itemList)))
+            return false;
+        */
+
+        // get sizing container
+        if(!_ReadItemListRoot(itemList[2], itemList))
+            return false;
+
+        // get column container
+        if(!_ReadItemListRoot(itemList[0], itemList))
+            return false;
+
+        // get 4th colum
+        ULong subList[11];
+        if(!_ReadItemListRoot(itemList[4], subList))
+            return false;
+
+        if(_ReadUiObjectFromAddress(subList[0], ui_object))
+            if(!_process.ReadMemory(ui_object.addr_child2, &item.timeleft, sizeof(item.timeleft)))
+                return false;
+
+        // get 0th colum
+        if(!_ReadItemListRoot(itemList[0], subList))
+            return false;
+
+        if(_ReadUiObjectFromAddress(subList[3], ui_object))
+            if(_process.ReadMemory(ui_object.addr_child2+0xc, &item.name, sizeof(item.name)))
+                if(!_ParseItemNameText(item.name))
+                    return false;
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionTrainer::_ReadItemListRoot( ULong address, ULong (&itemList)[11] )
+    {
+        _UiObject ui_object;
+
+        if (address)
+        {
+            if(!_ReadUiObjectFromAddress(address, ui_object))
+                return false;
+        }
+        else
+        {
+            if(!_ReadUiObject(ITEM_LIST, ui_object))
+                return false;
+        }
+
+        if(!_process.ReadMemory(ui_object.addr_child1, &itemList, sizeof(itemList)))
             return false;
 
         return true;
@@ -494,6 +574,24 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool AuctionTrainer::_ReadUiObjectFromAddress( ULong address, _UiObject& object )
+    {
+        // read
+        if(!_process.ReadMemory(address, &object, sizeof(object)))
+            return false;
+
+        // validate
+        if(!_IsValidUiObject(object))
+            return false;
+
+        // check path
+        //if(strcmp(object.path, _HINT_UIOBJECT_PATH[id]) != 0)
+        //   return false;
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     Bool AuctionTrainer::_ReadListRoot( _AhList& object )
     {
         // get list root object from static chain
@@ -591,5 +689,12 @@ namespace Diablo
             return NULL;
 
         return text;
+    }
+
+    Bool AuctionTrainer::_ParseItemNameText( TextString &text )
+    {
+        if (sscanf(text, "%[a-zA-Z0-9+'.()\% -]s{/c}",text) == 0)
+            return false;
+        return true;
     }
 }

@@ -31,6 +31,10 @@ namespace Diablo
 
             MAIN_POPUP,
 
+            PLAYER_GOLD,
+
+            ITEM_LIST,
+
             ID_COUNT,
         };
 
@@ -40,8 +44,8 @@ namespace Diablo
             ULong   n1[10];
             ULong   visible;
             ULong   n2[3];
-            Char    path[0x100];    // 038
-            Byte    _2[0x328];
+            Char    path[0x400];    // 038
+            Byte    _2[0x028];
             ULong   addr_child1;    // 460
             Byte    _3[0x018];
             ULong   n3[4];          // 47c
@@ -86,6 +90,7 @@ namespace Diablo
 
         /**/
         Bool ReadListItem( Index index, Item& item );
+        Bool ReadListTimeLeft( Index index, Item& item );
         Bool ReadListCount( ULong& count );
         Bool ReadListNextStatus( Bool& status );
         Bool ReadListBusyStatus( Bool& status );
@@ -106,13 +111,17 @@ namespace Diablo
 
         /**/
         Bool _ReadUiObject( Id id, _UiObject& object );
+        Bool _ReadUiObjectFromAddress( ULong address, _UiObject& object );
         Bool _ReadListRoot( _AhList& object );
+
+        Bool _ReadItemListRoot( ULong address, ULong (&itemList)[11] );
 
         /**/
         Bool _IsValidUiObject( const _UiObject& object );
 
         /**/
         const Char* _ParseItemStatText( const Char* text, Item::Stat& stat, Bool is_socket ) const;
+        Bool AuctionTrainer::_ParseItemNameText( TextString &text );
 
         /**/
         Bool OnScan( ULong address, const Byte* memory, ULong length );
