@@ -40,6 +40,7 @@ namespace HappyAuction
         "haListItem",
         "haListItemStat",
         "haListItemSocket",
+        "haGetGold",
 
         "haLog",
         "haBeep",
@@ -49,5 +50,7 @@ namespace HappyAuction
         "haSettingsListDelay",
         
         "haSettingsNextDelay",
+
+        "haSettingsQueriesPerHour"
     };
 }

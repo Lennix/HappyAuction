@@ -59,6 +59,8 @@ namespace Diablo
         Bool    ReadListCount( ULong& count );
         Bool    ReadListItem( Index index, Item& item );
 
+        Bool    GetGold(ULong& gold);
+
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );
         Bool    _WriteComboRefresh( Id option_id );

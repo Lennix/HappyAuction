@@ -211,6 +211,15 @@ namespace HappyAuction
                 index = _GetStackULong(1) - 1;
                 return (index < _list_item.sockets.GetCount()) ? _PushItemStat(_list_item.sockets[index], true) : _PushZeros(7);
 
+            // haGetGold()
+            case SCRIPT_HAGETGOLD:
+                ULong gold;
+                if (_ahi.GetGold(gold))
+                    _PushStackULong(gold);
+                else
+                    return 0;
+                return 1;
+
             // haLog(message)
             case SCRIPT_HALOG:
                 pstring = _GetStackString(1);
@@ -245,6 +254,20 @@ namespace HappyAuction
             case SCRIPT_HASETTINGSNEXTDELAY:
                 GAME_NEXTPAGE_DELAY = Tools::Conform(_GetStackULong(1), GAME_NEXTPAGE_DELAY_MIN, GAME_NEXTPAGE_DELAY_MAX);
                 return 0;
+
+            // haSettingsQueriesPerHour(delay)
+            case SCRIPT_HASETTINGSQUERIESPERHOUR:
+                unumber = _GetStackLong(1);
+                if(unumber)
+                {
+                    GAME_MAX_QUERIES_PER_HOUR = Tools::Conform(unumber, GAME_MAX_QUERIES_PER_HOUR_MIN, GAME_MAX_QUERIES_PER_HOUR_MAX);
+                    return 0;
+                }
+                else
+                {
+                    _PushStackULong(GAME_CURRENT_QUERIES_PER_HOUR);
+                    return 1;
+                }
 
             default:
                 return 0;

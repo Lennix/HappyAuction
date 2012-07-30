@@ -25,6 +25,8 @@ namespace HappyAuction
         SCRIPT_HALISTITEMSTAT,
         SCRIPT_HALISTITEMSOCKET,
 
+        SCRIPT_HAGETGOLD,
+
         SCRIPT_HALOG,
         SCRIPT_HABEEP,
         SCRIPT_HASLEEP,
@@ -33,6 +35,8 @@ namespace HappyAuction
         SCRIPT_HASETTINGSLISTDELAY,
 
         SCRIPT_HASETTINGSNEXTDELAY,
+
+        SCRIPT_HASETTINGSQUERIESPERHOUR,
 
         SCRIPT_COUNT,
     };

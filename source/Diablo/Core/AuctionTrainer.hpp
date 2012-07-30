@@ -95,6 +95,8 @@ namespace Diablo
         Bool ReadListNextStatus( Bool& status );
         Bool ReadListBusyStatus( Bool& status );
 
+        Bool ReadPlayerGold (ULong& gold);
+
         /**/
         Bool ReadPopupStatus( Bool& active );
 

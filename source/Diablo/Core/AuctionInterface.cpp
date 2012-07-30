@@ -230,16 +230,22 @@ namespace Diablo
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
             clock_t currTime = clock();
-
-            GAME_QUERIES_PER_HOUR = ((float)queries/((currTime - init)/1000))*60*60;
-
-            while (GAME_QUERIES_PER_HOUR > 800)
+            if (GAME_MAX_QUERIES_PER_HOUR > 0)
             {
-                _game.Sleep(25);
-                GAME_QUERIES_PER_HOUR = ((float)queries/((clock() - init)/1000))*60*60;
+                GAME_CURRENT_QUERIES_PER_HOUR = ((float)queries/((currTime - init)/1000))*60*60;
+
+                while (GAME_CURRENT_QUERIES_PER_HOUR > GAME_MAX_QUERIES_PER_HOUR)
+                {
+                    _game.Sleep(25);
+                    GAME_CURRENT_QUERIES_PER_HOUR = ((float)queries/((clock() - init)/1000))*60*60;
+                }
             }
-            // wait before clicking next
-            //Sleep(GAME_NEXTPAGE_DELAY);
+            clock_t timeElapsed = clock() - currTime;
+            if (timeElapsed < GAME_NEXTPAGE_DELAY)
+            {
+                // wait before clicking next
+                Sleep(GAME_NEXTPAGE_DELAY - timeElapsed);
+            }
 
             // hit next page button
             _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, 50);
@@ -360,6 +366,11 @@ namespace Diablo
         _game.InputEnable(true);
 
         return status;
+    }
+
+    Bool AuctionInterface::GetGold(ULong& gold)
+    {
+        return _trainer.ReadPlayerGold(gold);
     }
 
     // private

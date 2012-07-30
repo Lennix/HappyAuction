@@ -2,6 +2,7 @@
 #include <Diablo/Core/AuctionInterface.hpp>
 #include <Diablo/Core/AuctionTrainer.hpp>
 #include <Diablo/Core/Support.hpp>
+#include <string>
 
 namespace Diablo
 {
@@ -265,13 +266,6 @@ namespace Diablo
         // get items list
         if(!_ReadItemListRoot(itemList[index], itemList))
             return false;
-        /*
-        if(!_ReadUiObjectFromAddress(, ui_object))
-            return false;
-
-        if(!_process.ReadMemory(ui_object.addr_child1, &itemList, sizeof(itemList)))
-            return false;
-        */
 
         // get sizing container
         if(!_ReadItemListRoot(itemList[2], itemList))
@@ -298,6 +292,35 @@ namespace Diablo
             if(_process.ReadMemory(ui_object.addr_child2+0xc, &item.name, sizeof(item.name)))
                 if(!_ParseItemNameText(item.name))
                     return false;
+
+        return true;
+    }
+
+    Bool AuctionTrainer::ReadPlayerGold(ULong& gold)
+    {
+        _UiObject ui_object;
+        if(!_ReadUiObject(PLAYER_GOLD, ui_object))
+            return false;
+
+        TextString goldString;
+
+        if(!_process.ReadMemory(ui_object.addr_child2, &goldString, sizeof(goldString)))
+            return false;
+
+        TextString ret = "";
+
+        int count = 0;
+        for (int i = 0; i < sizeof(goldString); i++)
+        {
+            if (goldString[i] == 0 || goldString[i] == ' ')
+                break;
+            else if (goldString[i] != ',')
+            {
+                ret[count] = goldString[i];
+                count++;
+            }
+        }
+        gold = atol(ret);
 
         return true;
     }
