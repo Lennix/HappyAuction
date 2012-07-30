@@ -1,4 +1,4 @@
-HappyAuction v0.9.1
+HappyAuction v0.9.2
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -88,8 +88,8 @@ AUCTION FILTERS:
 
 - haFilterLevel(min,  max) -> status
     Sets item level filter.
-    - min:      minimum level
-    - min:      maximum level
+    - min:      minimum level. -1 to clear.
+    - min:      maximum level. -1 to clear.
     - status:   true if successful
 
 - haFilterRarity(id) -> status
@@ -109,7 +109,7 @@ AUCTION FILTERS:
 - haFilterBuyout(amount, randomize) -> status
 - haFilterBuyout() -> amount
     Sets or gets the buyout amount filter.
-    - amount:       buyout amount. -1 to empty input.
+    - amount:       buyout amount. -1 to clear.
     - randomize:    if true adds a small random value to
                     amount to avoid cached search results and detection.
     - status:       true if successful

@@ -109,36 +109,32 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterCharacter( FilterCharId id )
-    {
-        // select item
-        return _WriteComboBox(AuctionTrainer::COMBO_CHARACTER, id);
-    }
-
-    //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterType( FilterSecondaryId secondary_id )
     {
         Bits            chars_allowed = AH_COMBO_SECONDARY[secondary_id].character;
+        ULong           option_count;
+        ULong           char_option_offset;
         FilterCharId    char_id;
         FilterPrimaryId primary_id;
         FilterPrimaryId requested_primary_id = _SecondaryToPrimaryId(secondary_id);
 
         // read character id
-        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_CHARACTER, reinterpret_cast<Index&>(char_id)))
+        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_CHARACTER, reinterpret_cast<Index&>(char_id), option_count) || option_count <= FILTER_CHAR_COUNT)
             return false;
+        char_option_offset = (option_count - FILTER_CHAR_COUNT);
 
         // select different character if item not available
-        if((chars_allowed & BIT(char_id)) == 0)
+        if((chars_allowed & BIT(char_id - char_option_offset)) == 0)
         {
             char_id = static_cast<FilterCharId>(Tools::FirstBitIndex(chars_allowed));
 
             // select character
-            if(!_WriteComboBox(AuctionTrainer::COMBO_CHARACTER, char_id))
+            if(!_WriteComboBox(AuctionTrainer::COMBO_CHARACTER, char_id + char_option_offset))
                 return false;
         }
 
         // read primary id
-        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_PRIMARY, reinterpret_cast<Index&>(primary_id)))
+        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_PRIMARY, reinterpret_cast<Index&>(primary_id), option_count))
             return false;
 
         // select requested primary id if different from read primary id
@@ -154,16 +150,22 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterLevelMin( ULong level )
+    Bool AuctionInterface::WriteFilterLevelMin( Long level )
     {
-        _game.SendInputText(AH_INPUT_LEVEL_MIN.x, AH_INPUT_LEVEL_MIN.y, "%u", level);
+        if( level <= 0 )
+            _game.SendInputText(AH_INPUT_LEVEL_MIN.x, AH_INPUT_LEVEL_MIN.y, "");
+        else
+            _game.SendInputText(AH_INPUT_LEVEL_MIN.x, AH_INPUT_LEVEL_MIN.y, "%u", level);
         return true;
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterLevelMax( ULong level )
+    Bool AuctionInterface::WriteFilterLevelMax( Long level )
     {
-        _game.SendInputText(AH_INPUT_LEVEL_MAX.x, AH_INPUT_LEVEL_MAX.y, "%u", level);
+        if( level <= 0 )
+            _game.SendInputText(AH_INPUT_LEVEL_MAX.x, AH_INPUT_LEVEL_MAX.y, "");
+        else
+            _game.SendInputText(AH_INPUT_LEVEL_MAX.x, AH_INPUT_LEVEL_MAX.y, "%u", level);
         return true;
     }
 
@@ -413,7 +415,7 @@ namespace Diablo
         ULong               h;
 
         // open dropdown
-        _game.MouseClick(coordinate.x, coordinate.y, 150);
+        _game.MouseClick(coordinate.x, coordinate.y, 170);
 
         // image scan to selection
         window.CaptureScreen(pixels, _game.X(coordinate.x, false), y, 1, height);
@@ -433,7 +435,8 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::_CalculateComboIndex( Index& option_index, Id combo_id, Id option_id )
     {
-        IgnoreCollection ignores;
+        IgnoreCollection    ignores;
+        ULong               option_count;
         option_index = 0;
 
         // calculate option index
@@ -442,7 +445,7 @@ namespace Diablo
             Index primary_id;
 
             // read primary
-            if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_PRIMARY, primary_id))
+            if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_PRIMARY, primary_id, option_count))
                 return false;
 
             // stat
@@ -452,7 +455,7 @@ namespace Diablo
                 Id      secondary_id;
 
                 // read secondary
-                if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_SECONDARY, secondary_index))
+                if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_SECONDARY, secondary_index, option_count))
                     return false;
 
                 // get secondary id
@@ -470,7 +473,7 @@ namespace Diablo
                             Index stat_index;
 
                             // read statN
-                            if(!_trainer.ReadComboBox(stat_id, stat_index))
+                            if(!_trainer.ReadComboBox(stat_id, stat_index, option_count))
                                 return false;
 
                             // add ignore

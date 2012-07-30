@@ -182,13 +182,13 @@ namespace Diablo
             return false;
 
         // write
-        _process.WriteMemory(_address[id] + FIELD_OFFSET(_UiObject, n5), &index, sizeof(index));
+        _process.WriteMemory(_address[id] + FIELD_OFFSET(_UiObject, n5[0]), &index, sizeof(index));
 
         return true;
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionTrainer::ReadComboBox( Id id, Index& index )
+    Bool AuctionTrainer::ReadComboBox( Id id, Index& index, ULong& count )
     {
         _UiObject object;
 
@@ -200,7 +200,9 @@ namespace Diablo
         if(!_ReadUiObject(id, object))
             return false;
 
-        index = object.n5;
+        index = object.n5[0];
+        count = object.n5[3];
+
         return true;
     }
 

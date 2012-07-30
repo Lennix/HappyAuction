@@ -6,12 +6,12 @@ namespace Diablo
     /**/
     enum FilterCharId
     {
-        FILTER_CHAR_CURRENT,
         FILTER_CHAR_BARBARIAN,
         FILTER_CHAR_DEMONHUNTER,
         FILTER_CHAR_MONK,
         FILTER_CHAR_WITCHDOCTOR,
         FILTER_CHAR_WIZARD,
+        FILTER_CHAR_COUNT,
     };
 
     /**/

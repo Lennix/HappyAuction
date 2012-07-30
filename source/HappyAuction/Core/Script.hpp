@@ -76,7 +76,6 @@ namespace HappyAuction
         {
             Bool        status;
             Index       index;
-            ULong       unumber;
             Long        snumber;
             const Char* pstring;
             TextString  string;
@@ -93,12 +92,12 @@ namespace HappyAuction
 
             // haFilterLevel(min,  max) -> status
             case SCRIPT_HAFILTERLEVEL:
-                unumber = Tools::Conform(_GetStackULong(1), GAME_LEVEL_MIN, GAME_LEVEL_MAX);
-                status = _ahi.WriteFilterLevelMin(unumber);
+                snumber = Tools::Conform<Long>(_GetStackLong(1), -1, GAME_LEVEL_MAX);
+                status = _ahi.WriteFilterLevelMin(snumber);
                 if(status)
                 {
-                    ULong max = _GetStackULong(2);
-                    status = _ahi.WriteFilterLevelMax(max ? Tools::Conform(max, GAME_LEVEL_MIN, GAME_LEVEL_MAX) : unumber);
+                    Long max = _GetStackLong(2);
+                    status = _ahi.WriteFilterLevelMax(max ? Tools::Conform<Long>(max, -1, GAME_LEVEL_MAX) : snumber);
                 }
                 _PushStackBool(status);
                 return 1;

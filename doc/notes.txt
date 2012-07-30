@@ -1,3 +1,7 @@
+- raise filter dropdown delay a little hopefully fixing selection failing sometimes
+- fix setting character specific filters for users with more than 1 character
+- allow clearing level filter using haFilterLevel(-1) or haFilterLevel(-1, -1)
+
 CENTERED X -> RATIO CONVERSION FUNCTION USING 2560/1600 REZ:
 (x - (2560 / 2)) / 1600
 y / 1600

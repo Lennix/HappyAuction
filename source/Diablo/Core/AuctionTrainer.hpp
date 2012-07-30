@@ -54,7 +54,7 @@ namespace Diablo
             Byte    _5[0x5E0];
             ULong   addr_child2;    // ac8
             Byte    _6[0x220];
-            ULong   n5;             // cec
+            ULong   n5[4];          // cec
         };
 
         struct _AhList
@@ -82,7 +82,7 @@ namespace Diablo
 
         /**/
         Bool WriteComboBox( Id id, Index index );
-        Bool ReadComboBox( Id id, Index& index );
+        Bool ReadComboBox( Id id, Index& index, ULong& count );
 
         /**/
         Bool ReadHoverItem( Item& item );

@@ -24,7 +24,6 @@ namespace Diablo
     extern const Char*          GAME_WINDOW_TITLE;
     extern const Char*          GAME_WINDOW_CLASS;
     static const ULong          GAME_COORDINATE_SPREAD = 2;
-    static const ULong          GAME_LEVEL_MIN = 1;
     static const ULong          GAME_LEVEL_MAX = 99;
 
     //------------------------------------------------------------------------
