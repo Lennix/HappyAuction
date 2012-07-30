@@ -27,7 +27,6 @@ namespace Diablo
     //------------------------------------------------------------------------
     const ComboOption _options_character[] =
     {
-        { "Default",        { 0 }, _ALL },
         { "Barbarian",      { 0 }, _ALL },
         { "Demon Hunter",   { 0 }, _ALL },
         { "Monk",           { 0 }, _ALL },
@@ -302,7 +301,7 @@ namespace Diablo
 
     // public
     //------------------------------------------------------------------------
-    extern ULong        GAME_ITEMREAD_DELAY = 50; // ms
+    ULong               GAME_ITEMREAD_DELAY = 50; // ms
 
     const Char*         GAME_WINDOW_TITLE = "Diablo III";
     const Char*         GAME_WINDOW_CLASS = "D3 Main Window Class";

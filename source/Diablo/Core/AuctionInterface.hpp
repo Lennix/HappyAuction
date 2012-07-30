@@ -35,10 +35,9 @@ namespace Diablo
         Bool    ReadUnique( TextString& string );
 
         /**/
-        Bool    WriteFilterCharacter( FilterCharId id );
         Bool    WriteFilterType( FilterSecondaryId id );
-        Bool    WriteFilterLevelMin( ULong level );
-        Bool    WriteFilterLevelMax( ULong level );
+        Bool    WriteFilterLevelMin( Long level );
+        Bool    WriteFilterLevelMax( Long level );
         Bool    WriteFilterRarity( FilterRarityId id );
         Bool    WriteFilterStat( Index index, ItemStatId id, ULong value );
 
