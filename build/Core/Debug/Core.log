@@ -1,0 +1,21 @@
+﻿Der Buildvorgang wurde am 29.07.2012 18:57:28 gestartet.
+     1>Projekt "D:\HappyAuction\build\Core\Core.vcxproj" auf Knoten "2", build Ziel(e).
+     1>InitializeBuildStatus:
+         "Debug\Core.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../../source/ /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /wd4129 /wd4355 /wd4996 /analyze- /errorReport:prompt ..\..\source\Core\System\System.cpp ..\..\source\Core\Constants.cpp
+         Constants.cpp
+         System.cpp
+         Code wird generiert...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"D:\HappyAuction\build\Debug\Core.lib" Psapi.lib /NOLOGO Debug\System.obj
+         Debug\Constants.obj
+         Core.vcxproj -> D:\HappyAuction\build\Debug\Core.lib
+       FinalizeBuildStatus:
+         Die Datei "Debug\Core.unsuccessfulbuild" wird gelöscht.
+         Aktualisieren des Timestamps von "Debug\Core.lastbuildstate".
+     1>Die Erstellung des Projekts "D:\HappyAuction\build\Core\Core.vcxproj" ist abgeschlossen, build Ziel(e).
+
+Das Erstellen war erfolgreich.
+
+Verstrichene Zeit 00:00:01.78

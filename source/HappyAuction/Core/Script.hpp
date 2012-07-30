@@ -77,6 +77,7 @@ namespace HappyAuction
             Bool        status;
             Index       index;
             Long        snumber;
+            ULong       unumber;
             const Char* pstring;
             TextString  string;
 

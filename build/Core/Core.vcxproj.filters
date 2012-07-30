@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="System">
+      <UniqueIdentifier>{0ff73a12-6678-4f2e-af85-c4eb18747d63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support">
+      <UniqueIdentifier>{494a1ac3-dc0c-4c49-8bed-f1172c445fbd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\Core\System\MemoryScanner.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Process.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\System.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Thread.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Window.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Support\Lua.hpp">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Support\Settings.hpp">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Array.hpp" />
+    <ClInclude Include="..\..\source\Core\Constants.hpp" />
+    <ClInclude Include="..\..\source\Core\Enums.hpp" />
+    <ClInclude Include="..\..\source\Core\LocalList.hpp" />
+    <ClInclude Include="..\..\source\Core\Root.hpp" />
+    <ClInclude Include="..\..\source\Core\Tools.hpp" />
+    <ClInclude Include="..\..\source\Core\Types.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\Core\System\System.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Core\Constants.cpp" />
+  </ItemGroup>
+</Project>

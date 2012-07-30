@@ -1,0 +1,34 @@
+﻿Der Buildvorgang wurde am 30.07.2012 15:31:46 gestartet.
+     1>Projekt "D:\HappyAuction\build\HappyAuction\HappyAuction.vcxproj" auf Knoten "2", build Ziel(e).
+     1>InitializeBuildStatus:
+         Aktualisieren des Timestamps von "Debug\HappyAuction.unsuccessfulbuild".
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../../source/ /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /wd4129 /wd4355 /wd4996 /analyze- /errorReport:prompt ..\..\source\HappyAuction\Main.cpp
+         Main.cpp
+     1>d:\happyauction\source\happyauction\core\script.hpp(268): warning C4244: 'Argument': Konvertierung von 'Core::Double' in 'Core::ULong', möglicher Datenverlust
+       ResourceCompile:
+         Alle Ausgaben sind aktuell.
+       ManifestResourceCompile:
+         Alle Ausgaben sind aktuell.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\bin\HappyAuction.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\HappyAuction.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\HappyAuction\bin\HappyAuction.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\..\bin\HappyAuction.lib" /MACHINE:X86 Debug\System.res
+         Debug\HappyAuction.exe.embed.manifest.res
+         Debug\Constants.obj
+         Debug\Main.obj
+         D:\HappyAuction\build\Debug\Lua.lib
+         D:\HappyAuction\build\Debug\Core.lib
+         D:\HappyAuction\build\Debug\Diablo3.lib
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\HappyAuction.exe.embed.manifest" /manifest Debug\HappyAuction.exe.intermediate.manifest
+         Alle Ausgaben sind aktuell.
+       LinkEmbedManifest:
+         Alle Ausgaben sind aktuell.
+         HappyAuction.vcxproj -> D:\HappyAuction\build\HappyAuction\..\..\bin\HappyAuction.exe
+       FinalizeBuildStatus:
+         Die Datei "Debug\HappyAuction.unsuccessfulbuild" wird gelöscht.
+         Aktualisieren des Timestamps von "Debug\HappyAuction.lastbuildstate".
+     1>Die Erstellung des Projekts "D:\HappyAuction\build\HappyAuction\HappyAuction.vcxproj" ist abgeschlossen, build Ziel(e).
+
+Das Erstellen war erfolgreich.
+
+Verstrichene Zeit 00:00:03.95
