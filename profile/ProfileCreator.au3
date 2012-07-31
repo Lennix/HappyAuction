@@ -3,12 +3,11 @@
 ;loginfenster , benutzer passwort main ini
 #endregion
 #region INCLUDES
+#include "JSON.au3"
 #include <GUIConstantsEx.au3>
 #include <GuiComboBox.au3>
-#include <SliderConstants.au3>
-#include <EditConstants.au3>
 #Include <GuiSlider.au3>
-#include <WinAPI.au3>
+#include <EditConstants.au3>
 #endregion
 #region OPT
 Opt("GUIOnEventMode", 1)
@@ -311,7 +310,7 @@ Func builtLoginButton()
 EndFunc
 
 Func builtLoginFailed()
-	Local $fail = GUICtrlCreateLabel("Can't connect to Server!", 80, 175, 150, 30)
+	Local $fail = GUICtrlCreateLabel("Can't connect to Server!", 65, 175, 150, 30)
 	GUICtrlSetColor($fail, $colorRED)
 EndFunc
 #endregion
