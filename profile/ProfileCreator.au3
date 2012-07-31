@@ -6,6 +6,7 @@
 #include <GUIConstantsEx.au3>
 #include <GuiComboBox.au3>
 #include <SliderConstants.au3>
+#include <EditConstants.au3>
 #Include <GuiSlider.au3>
 #include <WinAPI.au3>
 #endregion
@@ -18,6 +19,7 @@ Opt("GUIOnEventMode", 1)
 Global $mainList = ""
 Global $mainGUI = ""
 Global $inputGUI = ""
+Global $loginGUI = ""
 Global $mainDropDown = ""
 Global $mainSlider = ""
 Global $mainSliderCache = ""
@@ -26,8 +28,11 @@ Global $addButton = ""
 Global $createButton = ""
 Global $editButton = ""
 Global $deleteButton = ""
+Global $loginButton = ""
 
 ;control holder
+Global $username
+Global $password
 Global $profileCounter = "0"
 Global $editingProfile = "-1"
 Global $sliderStartValue = "800"
@@ -36,9 +41,11 @@ Global $startPageDelay = "0"
 ;arrays
 Global $formData[19] = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 Global $filterData[6][2] = [["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]
+Global $userData[2] = ["", ""]
 
 ;other
-Global $lua_tab_count = 0
+Global $lua_tab_count = "0"
+Global $sessionID = "0"
 #endregion
 #region VARIABLES CONST
 ;files
@@ -59,7 +66,7 @@ Const $guiInputX = 100
 #region CORE
 #region CORE START
 checkIniFile()
-builtMainGUI()
+checkLoginData()
 #endregion
 #region CORE LOOP
 While 1
@@ -74,6 +81,10 @@ WEnd
 #region CORE FUNCTIONS
 Func quit()
 	Exit
+EndFunc
+
+Func goToMainFromInput()
+	switchToMainGUI($inputGUI)
 EndFunc
 #endregion
 #endregion
@@ -125,8 +136,8 @@ Func builtMainLayers()
 	EndIf
 EndFunc
 
-Func switchToMainGUI()
-	GUIDelete($inputGUI)
+Func switchToMainGUI($closeGUI)
+	GUIDelete($closeGUI)
 	GUISetState(@SW_SHOW, $mainGUI)
 EndFunc
 #endregion
@@ -136,7 +147,7 @@ Func builtInputGUI()
 	$inputGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 350, 580)
 	builtInputLayers()
 	GUISetState(@SW_SHOW, $inputGUI)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "switchToMainGUI", $inputGUI)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "goToMainFromInput", $inputGUI)
 EndFunc
 
 Func builtInputLayers()
@@ -278,6 +289,32 @@ Func editProfileGUI()
 	builtDeleteButton()
 EndFunc
 #endregion
+#region GUI LOGIN
+Func builtLoginGUI()
+	$loginGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 250, 200)
+	builtLoginLayers()
+	GUISetState(@SW_SHOW, $loginGUI)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "quit", $loginGUI)
+EndFunc
+
+Func builtLoginLayers()
+	GUICtrlCreateLabel("Username", 50, 25)
+	$userData[0] = GUICtrlCreateInput("", 50, 40, 150, 20)
+	GUICtrlCreateLabel("Password", 50, 80)
+	$userData[1] = GUICtrlCreateInput("", 50, 95, 150, 20, $ES_PASSWORD)
+	builtLoginButton()
+EndFunc
+
+Func builtLoginButton()
+	$loginButton = GUICtrlCreateButton("Login", 90, 138, 70, 30)
+	GUICtrlSetOnEvent($loginButton, "proceedLogin")
+EndFunc
+
+Func builtLoginFailed()
+	Local $fail = GUICtrlCreateLabel("Can't connect to Server!", 80, 175, 150, 30)
+	GUICtrlSetColor($fail, $colorRED)
+EndFunc
+#endregion
 #endregion
 #region INI
 Func loadIni()
@@ -319,6 +356,23 @@ Func loadIni()
 	Return $arrayProfiles
 EndFunc
 
+Func checkLoginData()
+	$username = IniRead($Ini, "main", "username", $error)
+	$password = IniRead($Ini, "main", "password", $error)
+	If $username == $error Or $password = $error Then
+		builtLoginGUI();
+	Else
+		If connectToServer($username, $password) Then
+			builtMainGUI();
+		Else
+			builtLoginGUI();
+			GUICtrlSetData($userData[0], $username)
+			GUICtrlSetData($userData[1], $password)
+			builtLoginFailed()
+		EndIF
+	EndIf
+EndFunc
+
 Func checkIniFile()
 	If FileExists($Ini) Then
 		;load main profilecounter
@@ -347,6 +401,7 @@ Func proceedCreatingProfile()
 	If Not $catchedERROR Then
 		writeProfile($profileCounter)
 		convertProfilesToLua()
+		switchToMainGUI($inputGUI)
 	EndIf
 EndFunc
 
@@ -355,12 +410,24 @@ Func proceedEditingProfile()
 	If Not $catchedERROR Then
 		writeProfile($editingProfile, True)
 		convertProfilesToLua()
+		switchToMainGUI($inputGUI)
 	EndIf
 EndFunc
 
 Func proceedDeletingProfile()
 	deleteProfile($editingProfile)
 	convertProfilesToLua()
+	switchToMainGUI($inputGUI)
+EndFunc
+
+Func proceedLogin()
+	If connectToServer(GUICtrlRead($userData[0]), GUICtrlRead($userData[1])) Then
+		writeLoginData()
+		builtMainGUI();
+		switchToMainGUI($loginGUI)
+	Else
+		builtLoginFailed()
+	EndIf
 EndFunc
 
 Func writeProfile($position, $edit = False)
@@ -399,8 +466,6 @@ Func writeProfile($position, $edit = False)
 		$profileCounter += 1
 		IniWrite($Ini, "main", "profilecounter", $profileCounter)
 	EndIf
-	;switch gui
-	switchToMainGUI()
 EndFunc
 
 Func loadProfile()
@@ -466,8 +531,13 @@ Func deleteProfile($position)
 	;update profile counter
 	$profileCounter -= 1
 	IniWrite($Ini, "main", "profilecounter", $profileCounter)
-	;switch gui
-	switchToMainGUI()
+EndFunc
+
+Func writeLoginData()
+	$username = GUICtrlRead($userData[0])
+	$password = GUICtrlRead($userData[1])
+	IniWrite($Ini, "main", "username", $username)
+	IniWrite($Ini, "main", "password", $password)
 EndFunc
 #endregion
 #region INPUT CONTROLLER
@@ -860,5 +930,29 @@ Func luaResetFilters()
 	WriteLua("haFilterStat(1, 'None', 0)")
 	WriteLua("haFilterStat(2, 'None', 0)")
 	WriteLua("haFilterStat(3, 'None', 0)")
+EndFunc
+#endregion
+#region SERVER
+Func iGet($action, $params = "")
+	$http = ObjCreate("WinHttp.WinHttpRequest.5.1")
+	$http.Open("POST", "http://d3ahbot.com/index.php?component=backend&action=" & $action, false)
+	$http.SetRequestHeader ("Content-Type", "application/x-www-form-urlencoded")
+	$http.SetCredentials("zero", "sehrklein", 0)
+	$http.Send($params)
+	ConsoleWrite($http.ResponseText & @CR)
+	$hRet = _JSONDecode($http.ResponseText)
+	If Not IsArray($hRet) Then Return SetError(1, 0, False)
+	If $hRet[1][1] == "fail" Then SetError(1)
+	Return $hRet
+EndFunc
+
+Func connectToServer($user, $userpwd)
+	Local $loginRequest = iGet("login", "username=" & $user & "&password=" & $userpwd)
+	If $loginRequest[1][1] == "success" Then
+		$sessionID = $loginRequest[2][1]
+		Return True
+	Else
+		Return False
+	EndIf
 EndFunc
 #endregion
