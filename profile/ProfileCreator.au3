@@ -1,6 +1,5 @@
 #region COMMENTS
-;log für profile statt für filter, queries per hour profile zum überschreibend er main, nextpagedelay in ms unter main, itemtimeleft min, legendarys and itemsets namen feld, minmax level
-;socket infos abfragen (optional), dps/armor in lua via found abfragen, timeleft/name, level range
+;socket infos abfragen (optional), dps/armor in lua via found abfragen
 ;cancel um edit wieder zu verlassen
 #endregion
 #region INCLUDES
@@ -15,37 +14,47 @@ Opt("GUIOnEventMode", 1)
 #endregion
 #region VARIABLES
 #region VARIABLES GLOBAL
+;controls
 Global $mainList = ""
 Global $mainGUI = ""
 Global $inputGUI = ""
 Global $mainDropDown = ""
 Global $mainSlider = ""
 Global $mainSliderCache = ""
+Global $mainInput = ""
+Global $mainCheckBox = ""
 Global $addButton = ""
 Global $createButton = ""
 Global $editButton = ""
 Global $deleteButton = ""
 
-Global $profileCounter = 0
-Global $editingProfile = -1
-Global $sliderStartValue = 800
+;control holder
+Global $profileCounter = "0"
+Global $editingProfile = "-1"
+Global $sliderStartValue = "800"
+Global $startPageDelay = "0"
+Global $startLog = "4"
 
-Global $formData[10] = ["", "", "", "", "", "", "", "", "", ""]
-Global $filterData[6][3] = [["", "", ""], ["", "", ""], ["", "", ""], ["", "", ""], ["", "", ""], ["", "", ""]]
+;arrays
+Global $formData[17] = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+Global $filterData[6][2] = [["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]
+
+;other
+Global $lua_tab_count = 0
 #endregion
 #region VARIABLES CONST
+;files
 Const $Ini = "Profiles.ini"
 Const $Txt = "Profiles.txt"
 
-Global $lua_tab_count = 0
-
-Const $error = "ERROR"
-
+;color
 Const $colorRED = 0xF20041
 Const $colorGREEN = 0x0D8B1A
 Const $colorSTANDARD = 0xffffff
 
+;other
 Const $queryZoneValue = 900
+Const $error = "ERROR"
 #endregion
 #endregion
 #region CORE
@@ -55,14 +64,10 @@ builtMainGUI()
 #endregion
 #region CORE LOOP
 While 1
-	;manipulate mM for price, bid and buyout
-	For $i = 5 To 7
-		manipulateInputM($formData[$i], GUICtrlRead($formData[$i]))
-	Next
-	;manipulate mM for startgold
-	manipulateInputM($formData[9], GUICtrlRead($formData[9]))
-	;update slider value
-	checkSliderInput()
+	;manipulate
+	manipulateInput()
+	;update main values
+	checkMainInput()
 	;delay
     Sleep(100)
 WEnd
@@ -84,14 +89,14 @@ EndFunc
 #region GUI MAIN
 ;main gui
 Func builtMainGUI()
-	$mainGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 300, 90)
+	$mainGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 300, 130)
 	builtMainLayers()
 	GUISetState(@SW_SHOW, $mainGUI)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "quit", $mainGUI)
 EndFunc
 
 Func builtMainLayers()
-	;main dropdown line
+	;profile dropdown line
 	GUICtrlCreateLabel("Profile", 10, 18)
 	$mainDropDown = GUICtrlCreateCombo("", 76, 15, 166, 20)
 	GUICtrlSetData($mainDropDown, $mainList)
@@ -99,9 +104,19 @@ Func builtMainLayers()
 	;add button line
 	$addButton = GUICtrlCreateButton("+", 256, 12, 30, 26)
 	GUICtrlSetOnEvent($addButton, "createProfileGUI")
-	;queries per hour line
-	GUICtrlCreateLabel("Queries / h", 10, 55)
-	$mainSlider = GUICtrlCreateSlider(70, 53, 180, 50, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
+	;pagedelay line
+	GUICtrlCreateLabel("PageDelay", 10, 58)
+	$mainInput = GUICtrlCreateInput($startPageDelay, 76, 55, 100, 20)
+	GUICtrlCreateLabel("ms", 183, 58)
+	;log line
+	GUICtrlCreateLabel("Log", 235, 58)
+	$mainCheckBox = GUICtrlCreateCheckbox("", 263, 56, 55, 20)
+	If $startLog == 1 Then
+		GUICtrlSetState($mainCheckBox, $GUI_CHECKED)
+	EndIf
+	;queries/h line
+	GUICtrlCreateLabel("Queries / h", 10, 90)
+	$mainSlider = GUICtrlCreateSlider(70, 87, 180, 50, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
 	GUICtrlSetLimit($mainSlider, 1600, 0)
 	GUICtrlSetData($mainSlider, $sliderStartValue)
 	Local $tempTicks[5] = [0, 400, 800, 1200, 1600]
@@ -109,7 +124,7 @@ Func builtMainLayers()
 	For $i = 0 To UBound($tempTicks) - 1
 		_GUICtrlSlider_SetTic($mainSlider, $tempTicks[$i])
 	Next
-	$mainSliderCache = GUICtrlCreateLabel($sliderStartValue, 257, 55, 30)
+	$mainSliderCache = GUICtrlCreateLabel($sliderStartValue, 257, 90, 30)
 	If  $sliderStartValue == 0 Or $sliderStartValue > $queryZoneValue Then
 		GUICtrlSetColor($mainSliderCache, $colorRED)
 	Else
@@ -125,7 +140,7 @@ EndFunc
 #region GUI INPUT
 Func builtInputGUI()
 	GUISetState(@SW_HIDE, $mainGUI)
-	$inputGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 300, 380)
+	$inputGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 330, 500)
 	builtInputLayers()
 	GUISetState(@SW_SHOW, $inputGUI)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "quit", $inputGUI)
@@ -164,26 +179,55 @@ Func builtInputLayers()
 		Else
 			GUICtrlCreateTabItem($i)
 		EndIf
-		$filterData[$i - 1][0] = GUICtrlCreateInput("stat", 87, 190, 110, 20)
-		$filterData[$i - 1][1] = GUICtrlCreateInput("0", 205, 190, 25, 20)
-		$filterData[$i - 1][2] = GUICtrlCreateCheckbox("Log", 237, 190, 35, 20)
+		$filterData[$i - 1][0] = GUICtrlCreateInput("stat", 87, 190, 140, 20)
+		$filterData[$i - 1][1] = GUICtrlCreateInput("0", 235, 190, 35, 20)
 	Next
 	GUICtrlCreateTabItem("")
 	GUICtrlSetState($startTab, $GUI_SHOW)
 	;price line
 	GUICtrlCreateLabel("Price", 10, 228)
-	$formData[5] = GUICtrlCreateInput("", 80, 225, 150, 20)
+	$formData[5] = GUICtrlCreateInput("0", 80, 225, 150, 20)
 	;bid line
 	GUICtrlCreateLabel("Bid", 10, 258)
-	$formData[6] = GUICtrlCreateInput("", 80, 255, 200, 20)
+	$formData[6] = GUICtrlCreateInput("0", 80, 255, 200, 20)
 	;buyout line
 	GUICtrlCreateLabel("Buyout", 10, 288)
-	$formData[7] = GUICtrlCreateInput("", 80, 285, 200, 20)
+	$formData[7] = GUICtrlCreateInput("0", 80, 285, 200, 20)
 	;random checkbox line
 	$formData[8] = GUICtrlCreateCheckbox("Random", 237, 225, 55, 20)
 	;start gold line
 	GUICtrlCreateLabel("StartGold", 10, 318)
 	$formData[9] = GUICtrlCreateInput("0", 80, 315, 200, 20)
+	;timeleft line
+	GUICtrlCreateLabel("Timeleft", 10, 348)
+	$formData[10] = GUICtrlCreateInput("d:hh:mm", 80, 345, 200, 20)
+	;min lvl, max lvl line
+	GUICtrlCreateLabel("min Lvl", 10, 378)
+	$formData[11] = GUICtrlCreateInput("1", 80, 375, 60, 20)
+	GUICtrlCreateLabel("max Lvl", 160, 378)
+	$formData[12] = GUICtrlCreateInput("60", 220, 375, 60, 20)
+	;dps/armor line
+	GUICtrlCreateLabel("DPS / Armor", 10, 408)
+	$formData[13] = GUICtrlCreateInput("0", 80, 405, 200, 20)
+	;Legendary/Set line
+	GUICtrlCreateLabel("Legendary / Set", 10, 438)
+	$formData[14] = GUICtrlCreateInput("", 80, 435, 200, 20)
+	;query/h line
+	GUICtrlCreateLabel("Queries / h", 10, 468)
+	$formData[15] = GUICtrlCreateSlider(80, 465, 200, 50, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
+	GUICtrlSetLimit($formData[15], 1600, 0)
+	GUICtrlSetData($formData[15], $sliderStartValue)
+	Local $tempTicks[5] = [0, 400, 800, 1200, 1600]
+	_GUICtrlSlider_ClearTics($formData[15])
+	For $i = 0 To UBound($tempTicks) - 1
+		_GUICtrlSlider_SetTic($formData[15], $tempTicks[$i])
+	Next
+	$formData[16] = GUICtrlCreateLabel($sliderStartValue, 287, 468, 30)
+	If  $sliderStartValue == 0 Or $sliderStartValue > $queryZoneValue Then
+		GUICtrlSetColor($formData[16], $colorRED)
+	Else
+		GUICtrlSetColor($formData[16], $colorGREEN)
+	EndIf
 EndFunc
 
 Func builtCreateButton()
@@ -263,7 +307,7 @@ Func loadIni()
 		$arrayData[8] = IniRead($Ini, "profile" & $i, "buyout", $error)
 		$arrayData[9] = IniRead($Ini, "profile" & $i, "priceflag", $error)
 		$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
-		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", 1) ; NOT AVAILABLE YET SET 1
+		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
 		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", 1) ; NOT AVAILABLE YET SET 1
 		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", 1) ; NOT AVAILABLE YET SET 1
 		$arrayProfiles[$i] = $arrayData
@@ -277,6 +321,12 @@ Func checkIniFile()
 		$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 		;load main slider value
 		$sliderStartValue = IniRead($Ini, "main", "queries", $error)
+		;load main page delay
+		$startPageDelay = IniRead($Ini, "main", "pagedelay", $error)
+		;load main log
+		If IniRead($Ini, "main", "logflag", $error) == 1 Then
+			$startLog = 1
+		EndIf
 		;load main dropdown data
 		For $i = 0 To $profileCounter - 1
 			$tempProfile = IniRead($Ini, "profile" & $i, "name", $error)
@@ -287,7 +337,10 @@ Func checkIniFile()
 		IniWrite($Ini, "main", "profilecounter", $profileCounter)
 		;create main slider value
 		IniWrite($Ini, "main", "queries", $sliderStartValue)
-
+		;create main page delay
+		IniWrite($Ini, "main", "pagedelay", $startPageDelay)
+		;create main log
+		IniWrite($Ini, "main", "logflag", $startLog)
 	EndIf
 EndFunc
 
@@ -321,7 +374,6 @@ Func writeProfile($position, $edit = False)
 	For $i = 1 To 6
 		IniWrite($Ini, "profile" & $position, "filter" & $i, GUICtrlRead($filterData[$i - 1][0]))
 		IniWrite($Ini, "profile" & $position, "value"  & $i, GUICtrlRead($filterData[$i - 1][1]))
-		IniWrite($Ini, "profile" & $position, "filterflag"  & $i, GUICtrlRead($filterData[$i - 1][2]))
 	Next
 	IniWrite($Ini, "profile" & $position, "price", GUICtrlRead($formData[5]))
 	IniWrite($Ini, "profile" & $position, "bid", GUICtrlRead($formData[6]))
@@ -363,9 +415,6 @@ Func loadProfile()
 			For $t = 1 To 6
 				GUICtrlSetData($filterData[$t - 1][0], IniRead($Ini, "profile" & $i, "filter" & $t, $error))
 				GUICtrlSetData($filterData[$t - 1][1], IniRead($Ini, "profile" & $i, "value" & $t, $error))
-				If	IniRead($Ini, "profile" & $i, "filterflag" & $t, "4") == "1" Then
-					GUICtrlSetState ($filterData[$t - 1][2], $GUI_CHECKED)
-				EndIf
 			Next
 		EndIf
 	Next
@@ -476,11 +525,23 @@ Func checkInput()
 	Return $catchedERROR
 EndFunc
 
-Func manipulateInputM($controlData, $input)
-	$manipulatedInput = StringRegExpReplace($input, "[mM]", "000000")
+Func manipulateInputMK($controlData, $input)
+	Local $manipulatedInput = StringRegExpReplace($input, "[mM]", "000000")
+	$manipulatedInput = StringRegExpReplace($manipulatedInput, "[kK]", "000")
 	If $manipulatedInput <> $input Then
 		GUICtrlSetData($controlData, $manipulatedInput)
 	EndIf
+EndFunc
+
+Func manipulateInput()
+	;manipulate price, bid and buyout
+	For $i = 5 To 7
+		manipulateInputMK($formData[$i], GUICtrlRead($formData[$i]))
+	Next
+	;manipulate startgold
+	manipulateInputMK($formData[9], GUICtrlRead($formData[9]))
+	;manipulate pagedelay
+	manipulateInputMK($mainInput, GUICtrlRead($mainInput))
 EndFunc
 
 Func checkSliderInput()
@@ -495,6 +556,24 @@ Func checkSliderInput()
 		;update slider value in ini
 		IniWrite($Ini, "main", "queries", $tempSliderValue)
 	EndIf
+EndFunc
+
+Func checkPageDelayInput()
+	If IniRead($Ini, "main", "pagedelay", $error) <> GUICtrlRead($mainInput) Then
+		IniWrite($Ini, "main", "pagedelay", GUICtrlRead($mainInput))
+	EndIf
+EndFunc
+
+Func checkLogInput()
+	If IniRead($Ini, "main", "logflag", $error) <> GUICtrlRead($mainCheckBox) Then
+		IniWrite($Ini, "main", "logflag", GUICtrlRead($mainCheckBox))
+	EndIf
+EndFunc
+
+Func checkMainInput()
+	checkSliderInput()
+	checkPageDelayInput()
+	checkLogInput()
 EndFunc
 #endregion
 #region LUA CONVERTER
