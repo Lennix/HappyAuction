@@ -1,5 +1,6 @@
 #region COMMENTS
 ;log für profile statt für filter, queries per hour profile zum überschreibend er main, nextpagedelay in ms unter main, itemtimeleft min, legendarys and itemsets namen feld, minmax level
+;socket infos abfragen (optional), dps/armor in lua via found abfragen, set class (haFilterClass()), timeleft/name
 #endregion
 #region INCLUDES
 #include <GUIConstantsEx.au3>
@@ -34,6 +35,8 @@ Global $filterData[6][3] = [["", "", ""], ["", "", ""], ["", "", ""], ["", "", "
 #region VARIABLES CONST
 Const $Ini = "Profiles.ini"
 Const $Txt = "Profiles.txt"
+
+Global $lua_tab_count = 0
 
 Const $error = "ERROR"
 
@@ -235,15 +238,16 @@ EndFunc
 #endregion
 #region INI
 Func loadIni()
+	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 	Local $arrayProfiles[$profileCounter]
-	For $i = 0 To UBound($arrayProfiles) - 1
-		Local $arrayData[11]
+	For $i = 0 To UBound($arrayProfiles)-1
+		Local $arrayData[12]
 		Local $arrayFilter[2]
 		Local $arrayStat[6]
 		Local $arrayValue[6]
 		For $t = 0 To 5
-			$arrayStat[$t] = IniRead($Ini, "profile" & $i, "filter" & $t, $error)
-			$arrayValue[$t] = IniRead($Ini, "profile" & $i, "value" & $t, $error)
+			$arrayStat[$t] = IniRead($Ini, "profile" & $i, "filter" & $t+1, $error)
+			$arrayValue[$t] = IniRead($Ini, "profile" & $i, "value" & $t+1, $error)
 		Next
 		$arrayFilter[0] = $arrayStat
 		$arrayFilter[1] = $arrayValue
@@ -258,6 +262,7 @@ Func loadIni()
 		$arrayData[8] = IniRead($Ini, "profile" & $i, "buyout", $error)
 		$arrayData[9] = IniRead($Ini, "profile" & $i, "priceflag", $error)
 		$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
+		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", 1) ; NOT AVAILABLE YET SET 1
 		$arrayProfiles[$i] = $arrayData
 	Next
 	Return $arrayProfiles
@@ -491,15 +496,134 @@ EndFunc
 #endregion
 #region LUA CONVERTER
 Func convertProfilesToLua()
+	$statfilter = "ERROR,Has Sockets,stat"
+
 	FileDelete($Txt)
 	FileWrite($Txt, "")
+
+	WriteLua("--[[", 1)
+	WriteLua("DISCLAIMER:")
+	WriteLua("This file was automatically created by HAA Profile Creator. It may not be compatible with HA.")
+	WriteLua("Please do not change this file unless you know what you're doing.")
+	WriteLua("]]--", -1)
+
+	WriteLua("while 1 do", 1)
+
+	$lua_tabs = ""
 	Local $profiles = loadIni()
-	For $i = 0 To UBound($profiles) - 1
-		Local $tempData = $profiles[$i]
-		FileWriteLine($Txt, "-- Profile " & $tempData[1])
-		FileWriteLine($Txt, "haFilterType('" & $tempData[4] & "')")
-		FileWriteLine($Txt, "haFilterRarity('" & $tempData[5] & "')")
-		FileWriteLine($Txt, "")
+	For $i = 0 To UBound($profiles)-1
+		Local $prof = $profiles[$i]
+		; 0 filter, 1 name, 2 class, 3 itemtype, 4 subtype, 5 rarity, 6 price, 7 bid, 8 buyout, 9 priceflag (random), 10 startgold, 11 log flag
+		; filter: 0 stats, 1 values
+		; write profile name
+		If $i > 0 Then WriteLua("")
+		WriteLua("-- Profile " & $prof[1])
+
+		; check gold (lets do that in the beginning)
+		If $prof[10] > 0 Then WriteLua("if haGetGold() > " & $prof[10] & " then", 1)
+
+		; itemtype is automatically determined, just use subtype
+		If StringLen($prof[4]) > 0 Then
+			WriteLua("haFilterType('" & $prof[4] & "')")
+		Else
+			; if subtype isn't set use itemtype
+			WriteLua("haFilterType('" & $prof[3] & "')")
+		EndIf
+		; rarity
+		If StringLen($prof[5]) > 0 Then
+			WriteLua("haFilterRarity('" & $prof[5] & "')")
+		Else
+			WriteLua("haFilterRarity('All')")
+		EndIf
+		; price
+		If StringLen($prof[6]) > 0 Then
+			If $prof[6] == 1 Then ; randomize
+				WriteLua("haFilterBuyout(" & $prof[6] & ", true)")
+			Else
+				WriteLua("haFilterBuyout(" & $prof[6] & ", false)")
+			EndIf
+		Else
+			WriteLua("haFilterBuyout(-1)")
+		EndIf
+
+		$filter = $prof[0]
+		$stats = $filter[0]
+		$values = $filter[1]
+
+		$fcount = 0
+
+		; set first 3 filter
+		For $j = 0 To UBound($stats)-1
+			If $stats[$j] <> "ERROR" And $stats[$j] <> "stat" Then
+				$fcount += 1
+				WriteLua("haFilterStat(" & $fcount & ", '" & $stats[$j] & "', " & $values[$j] & ")")
+				If $fcount == 3 Then ExitLoop
+			EndIf
+		Next
+		; now lets search
+		WriteLua("if haActionSearch() then", 1)
+		WriteLua("while haListNext() do", 1)
+
+		; get item information
+		WriteLua("local dps, bid, buyout, nstats, nsockets, id, currBid, flags, timeleft, name = haListItem()")
+
+		; log it?
+		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS: ' .. dps .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
+
+		WriteLua("local found = 0")
+
+		; check the stats
+		WriteLua("for i = 1, nstats do", 1)
+
+		WriteLua("local stat, value1 = haListItemStat(i)")
+		If $prof[11] == 1 Then WriteLua("haLog('STAT:' .. stat .. ' VALUE:' .. value1)")
+
+		$found = 0
+		For $j = 0 To UBound($stats)-1
+			If StringInStr($statfilter, $stats[$j]) == 0 Then
+				$found += 1
+				WriteLua('if stat == "' & $stats[$j] & '" and value1 >= ' & $values[$j] & " then found = found + 1 end")
+			EndIf
+		Next
+
+		WriteLua("end", -1) ; end for stat-loop
+
+		; did we find all filter and did the values fit?
+		WriteLua("if found == " & $found & " and flags == 102 then", 1)
+
+		; check bid/buyout
+		WriteLua("if buyout <= " & $prof[8] & " then", 1)
+		If $prof[11] == 1 Then WriteLua("haLog('Buying item')")
+		WriteLua("haActionBuyout()")
+		If $prof[7] > 0 Then
+			WriteLua("elseif bid <= " & $prof[7] & " then", -1)
+			If $prof[11] == 1 Then WriteLua("haLog('Bidding on item for " & $prof[7] & "')")
+			WriteLua("haActionBid(" & $prof[7] & ")",1)
+		EndIf
+		WriteLua("end", -1) ; end for bid/buyout if
+		WriteLua("end", -1) ; end for found
+
+		If $prof[11] == 1 Then
+			WriteLua("for i = 1, nsockets do", 1)
+			WriteLua("local stat, gtype, rank, value1 = haListItemSocket(i)")
+			WriteLua("haLog('SOCKET:' .. stat .. ' VALUE:' .. value1 .. ' GEM:' .. gtype .. ' RANK:' .. rank)")
+			WriteLua("end", -1)
+		EndIf
+		WriteLua("end", -1) ; end for while
+		WriteLua("end", -1) ; end for search
+		If $prof[10] > 0 Then WriteLua("end", -1) ; end for gold if
 	Next
+
+	WriteLua("end", -1) ; end for main while
+EndFunc
+
+Func WriteLua($text, $tab_count_change = 0)
+	If $tab_count_change < 0 Then $lua_tab_count += $tab_count_change
+	$lua_tabs = ""
+	For $i = 1 To $lua_tab_count
+		$lua_tabs &= @TAB
+	Next
+	FileWriteLine($Txt, $lua_tabs & $text)
+	If $tab_count_change > 0 Then $lua_tab_count += $tab_count_change
 EndFunc
 #endregion
