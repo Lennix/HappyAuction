@@ -1,6 +1,6 @@
 #region COMMENTS
-;socket infos abfragen (optional), dps/armor in lua via found abfragen
-;cancel um edit wieder zu verlassen
+;socket infos abfragen (optional)
+;loginfenster , benutzer passwort main ini
 #endregion
 #region INCLUDES
 #include <GUIConstantsEx.au3>
@@ -187,7 +187,7 @@ Func builtInputLayers()
 	GUICtrlCreateLabel("Buyout", 10, 288)
 	$formData[7] = GUICtrlCreateInput("0", $guiInputX, 285, 200, 20)
 	;random checkbox line
-	$formData[8] = GUICtrlCreateCheckbox("Random", $guiInputX + 165, 225, 55, 20)
+	$formData[8] = GUICtrlCreateCheckbox("Random", $guiInputX + 165, 225, 85, 20)
 	;start gold line
 	GUICtrlCreateLabel("StartGold", 10, 318)
 	$formData[9] = GUICtrlCreateInput("0", $guiInputX, 315, 200, 20)
@@ -406,30 +406,30 @@ EndFunc
 Func loadProfile()
 	editProfileGUI()
 	For $i = 0 To $profileCounter - 1
-		$tempProfile = IniRead($Ini, "profile" & $i, "name", $error)
+		$tempProfile = IniRead($Ini, "profile" & $i, "name", "")
 		If GUICtrlRead($mainDropDown) == $tempProfile Then
 			$editingProfile = $i
 			GUICtrlSetData($formData[0], $tempProfile)
-			_GUICtrlComboBox_SetCurSel($formData[1], _GUICtrlComboBox_FindString($formData[1], IniRead($Ini, "profile" & $i, "class", $error)))
-			_GUICtrlComboBox_SetCurSel($formData[2], _GUICtrlComboBox_FindString($formData[2], IniRead($Ini, "profile" & $i, "itemtype", $error)))
+			_GUICtrlComboBox_SetCurSel($formData[1], _GUICtrlComboBox_FindString($formData[1], IniRead($Ini, "profile" & $i, "class", "")))
+			_GUICtrlComboBox_SetCurSel($formData[2], _GUICtrlComboBox_FindString($formData[2], IniRead($Ini, "profile" & $i, "itemtype", "")))
 			checkItemtype()
-			_GUICtrlComboBox_SetCurSel($formData[3], _GUICtrlComboBox_FindString($formData[3], IniRead($Ini, "profile" & $i, "subtype", $error)))
-			_GUICtrlComboBox_SetCurSel($formData[4], _GUICtrlComboBox_FindString($formData[4], IniRead($Ini, "profile" & $i, "rarity", $error)))
-			GUICtrlSetData($formData[5], IniRead($Ini, "profile" & $i, "price", $error))
-			GUICtrlSetData($formData[6], IniRead($Ini, "profile" & $i, "bid", $error))
-			GUICtrlSetData($formData[7], IniRead($Ini, "profile" & $i, "buyout", $error))
+			_GUICtrlComboBox_SetCurSel($formData[3], _GUICtrlComboBox_FindString($formData[3], IniRead($Ini, "profile" & $i, "subtype", "")))
+			_GUICtrlComboBox_SetCurSel($formData[4], _GUICtrlComboBox_FindString($formData[4], IniRead($Ini, "profile" & $i, "rarity", "")))
+			GUICtrlSetData($formData[5], IniRead($Ini, "profile" & $i, "price", "0"))
+			GUICtrlSetData($formData[6], IniRead($Ini, "profile" & $i, "bid", "0"))
+			GUICtrlSetData($formData[7], IniRead($Ini, "profile" & $i, "buyout", "0"))
 			If	IniRead($Ini, "profile" & $i, "priceflag", "4") == "1" Then
 				GUICtrlSetState ($formData[8], $GUI_CHECKED)
 			EndIf
-			GUICtrlSetData($formData[9], IniRead($Ini, "profile" & $i, "startgold", $error))
-			GUICtrlSetData($formData[10], IniRead($Ini, "profile" & $i, "timeleft", $error))
-			GUICtrlSetData($formData[11], IniRead($Ini, "profile" & $i, "minlvl", $error))
-			GUICtrlSetData($formData[12], IniRead($Ini, "profile" & $i, "maxlvl", $error))
-			GUICtrlSetData($formData[13], IniRead($Ini, "profile" & $i, "dpsarmor", $error))
-			GUICtrlSetData($formData[14], IniRead($Ini, "profile" & $i, "legendaryset", $error))
+			GUICtrlSetData($formData[9], IniRead($Ini, "profile" & $i, "startgold", "0"))
+			GUICtrlSetData($formData[10], IniRead($Ini, "profile" & $i, "timeleft", "d:hh:mm"))
+			GUICtrlSetData($formData[11], IniRead($Ini, "profile" & $i, "minlvl", "1"))
+			GUICtrlSetData($formData[12], IniRead($Ini, "profile" & $i, "maxlvl", "60"))
+			GUICtrlSetData($formData[13], IniRead($Ini, "profile" & $i, "dpsarmor", "0"))
+			GUICtrlSetData($formData[14], IniRead($Ini, "profile" & $i, "legendaryset", ""))
 			Local $tempSliderData = GUICtrlRead($mainSlider)
-			If IniRead($Ini, "profile" & $i, "queries", $error) <> "0" Then
-				$tempSliderData = IniRead($Ini, "profile" & $i, "queries", $error)
+			If IniRead($Ini, "profile" & $i, "queries", GUICtrlRead($mainSlider)) <> "0" Then
+				$tempSliderData = IniRead($Ini, "profile" & $i, "queries", GUICtrlRead($mainSlider))
 			EndIf
 			GUICtrlSetData($formData[15], $tempSliderData)
 			GUICtrlSetData($formData[16], $tempSliderData)
@@ -438,13 +438,13 @@ Func loadProfile()
 			Else
 				GUICtrlSetColor($formData[16], $colorGREEN)
 			EndIf
-			GUICtrlSetData($formData[17], IniRead($Ini, "profile" & $i, "itemlevel", $error))
+			GUICtrlSetData($formData[17], IniRead($Ini, "profile" & $i, "itemlevel", "0"))
 			If	IniRead($Ini, "profile" & $i, "logflag", "4") == "1" Then
 				GUICtrlSetState ($formData[18], $GUI_CHECKED)
 			EndIf
 			For $t = 1 To 6
-				GUICtrlSetData($filterData[$t - 1][0], IniRead($Ini, "profile" & $i, "filter" & $t, $error))
-				GUICtrlSetData($filterData[$t - 1][1], IniRead($Ini, "profile" & $i, "value" & $t, $error))
+				GUICtrlSetData($filterData[$t - 1][0], IniRead($Ini, "profile" & $i, "filter" & $t, "stat"))
+				GUICtrlSetData($filterData[$t - 1][1], IniRead($Ini, "profile" & $i, "value" & $t, "0"))
 			Next
 		EndIf
 	Next
