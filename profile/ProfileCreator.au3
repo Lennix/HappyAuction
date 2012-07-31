@@ -216,14 +216,14 @@ Func builtInputLayers()
 	GUICtrlCreateLabel("Queries / h", 10, 468)
 	$formData[15] = GUICtrlCreateSlider(80, 465, 200, 50, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
 	GUICtrlSetLimit($formData[15], 1600, 0)
-	GUICtrlSetData($formData[15], $sliderStartValue)
+	GUICtrlSetData($formData[15], GUICtrlRead($mainSlider))
 	Local $tempTicks[5] = [0, 400, 800, 1200, 1600]
 	_GUICtrlSlider_ClearTics($formData[15])
 	For $i = 0 To UBound($tempTicks) - 1
 		_GUICtrlSlider_SetTic($formData[15], $tempTicks[$i])
 	Next
-	$formData[16] = GUICtrlCreateLabel($sliderStartValue, 287, 468, 30)
-	If  $sliderStartValue == 0 Or $sliderStartValue > $queryZoneValue Then
+	$formData[16] = GUICtrlCreateLabel(GUICtrlRead($mainSlider), 287, 468, 30)
+	If  GUICtrlRead($mainSlider) == 0 Or GUICtrlRead($mainSlider) > $queryZoneValue Then
 		GUICtrlSetColor($formData[16], $colorRED)
 	Else
 		GUICtrlSetColor($formData[16], $colorGREEN)
@@ -308,7 +308,7 @@ Func loadIni()
 		$arrayData[9] = IniRead($Ini, "profile" & $i, "priceflag", $error)
 		$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
 		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
-		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", 1) ; NOT AVAILABLE YET SET 1
+		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", $error)
 		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", 1) ; NOT AVAILABLE YET SET 1
 		$arrayProfiles[$i] = $arrayData
 	Next
@@ -380,6 +380,16 @@ Func writeProfile($position, $edit = False)
 	IniWrite($Ini, "profile" & $position, "buyout", GUICtrlRead($formData[7]))
 	IniWrite($Ini, "profile" & $position, "priceflag", GUICtrlRead($formData[8]))
 	IniWrite($Ini, "profile" & $position, "startgold", GUICtrlRead($formData[9]))
+	IniWrite($Ini, "profile" & $position, "timeleft", GUICtrlRead($formData[10]))
+	IniWrite($Ini, "profile" & $position, "minlvl", GUICtrlRead($formData[11]))
+	IniWrite($Ini, "profile" & $position, "maxlvl", GUICtrlRead($formData[12]))
+	IniWrite($Ini, "profile" & $position, "dpsarmor", GUICtrlRead($formData[13]))
+	IniWrite($Ini, "profile" & $position, "legendaryset", GUICtrlRead($formData[14]))
+	Local $tempSliderData = "0"
+	If GUICtrlRead($mainSlider) <> GUICtrlRead($formData[15]) Then
+		$tempSliderData = GUICtrlRead($formData[15])
+	EndIf
+	IniWrite($Ini, "profile" & $position, "queries", $tempSliderData)
 	If Not $edit Then
 		;update main dropdown
 		$mainList &= "|" & GUICtrlRead($formData[0])
@@ -412,6 +422,22 @@ Func loadProfile()
 				GUICtrlSetState ($formData[8], $GUI_CHECKED)
 			EndIf
 			GUICtrlSetData($formData[9], IniRead($Ini, "profile" & $i, "startgold", $error))
+			GUICtrlSetData($formData[10], IniRead($Ini, "profile" & $i, "timeleft", $error))
+			GUICtrlSetData($formData[11], IniRead($Ini, "profile" & $i, "minlvl", $error))
+			GUICtrlSetData($formData[12], IniRead($Ini, "profile" & $i, "maxlvl", $error))
+			GUICtrlSetData($formData[13], IniRead($Ini, "profile" & $i, "dpsarmor", $error))
+			GUICtrlSetData($formData[14], IniRead($Ini, "profile" & $i, "legendaryset", $error))
+			Local $tempSliderData = GUICtrlRead($mainSlider)
+			If IniRead($Ini, "profile" & $i, "queries", $error) <> "0" Then
+				$tempSliderData = IniRead($Ini, "profile" & $i, "queries", $error)
+			EndIf
+			GUICtrlSetData($formData[15], $tempSliderData)
+			GUICtrlSetData($formData[16], $tempSliderData)
+			If  $tempSliderData == 0 Or $tempSliderData > $queryZoneValue Then
+				GUICtrlSetColor($formData[16], $colorRED)
+			Else
+				GUICtrlSetColor($formData[16], $colorGREEN)
+			EndIf
 			For $t = 1 To 6
 				GUICtrlSetData($filterData[$t - 1][0], IniRead($Ini, "profile" & $i, "filter" & $t, $error))
 				GUICtrlSetData($filterData[$t - 1][1], IniRead($Ini, "profile" & $i, "value" & $t, $error))
@@ -545,17 +571,23 @@ Func manipulateInput()
 EndFunc
 
 Func checkSliderInput()
-	$tempSliderValue = GUICtrlRead($mainSlider)
-	If GUICtrlRead($mainSliderCache) <> $tempSliderValue Then
-		GUICtrlSetData($mainSliderCache, $tempSliderValue)
-		If $tempSliderValue == 0 Or $tempSliderValue > $queryZoneValue Then
-			GUICtrlSetColor($mainSliderCache, $colorRED)
-		Else
-			GUICtrlSetColor($mainSliderCache, $colorGREEN)
+	Local $tempSlider[2] = [$mainSlider, $formData[15]]
+	Local $tempSliderCache[2] = [$mainSliderCache, $formData[16]]
+	For $i = 0 To 1
+		$tempSliderValue = GUICtrlRead($tempSlider[$i])
+		If GUICtrlRead($tempSliderCache[$i]) <> $tempSliderValue Then
+			GUICtrlSetData($tempSliderCache[$i], $tempSliderValue)
+			If $tempSliderValue == 0 Or $tempSliderValue > $queryZoneValue Then
+				GUICtrlSetColor($tempSliderCache[$i], $colorRED)
+			Else
+				GUICtrlSetColor($tempSliderCache[$i], $colorGREEN)
+			EndIf
+			;update slider value in main
+			If $i = 0 Then
+				IniWrite($Ini, "main", "queries", $tempSliderValue)
+			EndIf
 		EndIf
-		;update slider value in ini
-		IniWrite($Ini, "main", "queries", $tempSliderValue)
-	EndIf
+	Next
 EndFunc
 
 Func checkPageDelayInput()
