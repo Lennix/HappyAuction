@@ -1,29 +1,30 @@
-ID: 276906053 DPS/Armor: 629 bid: 999500 buyout: 999500 currBid: 0 flags: 102 ilvl: 61 timeleft: 2h 1m name: Fissure Greaves
-STAT:Dexterity VALUE:130
-STAT:Vitality VALUE:57
-STAT:Armor VALUE:301
+ID: 280089193 DPS/Armor: 650 bid: 800000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d 7h name: Mortal Cover
+STAT:Dexterity VALUE:135
+STAT:Vitality VALUE:73
+STAT:Armor VALUE:235
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 280490324 DPS/Armor: 578 bid: 800000 buyout: 800000 currBid: 0 flags: 102 ilvl: 61 timeleft: 1d 11h name: Hollow Wraps
+STAT:Dexterity VALUE:142
+STAT:Vitality VALUE:63
+STAT:Armor VALUE:240
+STAT:Life Regeneration VALUE:69
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 278319476 DPS/Armor: 591 bid: 330750 buyout: 600000 currBid: 315000 flags: 102 ilvl: 62 timeleft: 19h 55m name: Wander Shelter
-STAT:Dexterity VALUE:138
-STAT:Vitality VALUE:82
-STAT:Armor VALUE:208
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 279233344 DPS/Armor: 577 bid: 1110 buyout: 500000 currBid: 1057 flags: 102 ilvl: 60 timeleft: 1d 3h name: Defiant Mail
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+ID: 279233344 DPS/Armor: 577 bid: 2205 buyout: 500000 currBid: 2100 flags: 102 ilvl: 60 timeleft: 18h 54m name: Defiant Mail
 STAT:Dexterity VALUE:120
 STAT:Vitality VALUE:72
 STAT:Armor VALUE:268
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 277923039 DPS/Armor: 571 bid: 400000 buyout: 400000 currBid: 0 flags: 102 ilvl: 60 timeleft: 15h 57m name: Attack Onus
+ID: 277923039 DPS/Armor: 571 bid: 400000 buyout: 400000 currBid: 0 flags: 102 ilvl: 60 timeleft: 7h 38m name: Attack Onus
 STAT:Dexterity VALUE:104
 STAT:Vitality VALUE:101
 STAT:Armor VALUE:276
 STAT:Life Regeneration VALUE:13
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 278850948 DPS/Armor: 563 bid: 400000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 60 timeleft: 1d name: Flesh Mail
+ID: 278850948 DPS/Armor: 563 bid: 400000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 60 timeleft: 16h 10m name: Flesh Mail
 STAT:Strength VALUE:49
 STAT:Dexterity VALUE:100
 STAT:Vitality VALUE:120
@@ -31,20 +32,13 @@ STAT:Armor VALUE:263
 STAT:Life Regeneration VALUE:61
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 277395526 DPS/Armor: 553 bid: 1000000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 61 timeleft: 5h 44m name: Cavalry Arts
-STAT:Dexterity VALUE:135
-STAT:Vitality VALUE:50
-STAT:Arcane Resistance VALUE:42
-STAT:Armor VALUE:197
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 278672254 DPS/Armor: 552 bid: 1100000 buyout: 1200000 currBid: 0 flags: 102 ilvl: 60 timeleft: 23h 9m name: Brigand's Cloth
+ID: 278672254 DPS/Armor: 552 bid: 1100000 buyout: 1200000 currBid: 0 flags: 102 ilvl: 60 timeleft: 14h 49m name: Brigand's Cloth
 STAT:Dexterity VALUE:149
 STAT:Vitality VALUE:72
 STAT:Armor VALUE:235
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
-ID: 279789249 DPS/Armor: 548 bid: 1000000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d 8h name: Scout Apex
+ID: 279789249 DPS/Armor: 548 bid: 1000000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d name: Scout Apex
 STAT:Dexterity VALUE:131
 STAT:Intelligence VALUE:48
 STAT:Vitality VALUE:75
@@ -52,21 +46,21 @@ STAT:Armor VALUE:111
 STAT:Pickup Radius VALUE:6
 SOCKET:Dexterity VALUE:42 GEM:Emerald RANK:10
 SOCKET:Dexterity VALUE:42 GEM:Emerald RANK:10
-ID: 278590325 DPS/Armor: 547 bid: 600000 buyout: 600000 currBid: 0 flags: 102 ilvl: 60 timeleft: 22h 27m name: Dash Gut
+ID: 278590325 DPS/Armor: 547 bid: 600000 buyout: 600000 currBid: 0 flags: 102 ilvl: 60 timeleft: 14h 7m name: Dash Gut
 STAT:Strength VALUE:49
 STAT:Dexterity VALUE:128
 STAT:Vitality VALUE:59
 STAT:Armor VALUE:262
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
-ID: 279658810 DPS/Armor: 544 bid: 525454 buyout: 1000000 currBid: 0 flags: 102 ilvl: 60 timeleft: 1d 6h name: Assassin's Greaves
+ID: 279658810 DPS/Armor: 544 bid: 525454 buyout: 1000000 currBid: 0 flags: 102 ilvl: 60 timeleft: 22h 12m name: Assassin's Greaves
 STAT:Dexterity VALUE:114
 STAT:Vitality VALUE:136
 STAT:Fire Resistance VALUE:37
 STAT:Armor VALUE:252
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 278792125 DPS/Armor: 543 bid: 860000 buyout: 940000 currBid: 0 flags: 102 ilvl: 60 timeleft: 1d name: Banished Guard
+ID: 278792125 DPS/Armor: 543 bid: 860000 buyout: 940000 currBid: 0 flags: 102 ilvl: 60 timeleft: 15h 44m name: Banished Guard
 STAT:Dexterity VALUE:140
 STAT:Vitality VALUE:65
 STAT:Cold Resistance VALUE:18
@@ -74,15 +68,13 @@ STAT:Armor VALUE:240
 STAT:Life Regeneration VALUE:42
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
 SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
-ID: 277535661 DPS/Armor: 542 bid: 900000 buyout: 900000 currBid: 0 flags: 102 ilvl: 61 timeleft: 7h 15m name: Dash Lock
-STAT:Dexterity VALUE:132
-STAT:Vitality VALUE:68
-STAT:Armor VALUE:198
-STAT:Gold Find VALUE:15
-STAT:Life Regeneration VALUE:72
+ID: 279911154 DPS/Armor: 540 bid: 150000 buyout: 260000 currBid: 0 flags: 102 ilvl: 61 timeleft: 1d 4h name: Outcast Wraps
+STAT:Dexterity VALUE:122
+STAT:Vitality VALUE:51
+STAT:Armor VALUE:190
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 279387466 DPS/Armor: 538 bid: 400000 buyout: 500000 currBid: 0 flags: 102 ilvl: 60 timeleft: 1d 4h name: Horizon Impunity
+ID: 279387466 DPS/Armor: 538 bid: 400000 buyout: 500000 currBid: 0 flags: 102 ilvl: 60 timeleft: 20h name: Horizon Impunity
 STAT:Strength VALUE:40
 STAT:Dexterity VALUE:108
 STAT:Vitality VALUE:118
@@ -90,21 +82,7 @@ STAT:Armor VALUE:231
 STAT:Life Regeneration VALUE:38
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 276976089 DPS/Armor: 531 bid: 477000 buyout: 477000 currBid: 0 flags: 102 ilvl: 60 timeleft: 2h 32m name: Shadow Deflectors
-STAT:Dexterity VALUE:96
-STAT:Vitality VALUE:115
-STAT:Armor VALUE:228
-STAT:Life Regeneration VALUE:23
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 279849175 DPS/Armor: 529 bid: 250000 buyout: 350000 currBid: 0 flags: 102 ilvl: 58 timeleft: 1d 10h name: Hollow Cloth
-STAT:Dexterity VALUE:119
-STAT:Vitality VALUE:128
-STAT:Lightning Resistance VALUE:35
-STAT:Armor VALUE:258
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 277953671 DPS/Armor: 524 bid: 200000 buyout: 650000 currBid: 0 flags: 102 ilvl: 58 timeleft: 16h 19m name: Scout Savvy
+ID: 277953671 DPS/Armor: 524 bid: 200000 buyout: 650000 currBid: 0 flags: 102 ilvl: 58 timeleft: 8h name: Scout Savvy
 STAT:Strength VALUE:51
 STAT:Dexterity VALUE:91
 STAT:Vitality VALUE:69
@@ -112,45 +90,27 @@ STAT:Lightning Resistance VALUE:24
 STAT:Armor VALUE:245
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 277162395 DPS/Armor: 521 bid: 500000 buyout: 750000 currBid: 0 flags: 102 ilvl: 61 timeleft: 3h 57m name: Horizon Gift
+ID: 280387919 DPS/Armor: 521 bid: 500000 buyout: 600000 currBid: 0 flags: 102 ilvl: 61 timeleft: 1d 10h name: Horizon Gift
 STAT:Dexterity VALUE:112
 STAT:Vitality VALUE:63
 STAT:Armor VALUE:185
 STAT:Life Regeneration VALUE:148
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 279341374 DPS/Armor: 506 bid: 1000000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 61 timeleft: 1d 4h name: Skirmishing Mail
+ID: 279341374 DPS/Armor: 506 bid: 1000000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 61 timeleft: 19h 41m name: Skirmishing Mail
 STAT:Strength VALUE:71
 STAT:Dexterity VALUE:150
 STAT:Vitality VALUE:76
 STAT:Armor VALUE:151
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 277537525 DPS/Armor: 494 bid: 500000 buyout: 750000 currBid: 0 flags: 102 ilvl: 58 timeleft: 7h 16m name: Barren Links
-STAT:Dexterity VALUE:122
-STAT:Intelligence VALUE:56
-STAT:Vitality VALUE:51
-STAT:Armor VALUE:218
-STAT:Physical Damage to Attacker VALUE:314
+ID: 280105937 DPS/Armor: 499 bid: 500000 buyout: 750000 currBid: 0 flags: 102 ilvl: 58 timeleft: 1d 7h name: Runner's Right
+STAT:Dexterity VALUE:121
+STAT:Vitality VALUE:65
+STAT:Armor VALUE:225
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 279673491 DPS/Armor: 489 bid: 120000 buyout: 150000 currBid: 0 flags: 102 ilvl: 60 timeleft: 1d 6h name: Rift Bounders
-STAT:Strength VALUE:37
-STAT:Dexterity VALUE:113
-STAT:Vitality VALUE:74
-STAT:Armor VALUE:174
-STAT:Life Regeneration VALUE:83
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 277290592 DPS/Armor: 484 bid: 700000 buyout: 900000 currBid: 0 flags: 102 ilvl: 60 timeleft: 4h 54m name: Hunt Retribution
-STAT:Strength VALUE:46
-STAT:Dexterity VALUE:136
-STAT:Vitality VALUE:96
-STAT:Armor VALUE:176
-STAT:Life Regeneration VALUE:10
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
-ID: 279468784 DPS/Armor: 483 bid: 400000 buyout: 500000 currBid: 0 flags: 102 ilvl: 60 timeleft: 1d 4h name: Strider's Sanctum
+ID: 279468784 DPS/Armor: 483 bid: 400000 buyout: 500000 currBid: 0 flags: 102 ilvl: 60 timeleft: 20h 35m name: Strider's Sanctum
 STAT:Strength VALUE:43
 STAT:Dexterity VALUE:127
 STAT:Vitality VALUE:89
@@ -158,3 +118,184 @@ STAT:Cold Resistance VALUE:12
 STAT:Armor VALUE:190
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
 SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 278828436 DPS/Armor: 482 bid: 1200000 buyout: 1200000 currBid: 0 flags: 102 ilvl: 60 timeleft: 16h 1m name: Target Braces
+STAT:Strength VALUE:46
+STAT:Dexterity VALUE:128
+STAT:Vitality VALUE:129
+STAT:Lightning Resistance VALUE:22
+STAT:Armor VALUE:164
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+ID: 280434190 DPS/Armor: 480 bid: 549999 buyout: 549999 currBid: 0 flags: 102 ilvl: 61 timeleft: 1d 11h name: Hunt Flourish
+STAT:Dexterity VALUE:147
+STAT:Vitality VALUE:56
+STAT:Poison Resistance VALUE:37
+STAT:Armor VALUE:153
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 278669970 DPS/Armor: 477 bid: 600000 buyout: 600000 currBid: 0 flags: 102 ilvl: 60 timeleft: 14h 48m name: Insolent Braces
+STAT:Dexterity VALUE:135
+STAT:Vitality VALUE:27
+STAT:All Resistance VALUE:24
+STAT:Armor VALUE:175
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Vitality VALUE:34 GEM:Amethyst RANK:8
+ID: 277766285 DPS/Armor: 467 bid: 650000 buyout: 790000 currBid: 0 flags: 102 ilvl: 60 timeleft: 5h 15m name: Stout Guard
+STAT:Dexterity VALUE:138
+STAT:Intelligence VALUE:27
+STAT:Vitality VALUE:74
+STAT:Arcane Resistance VALUE:36
+STAT:Armor VALUE:170
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 278104186 DPS/Armor: 452 bid: 501120 buyout: 800000 currBid: 0 flags: 102 ilvl: 60 timeleft: 9h 34m name: Native Denial
+STAT:Dexterity VALUE:130
+STAT:Intelligence VALUE:76
+STAT:Vitality VALUE:131
+STAT:Armor VALUE:160
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 280437858 DPS/Armor: 450 bid: 100000 buyout: 150000 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d 11h name: Pathfinder's Boon
+STAT:Dexterity VALUE:93
+STAT:Vitality VALUE:158
+STAT:Physical Damage to Attacker VALUE:81
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 280143689 DPS/Armor: 432 bid: 499999 buyout: 599999 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d 8h name: Ramble Craft
+STAT:Dexterity VALUE:98
+STAT:Intelligence VALUE:88
+STAT:Vitality VALUE:159
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+ID: 278573119 DPS/Armor: 430 bid: 55125 buyout: 300000 currBid: 52500 flags: 102 ilvl: 58 timeleft: 13h 58m name: Juggernaut's Links
+STAT:Dexterity VALUE:113
+STAT:Vitality VALUE:61
+STAT:Cold Resistance VALUE:32
+STAT:Armor VALUE:148
+STAT:Life Regeneration VALUE:87
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+ID: 278907348 DPS/Armor: 412 bid: 650000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 63 timeleft: 16h 35m name: Horizon Prowess
+STAT:Dexterity VALUE:93
+STAT:Vitality VALUE:168
+STAT:Physical Resistance VALUE:37
+STAT:Life Regeneration VALUE:67
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 278398632 DPS/Armor: 408 bid: 200000 buyout: 550000 currBid: 0 flags: 102 ilvl: 63 timeleft: 12h 21m name: War Tongue
+STAT:Dexterity VALUE:100
+STAT:Vitality VALUE:95
+STAT:Fire Resistance VALUE:26
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 279986445 DPS/Armor: 408 bid: 250000 buyout: 390000 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d 6h name: Cunning Rigging
+STAT:Dexterity VALUE:96
+STAT:Vitality VALUE:98
+STAT:Fire Resistance VALUE:40
+STAT:Life Regeneration VALUE:85
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 280051384 DPS/Armor: 404 bid: 600000 buyout: 600000 currBid: 0 flags: 102 ilvl: 63 timeleft: 1d 7h name: Stalwart Rigging
+STAT:Dexterity VALUE:99
+STAT:Vitality VALUE:137
+STAT:Fire Resistance VALUE:28
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 278662113 DPS/Armor: 403 bid: 100000 buyout: 150000 currBid: 0 flags: 102 ilvl: 60 timeleft: 14h 44m name: Ramble Disdain
+STAT:Dexterity VALUE:118
+STAT:Vitality VALUE:74
+STAT:Armor VALUE:114
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 278996842 DPS/Armor: 402 bid: 250000 buyout: 500000 currBid: 0 flags: 102 ilvl: 63 timeleft: 17h 13m name: Clever Cords
+STAT:Dexterity VALUE:96
+STAT:Intelligence VALUE:91
+STAT:Vitality VALUE:81
+STAT:Gold Find VALUE:16
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 279936139 DPS/Armor: 396 bid: 375000 buyout: 825000 currBid: 0 flags: 102 ilvl: 62 timeleft: 1d 5h name: Runner's Flourish
+STAT:Dexterity VALUE:113
+STAT:Intelligence VALUE:73
+STAT:Vitality VALUE:148
+STAT:Lightning Resistance VALUE:44
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 277919887 DPS/Armor: 389 bid: 260000 buyout: 260000 currBid: 0 flags: 102 ilvl: 62 timeleft: 7h 35m name: Visceral Plate
+STAT:Dexterity VALUE:104
+STAT:Intelligence VALUE:69
+STAT:Vitality VALUE:88
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 280019484 DPS/Armor: 389 bid: 500000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 62 timeleft: 1d 6h name: Vagabond's Alacrity
+STAT:Dexterity VALUE:89
+STAT:Vitality VALUE:144
+STAT:Poison Resistance VALUE:36
+STAT:Physical Damage to Attacker VALUE:319
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+ID: 278819846 DPS/Armor: 388 bid: 86802 buyout: 450000 currBid: 82669 flags: 102 ilvl: 62 timeleft: 15h 57m name: Battle Savvy
+STAT:Dexterity VALUE:107
+STAT:Vitality VALUE:146
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 279050231 DPS/Armor: 386 bid: 750000 buyout: 999000 currBid: 0 flags: 102 ilvl: 62 timeleft: 17h 36m name: Dash Urge
+STAT:Strength VALUE:75
+STAT:Dexterity VALUE:119
+STAT:Intelligence VALUE:48
+STAT:Vitality VALUE:77
+STAT:Fire Resistance VALUE:49
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 279507121 DPS/Armor: 386 bid: 1200000 buyout: 1200000 currBid: 0 flags: 102 ilvl: 62 timeleft: 20h 52m name: Doom Bruiser
+STAT:Dexterity VALUE:84
+STAT:Intelligence VALUE:77
+STAT:Vitality VALUE:58
+STAT:Lightning Resistance VALUE:36
+STAT:Gold Find VALUE:16
+STAT:Life Regeneration VALUE:121
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+SOCKET:Dexterity VALUE:38 GEM:Emerald RANK:9
+ID: 277994368 DPS/Armor: 385 bid: 50000 buyout: 150000 currBid: 0 flags: 102 ilvl: 62 timeleft: 8h 26m name: Scout Alacrity
+STAT:Dexterity VALUE:110
+STAT:Vitality VALUE:62
+STAT:Cold Resistance VALUE:48
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 279765435 DPS/Armor: 384 bid: 250000 buyout: 1000000 currBid: 0 flags: 102 ilvl: 62 timeleft: 23h 47m name: Desolate Rigging
+STAT:Dexterity VALUE:131
+STAT:Vitality VALUE:118
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Vitality VALUE:34 GEM:Amethyst RANK:8
+ID: 280516073 DPS/Armor: 381 bid: 200000 buyout: 200000 currBid: 0 flags: 102 ilvl: 62 timeleft: 1d 11h name: Mutiny Abyss
+STAT:Dexterity VALUE:111
+STAT:Vitality VALUE:51
+STAT:Lightning Resistance VALUE:48
+STAT:Life Regeneration VALUE:93
+STAT:Physical Damage to Attacker VALUE:952
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 277608265 DPS/Armor: 381 bid: 121551 buyout: 1200000 currBid: 115763 flags: 102 ilvl: 62 timeleft: 17m name: Attack Torch
+STAT:Dexterity VALUE:81
+STAT:Vitality VALUE:183
+STAT:Fire Resistance VALUE:29
+SOCKET:Dexterity VALUE:42 GEM:Emerald RANK:10
+SOCKET:Dexterity VALUE:42 GEM:Emerald RANK:10
+ID: 280313585 DPS/Armor: 376 bid: 477777 buyout: 577777 currBid: 0 flags: 102 ilvl: 62 timeleft: 1d 9h name: Hunting Robes
+STAT:Dexterity VALUE:143
+STAT:Vitality VALUE:51
+STAT:Physical Resistance VALUE:47
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 280192011 DPS/Armor: 375 bid: 81923 buyout: 281923 currBid: 0 flags: 102 ilvl: 62 timeleft: 1d 8h name: Wander Ward
+STAT:Dexterity VALUE:103
+STAT:Vitality VALUE:50
+STAT:Arcane Resistance VALUE:35
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+SOCKET:Dexterity VALUE:34 GEM:Emerald RANK:8
+ID: 279656345 DPS/Armor: 374 bid: 1199999 buyout: 1199999 currBid: 0 flags: 102 ilvl: 62 timeleft: 22h 11m name: Dire Boon
+STAT:Dexterity VALUE:145
+STAT:Intelligence VALUE:85
+STAT:Vitality VALUE:77
+SOCKET:Dexterity VALUE:42 GEM:Emerald RANK:10
+SOCKET:Dexterity VALUE:42 GEM:Emerald RANK:10

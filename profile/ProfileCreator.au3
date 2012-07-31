@@ -286,7 +286,7 @@ Func loadIni()
 	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 	Local $arrayProfiles[$profileCounter]
 	For $i = 0 To UBound($arrayProfiles)-1
-		Local $arrayData[14]
+		Local $arrayData[15]
 		Local $arrayFilter[2]
 		Local $arrayStat[6]
 		Local $arrayValue[6]
@@ -310,6 +310,7 @@ Func loadIni()
 		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
 		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", $error)
 		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", 1) ; NOT AVAILABLE YET SET 1
+		$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error) ; NOT AVAILABLE YET SET 1
 		$arrayProfiles[$i] = $arrayData
 	Next
 	Return $arrayProfiles
@@ -655,7 +656,7 @@ Func convertProfilesToLua()
 			WriteLua("haFilterRarity('All')")
 		EndIf
 		; price
-		If StringLen($prof[6]) > 0 Then
+		If $prof[6] > 0 Then
 			If $prof[6] == 1 Then ; randomize
 				WriteLua("haFilterBuyout(" & $prof[6] & ", true)")
 			Else
@@ -663,6 +664,13 @@ Func convertProfilesToLua()
 			EndIf
 		Else
 			WriteLua("haFilterBuyout(-1)")
+		EndIf
+
+		; set unique/legendary name
+		If StringLen($prof[14]) > 0 Then
+			WriteLua("haFilterUnique('" & $prof[14] & "')")
+		Else
+			WriteLua("haFilterUnique('')")
 		EndIf
 
 		$filter = $prof[0]
@@ -679,6 +687,7 @@ Func convertProfilesToLua()
 				If $fcount == 3 Then ExitLoop
 			EndIf
 		Next
+
 		; now lets search
 		WriteLua("if haActionSearch() then", 1)
 		WriteLua("while haListNext() do", 1)
