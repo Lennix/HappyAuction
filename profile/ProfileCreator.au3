@@ -556,11 +556,26 @@ Func checkInput()
 EndFunc
 
 Func manipulateInputMK($controlData, $input)
-	Local $manipulatedInput = StringRegExpReplace($input, "[mM]", "000000")
-	$manipulatedInput = StringRegExpReplace($manipulatedInput, "[kK]", "000")
+	Local $manipulatedInput = $input
+	$manipulatedInput = StringRegExpReplace($manipulatedInput, "[,]", ".")
+	If checkStringForManipulator($manipulatedInput, "[mM]") Then
+		$manipulatedInput = StringRegExpReplace($manipulatedInput, "[mM]", "")
+		$manipulatedInput = Number($manipulatedInput)
+		$manipulatedInput *= 1000000
+	EndIf
+	If checkStringForManipulator($manipulatedInput, "[kK]") Then
+		$manipulatedInput = StringRegExpReplace($manipulatedInput, "[kK]", "")
+		$manipulatedInput = Number($manipulatedInput)
+		$manipulatedInput *= 1000
+	EndIf
 	If $manipulatedInput <> $input Then
 		GUICtrlSetData($controlData, $manipulatedInput)
 	EndIf
+EndFunc
+
+Func checkStringForManipulator($string, $manipulator)
+    If StringRegExp($string, $manipulator) Then Return True
+    Return False
 EndFunc
 
 Func manipulateInput()
