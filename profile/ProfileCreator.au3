@@ -3,11 +3,10 @@
 ;cancel um edit wieder zu verlassen
 #endregion
 #region INCLUDES
+#include "JSON.au3"
 #include <GUIConstantsEx.au3>
 #include <GuiComboBox.au3>
-#include <SliderConstants.au3>
 #Include <GuiSlider.au3>
-#include <WinAPI.au3>
 #endregion
 #region OPT
 Opt("GUIOnEventMode", 1)
