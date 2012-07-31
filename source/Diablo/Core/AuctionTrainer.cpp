@@ -34,6 +34,8 @@ namespace Diablo
         "Root.TopLayer.item 2.stack.frame body.stack.socket 0.text",
         "Root.TopLayer.item 2.stack.frame body.stack.socket 1.text",
         "Root.TopLayer.item 2.stack.frame body.stack.socket 2.text",
+        "Root.TopLayer.item 2.stack.frame body.stack.wrapper.itemLevel",
+        "Root.TopLayer.item 2.stack.frame body.stack.main.stack.wrapper.col1.type",
 
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchItemList.PagingButtonsContainer.PageRightButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.SearchButton",
@@ -223,6 +225,9 @@ namespace Diablo
 
         // sockets (can be empty)
         if(!_ReadHoverItemSockets(item.sockets))
+            return false;
+
+        if(!_ReadHoverItemLevel(item.ilevel))
             return false;
 
         // must have something!
@@ -528,6 +533,25 @@ namespace Diablo
             else
                 return false;
         }
+
+        return true;
+    }
+
+    Bool AuctionTrainer::_ReadHoverItemLevel( ULong& ilevel )
+    {
+        _UiObject       ui_object;
+        if(!_ReadUiObject(TOOLTIP_ITEMLEVEL, ui_object))
+            return false;
+
+        TextString ilevelText;
+
+        if(!_process.ReadMemory(ui_object.addr_child2, &ilevelText, sizeof(ilevelText)))
+            return false;
+
+        if (sscanf(ilevelText, "Item Level: %[a-zA-Z0-9+'.()\% -]s",ilevelText) == 0)
+            return false;
+
+        ilevel = atol(ilevelText);
 
         return true;
     }

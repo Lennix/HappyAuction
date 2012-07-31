@@ -25,6 +25,8 @@ namespace Diablo
             TOOLTIP_SOCKET0,
             TOOLTIP_SOCKET1,
             TOOLTIP_SOCKET2,
+            TOOLTIP_ITEMLEVEL,
+            TOOLTIP_ITEMTYPE,
 
             LIST_PAGENEXT,
             LIST_SEARCHBUTTON,
@@ -105,6 +107,7 @@ namespace Diablo
         Bool _ReadHoverItemDpsArmor( ULong& value );
         Bool _ReadHoverItemStats( Item::StatCollection& stats );
         Bool _ReadHoverItemSockets( Item::SocketCollection& sockets );
+        Bool _ReadHoverItemLevel( ULong& ilevel );
 
         /**/
         Bool _ClearHoverItemDpsArmor();

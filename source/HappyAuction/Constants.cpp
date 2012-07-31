@@ -28,6 +28,7 @@ namespace HappyAuction
         "haFilterStat",
         "haFilterBuyout",
         "haFilterUnique",
+        "haFilterClass",
 
         "haActionBid",
         "haActionBuyout",
@@ -48,9 +49,7 @@ namespace HappyAuction
         "haAlert",
 
         "haSettingsListDelay",
-        
         "haSettingsNextDelay",
-
         "haSettingsQueriesPerHour"
     };
 }

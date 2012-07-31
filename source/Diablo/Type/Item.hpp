@@ -34,6 +34,8 @@ namespace Diablo
         ULong               currBid;
         ULong               flags;
 
+        ULong               ilevel;
+
         TextString          timeleft;
         TextString          name;
 

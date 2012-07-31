@@ -44,6 +44,7 @@ namespace Diablo
         Bool    WriteFilterLevelMax( Long level );
         Bool    WriteFilterRarity( FilterRarityId id );
         Bool    WriteFilterStat( Index index, ItemStatId id, ULong value );
+        Bool    WriteFilterCharacter( FilterCharId charId );
 
         /**/
         Bool    ActionSearch();
@@ -68,5 +69,6 @@ namespace Diablo
         Id      _OptionIndexToId( Index option_index, Id group_id, const ComboBox& box ) const;
         Index   _OptionIdToIndex( Id option_id, Id group_id, const ComboBox& box, IgnoreCollection& ignores ) const;
         Bool    _WaitSearch();
+        clock_t _WaitForQueriesPerHour();
     };
 }

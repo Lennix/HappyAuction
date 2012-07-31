@@ -150,6 +150,25 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool AuctionInterface::WriteFilterCharacter( FilterCharId charId )
+    {
+        FilterCharId    char_id;
+        ULong           option_count;
+        ULong           char_option_offset;
+
+        // read character id
+        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_CHARACTER, reinterpret_cast<Index&>(char_id), option_count) || option_count <= FILTER_CHAR_COUNT)
+            return false;
+
+        char_option_offset = (option_count - FILTER_CHAR_COUNT);
+
+        // select character
+        if(!_WriteComboBox(AuctionTrainer::COMBO_CHARACTER, charId + char_option_offset))
+            return false;
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterLevelMin( Long level )
     {
         if( level <= 0 )
@@ -191,6 +210,9 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionSearch()
     {
+        // wait if needed
+        _WaitForQueriesPerHour();
+
         // hit search button
         _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y, 50);
 
@@ -201,6 +223,9 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionListSortDpsArmor()
     {
+        // wait if needed
+        _WaitForQueriesPerHour();
+
         // click sort column header
         _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y, 50);
 
@@ -210,6 +235,9 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionListSortBuyout()
     {
+        // wait if needed
+        _WaitForQueriesPerHour();
+
         // click sort column header
         _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y, 50);
 
@@ -231,23 +259,10 @@ namespace Diablo
         // check listing status
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
-            clock_t currTime = clock();
-            if (GAME_MAX_QUERIES_PER_HOUR > 0)
-            {
-                GAME_CURRENT_QUERIES_PER_HOUR = ((float)queries/((currTime - init)/1000))*60*60;
-
-                while (GAME_CURRENT_QUERIES_PER_HOUR > GAME_MAX_QUERIES_PER_HOUR)
-                {
-                    _game.Sleep(25);
-                    GAME_CURRENT_QUERIES_PER_HOUR = ((float)queries/((clock() - init)/1000))*60*60;
-                }
-            }
-            clock_t timeElapsed = clock() - currTime;
+            clock_t timeElapsed = _WaitForQueriesPerHour();
+            // wait before clicking next
             if (timeElapsed < GAME_NEXTPAGE_DELAY)
-            {
-                // wait before clicking next
                 Sleep(GAME_NEXTPAGE_DELAY - timeElapsed);
-            }
 
             // hit next page button
             _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, 50);
@@ -566,5 +581,22 @@ namespace Diablo
         }
 
         return false;
+    }
+
+    //------------------------------------------------------------------------
+    clock_t AuctionInterface::_WaitForQueriesPerHour()
+    {
+        clock_t currTime = clock();
+        if (GAME_MAX_QUERIES_PER_HOUR > 0)
+        {
+            GAME_CURRENT_QUERIES_PER_HOUR = ((float)queries/((currTime - init)/1000))*60*60;
+
+            while (GAME_CURRENT_QUERIES_PER_HOUR > GAME_MAX_QUERIES_PER_HOUR)
+            {
+                _game.Sleep(25);
+                GAME_CURRENT_QUERIES_PER_HOUR = ((float)queries/((clock() - init)/1000))*60*60;
+            }
+        }
+        return clock() - currTime; // time waited
     }
 }

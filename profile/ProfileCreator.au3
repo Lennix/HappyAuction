@@ -1,6 +1,7 @@
 #region COMMENTS
 ;log für profile statt für filter, queries per hour profile zum überschreibend er main, nextpagedelay in ms unter main, itemtimeleft min, legendarys and itemsets namen feld, minmax level
-;socket infos abfragen (optional), dps/armor in lua via found abfragen, set class (haFilterClass()), timeleft/name
+;socket infos abfragen (optional), dps/armor in lua via found abfragen, timeleft/name, level range
+;cancel um edit wieder zu verlassen
 #endregion
 #region INCLUDES
 #include <GUIConstantsEx.au3>
@@ -241,7 +242,7 @@ Func loadIni()
 	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 	Local $arrayProfiles[$profileCounter]
 	For $i = 0 To UBound($arrayProfiles)-1
-		Local $arrayData[12]
+		Local $arrayData[14]
 		Local $arrayFilter[2]
 		Local $arrayStat[6]
 		Local $arrayValue[6]
@@ -263,6 +264,8 @@ Func loadIni()
 		$arrayData[9] = IniRead($Ini, "profile" & $i, "priceflag", $error)
 		$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
 		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", 1) ; NOT AVAILABLE YET SET 1
+		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", 1) ; NOT AVAILABLE YET SET 1
+		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", 1) ; NOT AVAILABLE YET SET 1
 		$arrayProfiles[$i] = $arrayData
 	Next
 	Return $arrayProfiles
@@ -513,6 +516,9 @@ Func convertProfilesToLua()
 	Local $profiles = loadIni()
 	For $i = 0 To UBound($profiles)-1
 		Local $prof = $profiles[$i]
+
+		luaResetFilters()
+
 		; 0 filter, 1 name, 2 class, 3 itemtype, 4 subtype, 5 rarity, 6 price, 7 bid, 8 buyout, 9 priceflag (random), 10 startgold, 11 log flag
 		; filter: 0 stats, 1 values
 		; write profile name
@@ -521,6 +527,8 @@ Func convertProfilesToLua()
 
 		; check gold (lets do that in the beginning)
 		If $prof[10] > 0 Then WriteLua("if haGetGold() > " & $prof[10] & " then", 1)
+
+		If StringLen($prof[2]) > 0 Then WriteLua("haFilterClass('" & $prof[2] & "')")
 
 		; itemtype is automatically determined, just use subtype
 		If StringLen($prof[4]) > 0 Then
@@ -565,10 +573,10 @@ Func convertProfilesToLua()
 		WriteLua("while haListNext() do", 1)
 
 		; get item information
-		WriteLua("local dps, bid, buyout, nstats, nsockets, id, currBid, flags, timeleft, name = haListItem()")
+		WriteLua("local dpsarmor, bid, buyout, nstats, nsockets, id, currBid, flags, ilvl, timeleft, name = haListItem()")
 
 		; log it?
-		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS: ' .. dps .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
+		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
 
 		WriteLua("local found = 0")
 
@@ -587,6 +595,16 @@ Func convertProfilesToLua()
 		Next
 
 		WriteLua("end", -1) ; end for stat-loop
+
+		If $prof[12] > 0 Then ; check dps/armor
+			WriteLua("if dpsarmor > " & $prof[12] & " then found = found + 1 end")
+			$found += 1
+		EndIf
+
+		If $prof[13] > 0 Then ; check itemlevel
+			WriteLua("if ilvl > " & $prof[13] & " then found = found + 1 end")
+			$found += 1
+		EndIf
 
 		; did we find all filter and did the values fit?
 		WriteLua("if found == " & $found & " and flags == 102 then", 1)
@@ -625,5 +643,11 @@ Func WriteLua($text, $tab_count_change = 0)
 	Next
 	FileWriteLine($Txt, $lua_tabs & $text)
 	If $tab_count_change > 0 Then $lua_tab_count += $tab_count_change
+EndFunc
+
+Func luaResetFilters()
+	WriteLua("haFilterStat(1, 'None', 0)")
+	WriteLua("haFilterStat(2, 'None', 0)")
+	WriteLua("haFilterStat(3, 'None', 0)")
 EndFunc
 #endregion

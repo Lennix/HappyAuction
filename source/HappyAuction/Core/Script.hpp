@@ -140,6 +140,13 @@ namespace HappyAuction
                     _PushStackString(_ahi.ReadUnique(string) ? string : "");
                 return 1;
 
+            // haFilterCharacter(id) -> status
+            case SCRIPT_HAFILTERCLASS:
+                pstring = _GetStackString(1);
+                status = pstring && _ahi.WriteFilterCharacter(Tools::Conform(static_cast<FilterCharId>(AH_COMBO_CHARACTER.Find(pstring)), FILTER_CHAR_BARBARIAN, FILTER_CHAR_WIZARD));
+                _PushStackBool(status);
+                return 1;
+
             // haActionBid(bid) -> status
             case SCRIPT_HAACTIONBID:
                 status = (_list_index > 0) ? _ahi.ActionBid(_list_index - 1, _GetStackULong(1)) : false;
@@ -187,7 +194,7 @@ namespace HappyAuction
                 _PushStackBool(status);
                 return 1;
 
-            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets
+            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, id, currBid, flags, itemlevel, timeleft, name
             case SCRIPT_HALISTITEM:
                 _PushStackULong(_list_item.dpsarmor);
                 _PushStackULong(_list_item.bid);
@@ -197,9 +204,10 @@ namespace HappyAuction
                 _PushStackULong(_list_item.id);
                 _PushStackULong(_list_item.currBid);
                 _PushStackULong(_list_item.flags);
+                _PushStackULong(_list_item.ilevel);
                 _PushStackString(_list_item.timeleft);
                 _PushStackString(_list_item.name);
-                return 10;
+                return 11;
 
             // haListItemStat(stat) -> stat, value1, value2, value3, value4
             case SCRIPT_HALISTITEMSTAT:
