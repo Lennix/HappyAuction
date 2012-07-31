@@ -11,19 +11,19 @@ while 1 do
 	haFilterClass('Barbarian')
 	haFilterType('Bow')
 	haFilterRarity('Normal')
-	haFilterBuyout(-1)
+	haFilterLevel(-1,-1)
+	haFilterBuyout(3000000, true)
 	haFilterUnique('uiuiui')
 	if haActionSearch() then
 		while haListNext() do
 			local dpsarmor, bid, buyout, nstats, nsockets, id, currBid, flags, ilvl, timeleft, name = haListItem()
 			local found = 0
-			for i = 1, nstats do
-				local stat, value1 = haListItemStat(i)
-			end
 			if ilvl > 1 then found = found + 1 end
 			if found == 1 and flags == 102 then
-				if buyout <= 0 then
+				if buyout <= 400000 then
 					haActionBuyout()
+				elseif bid <= 300000 then
+				haActionBid(300000)
 				end
 			end
 		end
@@ -36,18 +36,16 @@ while 1 do
 	haFilterClass('Demon Hunter')
 	haFilterType('Bow')
 	haFilterRarity('Normal')
-	haFilterBuyout(-1)
+	haFilterLevel(57,-1)
+	haFilterBuyout(500000, false)
 	haFilterUnique('hi')
 	if haActionSearch() then
 		while haListNext() do
 			local dpsarmor, bid, buyout, nstats, nsockets, id, currBid, flags, ilvl, timeleft, name = haListItem()
 			local found = 0
-			for i = 1, nstats do
-				local stat, value1 = haListItemStat(i)
-			end
 			if ilvl > 1 then found = found + 1 end
 			if found == 1 and flags == 102 then
-				if buyout <= 0 then
+				if buyout <= 400000 then
 					haActionBuyout()
 				end
 			end

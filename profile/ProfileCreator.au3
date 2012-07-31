@@ -286,14 +286,17 @@ Func loadIni()
 	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 	Local $arrayProfiles[$profileCounter]
 	For $i = 0 To UBound($arrayProfiles)-1
-		Local $arrayData[15]
+		Local $arrayData[17]
 		Local $arrayFilter[2]
-		Local $arrayStat[6]
-		Local $arrayValue[6]
-		For $t = 0 To 5
-			$arrayStat[$t] = IniRead($Ini, "profile" & $i, "filter" & $t+1, $error)
-			$arrayValue[$t] = IniRead($Ini, "profile" & $i, "value" & $t+1, $error)
+		Local $arrayStat[7]
+		Local $arrayValue[7]
+		$fcount = 0
+		For $t = 1 To 6
+			$arrayStat[$t] = IniRead($Ini, "profile" & $i, "filter" & $t, $error)
+			If $arrayStat[$t] <> $error And $arrayStat[$t] <> "stat" Then $fcount += 1
+			$arrayValue[$t] = IniRead($Ini, "profile" & $i, "value" & $t, $error)
 		Next
+		$arrayStat[0] = $fcount
 		$arrayFilter[0] = $arrayStat
 		$arrayFilter[1] = $arrayValue
 		$arrayData[0] = $arrayFilter
@@ -310,7 +313,9 @@ Func loadIni()
 		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
 		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", $error)
 		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", 1) ; NOT AVAILABLE YET SET 1
-		$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error) ; NOT AVAILABLE YET SET 1
+		$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error)
+		$arrayData[15] = IniRead($Ini, "profile" & $i, "minlvl", $error)
+		$arrayData[16] = IniRead($Ini, "profile" & $i, "maxlvl", $error)
 		$arrayProfiles[$i] = $arrayData
 	Next
 	Return $arrayProfiles
@@ -655,9 +660,20 @@ Func convertProfilesToLua()
 		Else
 			WriteLua("haFilterRarity('All')")
 		EndIf
+		; level requirement
+		If $prof[15] > 0 And $prof[16] > 0 Then
+			WriteLua("haFilterLevel(" & $prof[15] & "," & $prof[16] & ")")
+		ElseIf $prof[15] > 0 Then
+			WriteLua("haFilterLevel(" & $prof[15] & ",-1)")
+		ElseIf $prof[16] > 0 Then
+			WriteLua("haFilterLevel(-1," & $prof[16] & ")")
+		Else
+			WriteLua("haFilterLevel(-1,-1)")
+		EndIf
+
 		; price
 		If $prof[6] > 0 Then
-			If $prof[6] == 1 Then ; randomize
+			If $prof[9] == 1 Then ; randomize
 				WriteLua("haFilterBuyout(" & $prof[6] & ", true)")
 			Else
 				WriteLua("haFilterBuyout(" & $prof[6] & ", false)")
@@ -679,14 +695,16 @@ Func convertProfilesToLua()
 
 		$fcount = 0
 
-		; set first 3 filter
-		For $j = 0 To UBound($stats)-1
-			If $stats[$j] <> "ERROR" And $stats[$j] <> "stat" Then
-				$fcount += 1
-				WriteLua("haFilterStat(" & $fcount & ", '" & $stats[$j] & "', " & $values[$j] & ")")
-				If $fcount == 3 Then ExitLoop
-			EndIf
-		Next
+		If $stats[0] > 0 Then
+			; set first 3 filter
+			For $j = 1 To $stats[0]
+				If $stats[$j] <> "ERROR" And $stats[$j] <> "stat" Then
+					$fcount += 1
+					WriteLua("haFilterStat(" & $fcount & ", '" & $stats[$j] & "', " & $values[$j] & ")")
+					If $fcount == 3 Then ExitLoop
+				EndIf
+			Next
+		EndIf
 
 		; now lets search
 		WriteLua("if haActionSearch() then", 1)
@@ -699,47 +717,65 @@ Func convertProfilesToLua()
 		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
 
 		WriteLua("local found = 0")
-
-		; check the stats
-		WriteLua("for i = 1, nstats do", 1)
-
-		WriteLua("local stat, value1 = haListItemStat(i)")
-		If $prof[11] == 1 Then WriteLua("haLog('STAT:' .. stat .. ' VALUE:' .. value1)")
-
 		$found = 0
-		For $j = 0 To UBound($stats)-1
-			If StringInStr($statfilter, $stats[$j]) == 0 Then
-				$found += 1
-				WriteLua('if stat == "' & $stats[$j] & '" and value1 >= ' & $values[$j] & " then found = found + 1 end")
-			EndIf
-		Next
 
-		WriteLua("end", -1) ; end for stat-loop
+		; only loop through stats when we want to check stats or log it
+		If $stats[0] > 0 Or $prof[11] == 1 Then
+			; check the stats
+			WriteLua("for i = 1, nstats do", 1)
 
-		If $prof[12] > 0 Then ; check dps/armor
+			WriteLua("local stat, value1 = haListItemStat(i)")
+			If $prof[11] == 1 Then WriteLua("haLog('STAT:' .. stat .. ' VALUE:' .. value1)")
+
+			For $j = 1 To $stats[0]
+				If StringInStr($statfilter, $stats[$j]) == 0 Then
+					$found += 1
+					WriteLua('if stat == "' & $stats[$j] & '" and value1 >= ' & $values[$j] & " then found = found + 1 end")
+				EndIf
+			Next
+
+			WriteLua("end", -1) ; end for stat-loop
+		EndIf
+
+		; check dps/armor
+		If $prof[12] > 0 Then
 			WriteLua("if dpsarmor > " & $prof[12] & " then found = found + 1 end")
 			$found += 1
 		EndIf
 
-		If $prof[13] > 0 Then ; check itemlevel
+		; check itemlevel
+		If $prof[13] > 0 Then
 			WriteLua("if ilvl > " & $prof[13] & " then found = found + 1 end")
 			$found += 1
 		EndIf
 
-		; did we find all filter and did the values fit?
-		WriteLua("if found == " & $found & " and flags == 102 then", 1)
+		; buy/bid if we have buy/bid values
+		If $prof[7] > 0 Or $Prof[8] > 0 Then
+			; did we find all filter and did the values fit?
+			WriteLua("if found == " & $found & " and flags == 102 then", 1)
 
-		; check bid/buyout
-		WriteLua("if buyout <= " & $prof[8] & " then", 1)
-		If $prof[11] == 1 Then WriteLua("haLog('Buying item')")
-		WriteLua("haActionBuyout()")
-		If $prof[7] > 0 Then
-			WriteLua("elseif bid <= " & $prof[7] & " then", -1)
-			If $prof[11] == 1 Then WriteLua("haLog('Bidding on item for " & $prof[7] & "')")
-			WriteLua("haActionBid(" & $prof[7] & ")",1)
+			; check buyout
+			If $prof[8] > 0 Then
+				WriteLua("if buyout <= " & $prof[8] & " then", 1)
+				If $prof[11] == 1 Then WriteLua("haLog('Buying item')")
+				WriteLua("haActionBuyout()")
+			EndIf
+			; check bid
+			If $prof[7] > 0 Then
+				If $prof[8] > 0 Then
+					WriteLua("elseif bid <= " & $prof[7] & " then", -1)
+				Else
+					WriteLua("if bid <= " & $prof[7] & " then", 1)
+				EndIf
+				If $prof[11] == 1 Then WriteLua("haLog('Bidding on item for " & $prof[7] & "')")
+				WriteLua("haActionBid(" & $prof[7] & ")",1)
+			EndIf
+
+			WriteLua("end", -1) ; end for bid/buyout if
+			WriteLua("end", -1) ; end for found
+		ElseIf $prof[11] == 1 Then
+			WriteLua("if found == " & $found & " and flags == 102 then haLog('Found match!') end")
 		EndIf
-		WriteLua("end", -1) ; end for bid/buyout if
-		WriteLua("end", -1) ; end for found
 
 		If $prof[11] == 1 Then
 			WriteLua("for i = 1, nsockets do", 1)
