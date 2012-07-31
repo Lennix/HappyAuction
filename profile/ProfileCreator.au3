@@ -475,7 +475,7 @@ Func checkInput()
 	$catchedERROR = False
 	;check if all controls are filled
 	For $i = 0 To UBound($formData) - 1
-		If GUICtrlRead($formData[$i]) == "" Then
+		If GUICtrlRead($formData[$i]) == "" And $i <> 14 Then
 			paintGUI($formData[$i], False)
 			$catchedERROR = True
 		Else
@@ -504,15 +504,15 @@ Func checkInput()
 			$catchedERROR = True
 		Else
 			paintGUI($formData[$i])
-			;check if price(5) >= buyout(7) >= bid(6) (at 7 to check only one time)
+			;check price(5), buyout(7) and bid(6) (at 7 to check only one time)
 			If $i == 7 Then
-				If Number(GUICtrlRead($formData[5])) < Number(GUICtrlRead($formData[7])) Then
+				If Number(GUICtrlRead($formData[5])) < Number(GUICtrlRead($formData[7])) And GUICtrlRead($formData[5]) <> "0" Then
 					paintGUI($formData[7], False)
 					$catchedERROR = True
 				Else
 					paintGUI($formData[7])
 				EndIf
-				If Number(GUICtrlRead($formData[7])) < Number(GUICtrlRead($formData[6])) Or Number(GUICtrlRead($formData[5])) < Number(GUICtrlRead($formData[6])) Then
+				If (Number(GUICtrlRead($formData[7])) < Number(GUICtrlRead($formData[6])) And Number(GUICtrlRead($formData[7]) <> "0")) Or (Number(GUICtrlRead($formData[5])) < Number(GUICtrlRead($formData[6])) And GUICtrlRead($formData[5]) <> "0") Then
 					paintGUI($formData[6], False)
 					$catchedERROR = True
 				Else
@@ -549,6 +549,55 @@ Func checkInput()
 		$catchedERROR = True
 	Else
 		paintGUI($formData[9])
+	EndIf
+	;check timeleft for right syntax
+	If StringMid(GUICtrlRead($formData[10]), 2, 1) <> ":" Or StringMid(GUICtrlRead($formData[10]), 5, 1) <> ":" Then
+		GUICtrlSetData($formData[10], "d:hh:mm")
+		paintGUI($formData[10], False)
+		$catchedERROR = True
+	Else
+		paintGUI($formData[10])
+		Local $tempTime = StringRegExpReplace(GUICtrlRead($formData[10]), "[:]", "", 2)
+		If StringLen($tempTime) <> 5 Or (Number($tempTime) == 0 And $tempTime <> "dhhmm") Then
+			GUICtrlSetData($formData[10], "d:hh:mm")
+			paintGUI($formData[10], False)
+			$catchedERROR = True
+		Else
+			paintGUI($formData[10])
+		EndIf
+	EndIf
+	;check min and max level
+	If  Number(GUICtrlRead($formData[11])) < 1 Or Number(GUICtrlRead($formData[11])) > 60 Or Number(GUICtrlRead($formData[11])) > Number(GUICtrlRead($formData[12]))  Then
+		paintGUI($formData[11], False)
+		$catchedERROR = True
+	Else
+		paintGUI($formData[11])
+	EndIf
+	If  Number(GUICtrlRead($formData[12])) < 1 Or Number(GUICtrlRead($formData[12])) > 60 Then
+		paintGUI($formData[12], False)
+		$catchedERROR = True
+	Else
+		paintGUI($formData[12])
+	EndIf
+	;check DPS / Armor for number
+	If  Number(GUICtrlRead($formData[13])) < 1 And GUICtrlRead($formData[13]) <> "0" Then
+		paintGUI($formData[13], False)
+		$catchedERROR = True
+	Else
+		paintGUI($formData[13])
+	EndIf
+	;check logflag logic
+	If Number(GUICtrlRead($formData[5])) > 0 And Number(GUICtrlRead($formData[6])) == 0 And Number(GUICtrlRead($formData[7])) == 0 And GUICtrlRead($formData[18]) == "4" Then
+		paintGUI($formData[18], False)
+		$catchedERROR = True
+	Else
+		paintGUI($formData[18])
+		If Number(GUICtrlRead($formData[5])) == 0 And Number(GUICtrlRead($formData[6])) == 0 And Number(GUICtrlRead($formData[7])) == 0 And GUICtrlRead($formData[18]) == "4" Then
+			paintGUI($formData[18], False)
+			$catchedERROR = True
+		Else
+			paintGUI($formData[18])
+		EndIf
 	EndIf
 	;redraw window to avoid gui errors
 	_WinAPI_RedrawWindow($inputGUI)
