@@ -730,7 +730,7 @@ Func checkSliderInput()
 EndFunc
 
 Func checkPageDelayInput()
-	If IniRead($Ini, "main", "pagedelay", $error) <> GUICtrlRead($mainInput) Then
+	If IniRead($Ini, "main", "pagedelay", "0") <> GUICtrlRead($mainInput) Then
 		IniWrite($Ini, "main", "pagedelay", GUICtrlRead($mainInput))
 	EndIf
 EndFunc
