@@ -448,6 +448,7 @@ EndFunc
 Func proceedCreatingProfile()
 	$catchedERROR = checkInput()
 	If Not $catchedERROR Then
+		sendProfilePackage(createProfilePackage())
 		writeProfile($profileCounter)
 		convertProfilesToLua()
 		switchToMainGUI($inputGUI)
@@ -1014,9 +1015,48 @@ Func connectToServer($user, $userpwd)
 	Local $loginRequest = iGet("login", "username=" & $user & "&password=" & $userpwd)
 	If $loginRequest[1][1] == "success" Then
 		$sessionID = $loginRequest[2][1]
+		IniWrite($Ini, "main", "sessionid", $sessionID)
 		Return True
 	Else
 		Return False
 	EndIf
+EndFunc
+
+Func sendLog($message)
+	iGet("log", "message=" & $message)
+EndFunc
+
+Func createProfilePackage()
+	Local $profilePackage
+	Local $arrayData[19]
+	Local $arrayFilter[2]
+	Local $arrayStat[7]
+	Local $arrayValue[7]
+	$fcount = 0
+	For $i = 1 To 6
+		$arrayStat[$i] = GUICtrlRead($filterData[$i - 1][0])
+		If $arrayStat[$i] <> $error And $arrayStat[$i] <> "stat" Then $fcount += 1
+			$arrayValue[$i] = GUICtrlRead($filterData[$i - 1][1])
+	Next
+	$arrayStat[0] = $fcount
+	$arrayFilter[0] = $arrayStat
+	$arrayFilter[1] = $arrayValue
+	$arrayData[0] = $arrayFilter
+	For $i = 0 To 14
+		$arrayData[$i + 1] = $formData[$i]
+	Next
+	If GUICtrlRead($mainSlider) <> GUICtrlRead($formData[15]) Then
+		$arrayData[16] = GUICtrlRead($formData[15])
+	Else
+		$arrayData[16] = "-1"
+	EndIf
+	$arrayData[17] = $formData[17]
+	$arrayData[18] = $formData[18]
+	$profilePackage = $arrayData
+	return $profilePackage
+EndFunc
+
+Func sendProfilePackage($package)
+	iGet("decode", "json=" & _JSONEncode($package))
 EndFunc
 #endregion
