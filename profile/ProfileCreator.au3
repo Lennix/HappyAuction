@@ -32,6 +32,7 @@ Global $editButton = ""
 Global $deleteButton = ""
 Global $loginButton = ""
 Global $logoutButton = ""
+Global $loginCheckBox = ""
 
 ;control holder
 Global $username
@@ -50,6 +51,7 @@ Global $userData[2] = ["", ""]
 Global $lua_tab_count = "0"
 Global $sessionID = "0"
 Global $login = False
+Global $loginflag = False
 #endregion
 #region VARIABLES CONST
 ;files
@@ -80,6 +82,8 @@ While 1
 		;update main values
 		checkMainInput()
 		;delay
+	Else
+		checkLoginInput()
 	EndIf
 	Sleep(100)
 WEnd
@@ -307,11 +311,18 @@ Func builtLoginGUI()
 EndFunc
 
 Func builtLoginLayers()
+	;username line
 	GUICtrlCreateLabel("Username", 50, 25)
 	$userData[0] = GUICtrlCreateInput("", 50, 40, 150, 20)
-	GUICtrlCreateLabel("Password", 50, 80)
-	$userData[1] = GUICtrlCreateInput("", 50, 95, 150, 20, $ES_PASSWORD)
+	;password line
+	GUICtrlCreateLabel("Password", 50, 65)
+	$userData[1] = GUICtrlCreateInput("", 50, 80, 150, 20, $ES_PASSWORD)
 	builtLoginButton()
+	;autologin line
+	$loginCheckBox = GUICtrlCreateCheckbox("AutoLogin", 50, 105, 150, 20)
+	If $loginflag Then
+		GUICtrlSetState($loginCheckBox, $GUI_CHECKED)
+	EndIf
 EndFunc
 
 Func builtLoginButton()
@@ -373,20 +384,32 @@ Func loadIni()
 EndFunc
 
 Func checkLoginData()
-	$username = IniRead($Ini, "main", "username", $error)
-	$password = IniRead($Ini, "main", "password", $error)
+	$username = IniRead($Ini, "main", "username", "")
+	$password = IniRead($Ini, "main", "password", "")
+	If IniRead($Ini, "main", "loginflag", "4") == "1" Then
+		$loginflag = True
+	EndIf
 	If $username == $error Or $password = $error Then
+		;first login
 		builtLoginGUI();
 	Else
-		If connectToServer($username, $password) Then
-			$login = True
-			loadMain()
-			builtMainGUI();
+		If $loginflag Then
+			;try to autologin
+			If connectToServer($username, $password) Then
+				$login = True
+				loadMain()
+				builtMainGUI();
+			;autologin failed
+			Else
+				builtLoginGUI();
+				GUICtrlSetData($userData[0], $username)
+				builtLoginFailed()
+			EndIF
 		Else
+			;no autologin
 			builtLoginGUI();
 			GUICtrlSetData($userData[0], $username)
-			builtLoginFailed()
-		EndIF
+		EndIf
 	EndIf
 EndFunc
 
@@ -415,7 +438,7 @@ Func createMain()
 	IniWrite($Ini, "main", "profilecounter", $profileCounter)
 	;create main slider value
 	IniWrite($Ini, "main", "queries", $sliderStartValue)
-		;create main page delay
+	;create main page delay
 	IniWrite($Ini, "main", "pagedelay", $startPageDelay)
 EndFunc
 
@@ -762,6 +785,17 @@ EndFunc
 Func checkMainInput()
 	checkSliderInput()
 	checkPageDelayInput()
+EndFunc
+
+Func checkLoginInput()
+	If IniRead($Ini, "main", "loginflag", "4") <> GUICtrlRead($loginCheckBox) Then
+		If GUICtrlRead($loginCheckBox) == "1" Then
+			$loginflag = True
+		Else
+			$loginflag = False
+		EndIf
+		IniWrite($Ini, "main", "loginflag", GUICtrlRead($loginCheckBox))
+	EndIf
 EndFunc
 #endregion
 #region LUA CONVERTER
