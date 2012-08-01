@@ -586,9 +586,11 @@ EndFunc
 
 Func writeLoginData()
 	$username = GUICtrlRead($userData[0])
-	$password = md5(GUICtrlRead($userData[1]))
 	IniWrite($Ini, "main", "username", $username)
-	IniWrite($Ini, "main", "password", $password)
+	If $loginflag Then
+		$password = md5(GUICtrlRead($userData[1]))
+		IniWrite($Ini, "main", "password", $password)
+	EndIf
 EndFunc
 #endregion
 #region INPUT CONTROLLER
