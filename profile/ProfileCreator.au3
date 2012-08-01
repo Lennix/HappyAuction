@@ -31,6 +31,7 @@ Global $createButton = ""
 Global $editButton = ""
 Global $deleteButton = ""
 Global $loginButton = ""
+Global $logoutButton = ""
 
 ;control holder
 Global $username
@@ -48,6 +49,7 @@ Global $userData[2] = ["", ""]
 ;other
 Global $lua_tab_count = "0"
 Global $sessionID = "0"
+Global $login = False
 #endregion
 #region VARIABLES CONST
 ;files
@@ -72,12 +74,14 @@ checkLoginData()
 #endregion
 #region CORE LOOP
 While 1
-	;manipulate
-	manipulateInput()
-	;update main values
-	checkMainInput()
-	;delay
-    Sleep(100)
+	If $login Then
+		;manipulate
+		manipulateInput()
+		;update main values
+		checkMainInput()
+		;delay
+	EndIf
+	Sleep(100)
 WEnd
 #endregion
 #region CORE FUNCTIONS
@@ -101,7 +105,7 @@ EndFunc
 #region GUI MAIN
 ;main gui
 Func builtMainGUI()
-	$mainGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 300, 130)
+	$mainGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 300, 160)
 	builtMainLayers()
 	GUISetState(@SW_SHOW, $mainGUI)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "quit", $mainGUI)
@@ -122,7 +126,7 @@ Func builtMainLayers()
 	GUICtrlCreateLabel("ms", 255, 58)
 	;queries/h line
 	GUICtrlCreateLabel("Queries / h", 10, 95)
-	$mainSlider = GUICtrlCreateSlider(70, 92, 180, 50, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
+	$mainSlider = GUICtrlCreateSlider(70, 92, 180, 30, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
 	GUICtrlSetLimit($mainSlider, 1600, 0)
 	GUICtrlSetData($mainSlider, $sliderStartValue)
 	Local $tempTicks[5] = [0, 400, 800, 1200, 1600]
@@ -136,6 +140,9 @@ Func builtMainLayers()
 	Else
 		GUICtrlSetColor($mainSliderCache, $colorGREEN)
 	EndIf
+	;logout button line
+	$logoutButton = GUICtrlCreateButton("Logout", 115, 125, 70, 30)
+	GUICtrlSetOnEvent($logoutButton, "logout")
 EndFunc
 
 Func switchToMainGUI($closeGUI)
@@ -220,7 +227,7 @@ Func builtInputLayers()
 	$formData[14] = GUICtrlCreateInput("", $guiInputX, 435, 200, 20)
 	;query/h line
 	GUICtrlCreateLabel("Queries / h", 10, 498)
-	$formData[15] = GUICtrlCreateSlider($guiInputX, 495, 200, 50, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
+	$formData[15] = GUICtrlCreateSlider($guiInputX, 495, 200, 30, BitOR($TBS_TOOLTIPS, $TBS_BOTTOM, $TBS_ENABLESELRANGE))
 	GUICtrlSetLimit($formData[15], 1600, 0)
 	GUICtrlSetData($formData[15], GUICtrlRead($mainSlider))
 	Local $tempTicks[5] = [0, 400, 800, 1200, 1600]
@@ -316,6 +323,13 @@ Func builtLoginFailed()
 	Local $fail = GUICtrlCreateLabel("Can't connect to Server!", 65, 175, 150, 30)
 	GUICtrlSetColor($fail, $colorRED)
 EndFunc
+
+Func logout()
+	$login = False
+	GUIDelete($mainGUI)
+	builtLoginGUI();
+	GUICtrlSetData($userData[0], $username)
+EndFunc
 #endregion
 #endregion
 #region INI
@@ -365,6 +379,8 @@ Func checkLoginData()
 		builtLoginGUI();
 	Else
 		If connectToServer($username, $password) Then
+			$login = True
+			loadMain()
 			builtMainGUI();
 		Else
 			builtLoginGUI();
@@ -375,26 +391,32 @@ Func checkLoginData()
 EndFunc
 
 Func checkIniFile()
-	If FileExists($Ini) Then
-		;load main profilecounter
-		$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
-		;load main slider value
-		$sliderStartValue = IniRead($Ini, "main", "queries", $error)
-		;load main page delay
-		$startPageDelay = IniRead($Ini, "main", "pagedelay", $error)
-		;load main dropdown data
-		For $i = 0 To $profileCounter - 1
-			$tempProfile = IniRead($Ini, "profile" & $i, "name", $error)
-			$mainList &= "|" & $tempProfile
-		Next
-	Else
-		;create main profilecounter
-		IniWrite($Ini, "main", "profilecounter", $profileCounter)
-		;create main slider value
-		IniWrite($Ini, "main", "queries", $sliderStartValue)
-		;create main page delay
-		IniWrite($Ini, "main", "pagedelay", $startPageDelay)
+	If Not FileExists($Ini) Then
+		createMain()
 	EndIf
+EndFunc
+
+Func loadMain()
+	;load main profilecounter
+	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
+	;load main slider value
+	$sliderStartValue = IniRead($Ini, "main", "queries", $error)
+	;load main page delay
+	$startPageDelay = IniRead($Ini, "main", "pagedelay", $error)
+	;load main dropdown data
+	For $i = 0 To $profileCounter - 1
+		$tempProfile = IniRead($Ini, "profile" & $i, "name", $error)
+		$mainList &= "|" & $tempProfile
+	Next
+EndFunc
+
+Func createMain()
+	;create main profilecounter
+	IniWrite($Ini, "main", "profilecounter", $profileCounter)
+	;create main slider value
+	IniWrite($Ini, "main", "queries", $sliderStartValue)
+		;create main page delay
+	IniWrite($Ini, "main", "pagedelay", $startPageDelay)
 EndFunc
 
 Func proceedCreatingProfile()
@@ -423,7 +445,9 @@ EndFunc
 
 Func proceedLogin()
 	If connectToServer(GUICtrlRead($userData[0]), md5(GUICtrlRead($userData[1]))) Then
+		$login = True
 		writeLoginData()
+		loadMain()
 		builtMainGUI();
 		switchToMainGUI($loginGUI)
 	Else

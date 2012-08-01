@@ -74,9 +74,9 @@ while 1 do
 	haFilterClass('Wizard')
 	haFilterType('Pants')
 	haFilterRarity('All')
-	haFilterLevel(-1,-1)
+	haFilterLevel(1,60)
 	haFilterBuyout(1800000, false)
-	haFilterUnique('ERROR')
+	haFilterUnique('')
 	haFilterStat(1, 'Has Sockets', 2)
 	haFilterStat(2, 'Intelligence', 158)
 	haFilterStat(3, 'Vitality', 100)
@@ -89,8 +89,7 @@ while 1 do
 				if stat == "Intelligence" and value1 >= 158 then found = found + 1 end
 				if stat == "Vitality" and value1 >= 100 then found = found + 1 end
 			end
-			if ilvl > 1 then found = found + 1 end
-			if found == 3 and flags == 102 then
+			if found == 2 and flags == 102 then
 				if buyout <= 1800000 then
 					haActionBuyout()
 				end
