@@ -4,6 +4,7 @@
 #endregion
 #region INCLUDES
 #include "JSON.au3"
+#include "MD5.au3"
 #include <GUIConstantsEx.au3>
 #include <GuiComboBox.au3>
 #Include <GuiSlider.au3>
@@ -366,7 +367,6 @@ Func checkLoginData()
 		Else
 			builtLoginGUI();
 			GUICtrlSetData($userData[0], $username)
-			GUICtrlSetData($userData[1], $password)
 			builtLoginFailed()
 		EndIF
 	EndIf
@@ -420,7 +420,7 @@ Func proceedDeletingProfile()
 EndFunc
 
 Func proceedLogin()
-	If connectToServer(GUICtrlRead($userData[0]), GUICtrlRead($userData[1])) Then
+	If connectToServer(GUICtrlRead($userData[0]), md5(GUICtrlRead($userData[1]))) Then
 		writeLoginData()
 		builtMainGUI();
 		switchToMainGUI($loginGUI)
@@ -534,7 +534,7 @@ EndFunc
 
 Func writeLoginData()
 	$username = GUICtrlRead($userData[0])
-	$password = GUICtrlRead($userData[1])
+	$password = md5(GUICtrlRead($userData[1]))
 	IniWrite($Ini, "main", "username", $username)
 	IniWrite($Ini, "main", "password", $password)
 EndFunc
