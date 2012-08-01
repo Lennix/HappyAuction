@@ -9,6 +9,8 @@
 #include <GuiComboBox.au3>
 #Include <GuiSlider.au3>
 #include <EditConstants.au3>
+#include <ButtonConstants.au3>
+
 #endregion
 #region OPT
 Opt("GUIOnEventMode", 1)
@@ -306,7 +308,7 @@ Func builtLoginLayers()
 EndFunc
 
 Func builtLoginButton()
-	$loginButton = GUICtrlCreateButton("Login", 90, 138, 70, 30)
+	$loginButton = GUICtrlCreateButton("Login", 90, 138, 70, 30, $BS_DEFPUSHBUTTON)
 	GUICtrlSetOnEvent($loginButton, "proceedLogin")
 EndFunc
 
