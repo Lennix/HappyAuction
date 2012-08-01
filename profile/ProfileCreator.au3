@@ -337,6 +337,9 @@ EndFunc
 
 Func logout()
 	$login = False
+	$loginflag = False
+	IniWrite($Ini, "main", "password", "")
+	IniWrite($Ini, "main", "loginflag", "4")
 	GUIDelete($mainGUI)
 	builtLoginGUI();
 	GUICtrlSetData($userData[0], $username)
