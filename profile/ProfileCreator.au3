@@ -33,6 +33,7 @@ Global $deleteButton = ""
 Global $loginButton = ""
 Global $logoutButton = ""
 Global $loginCheckBox = ""
+Global $logLabel = ""
 
 ;control holder
 Global $username
@@ -61,6 +62,7 @@ Const $Txt = "Profiles.txt"
 ;color
 Const $colorRED = 0xF20041
 Const $colorGREEN = 0x0D8B1A
+Const $colorBlack = 0x000000
 Const $colorSTANDARD = 0xffffff
 
 ;other
@@ -106,6 +108,15 @@ Func paintGUI($control, $bool = True)
 		GUICtrlSetBkColor($control, $colorRED)
 	EndIf
 EndFunc
+
+Func paintFont($control, $bool = True)
+	If $bool Then
+		GUICtrlSetColor($control, $colorBLACK)
+	Else
+		GUICtrlSetColor($control, $colorRED)
+	EndIf
+EndFunc
+
 #region GUI MAIN
 ;main gui
 Func builtMainGUI()
@@ -249,7 +260,8 @@ Func builtInputLayers()
 	GUICtrlCreateLabel("ItemLevel", 10, 468)
 	$formData[17] = GUICtrlCreateInput("0", $guiInputX, 465, 200, 20)
 	;log line
-	$formData[18] = GUICtrlCreateCheckbox("Log", 300, 540, 55, 20)
+	$logLabel = GUICtrlCreateLabel("Log", 320, 543)
+	$formData[18] = GUICtrlCreateCheckbox("", 300, 540, 20, 20)
 EndFunc
 
 Func builtCreateButton()
@@ -448,7 +460,7 @@ EndFunc
 Func proceedCreatingProfile()
 	$catchedERROR = checkInput()
 	If Not $catchedERROR Then
-		sendProfilePackage(createProfilePackage())
+		;sendProfilePackage(createProfilePackage())
 		writeProfile($profileCounter)
 		convertProfilesToLua()
 		switchToMainGUI($inputGUI)
@@ -597,9 +609,9 @@ EndFunc
 #region INPUT CONTROLLER
 Func checkInput()
 	$catchedERROR = False
-	;check if all controls are filled
-	For $i = 0 To UBound($formData) - 1
-		If GUICtrlRead($formData[$i]) == "" And $i <> 14 Then
+	;check if profilename and dropdowns are filled
+	For $i = 0 To 5
+		If GUICtrlRead($formData[$i]) == "" Then
 			paintGUI($formData[$i], False)
 			$catchedERROR = True
 		Else
@@ -712,15 +724,15 @@ Func checkInput()
 	EndIf
 	;check logflag logic
 	If Number(GUICtrlRead($formData[5])) > 0 And Number(GUICtrlRead($formData[6])) == 0 And Number(GUICtrlRead($formData[7])) == 0 And GUICtrlRead($formData[18]) == "4" Then
-		paintGUI($formData[18], False)
+		paintFont($logLabel, False)
 		$catchedERROR = True
 	Else
-		paintGUI($formData[18])
+		paintFont($logLabel)
 		If Number(GUICtrlRead($formData[5])) == 0 And Number(GUICtrlRead($formData[6])) == 0 And Number(GUICtrlRead($formData[7])) == 0 And GUICtrlRead($formData[18]) == "4" Then
-			paintGUI($formData[18], False)
+			paintFont($logLabel, False)
 			$catchedERROR = True
 		Else
-			paintGUI($formData[18])
+			paintFont($logLabel)
 		EndIf
 	EndIf
 	;redraw window to avoid gui errors
