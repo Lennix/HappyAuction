@@ -609,13 +609,15 @@ EndFunc
 #region INPUT CONTROLLER
 Func checkInput()
 	$catchedERROR = False
-	;check if profilename is filled
-	If GUICtrlRead($formData[0]) == "" Then
-		paintGUI($formData[0], False)
-		$catchedERROR = True
-	Else
-		paintGUI($formData[0])
-	EndIf
+	;check if profilename and dropdowns are filled
+	For $i = 0 To 5
+		If GUICtrlRead($formData[$i]) == "" Then
+			paintGUI($formData[$i], False)
+			$catchedERROR = True
+		Else
+			paintGUI($formData[$i])
+		EndIf
+	Next
 	;check if the profilename is unique
 	$doubleProfile = False
 	For $i = 0 To $profileCounter - 1
