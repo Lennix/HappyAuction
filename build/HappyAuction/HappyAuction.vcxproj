@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\HappyAuction\Core\Application.hpp" />
+    <ClInclude Include="..\..\source\HappyAuction\Core\AuthRunner.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Core\Script.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Core\ScriptRunner.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Resource\resource.h" />

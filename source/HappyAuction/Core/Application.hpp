@@ -1,9 +1,9 @@
 #pragma once
 #include <HappyAuction/Constants.hpp>
 #include <HappyAuction/Core/ScriptRunner.hpp>
+#include <HappyAuction/Core/AuthRunner.hpp>
 #include <HappyAuction/Resource/resource.h>
 #include <Core/System/System.hpp>
-#include <WinHttpClient/Common/Include/WinHttpClient.h>
 
 namespace HappyAuction
 {
@@ -11,33 +11,12 @@ namespace HappyAuction
     class Application
     {
     private:
-        ScriptRunner _runner;
+        AuthRunner _auth;
 
     public:
         /**/
         void Run()
         {
-            // Set URL.
-            WinHttpClient client(L"http://d3ahbot.com/index.php?component=backend&action=login");
- 
-            // Set post data.
-            string data = "username=lennix&password=fa79010cf00be721e94e8d804c490f9b0658d5c7f69c0337dbdb4248dcfa3c9f";
-            client.SetAdditionalDataToSend((BYTE *)data.c_str(), data.size());
- 
-            // Set request headers.
-            wchar_t szSize[50] = L"";
-            swprintf_s(szSize, L"%d", data.size());
-            wstring headers = L"Content-Length: ";
-            headers += szSize;
-            headers += L"\r\nContent-Type: application/x-www-form-urlencoded\r\n";
-            client.SetAdditionalRequestHeaders(headers);
- 
-            // Send HTTP post request.
-            client.SendHttpRequest(L"POST");
- 
-            wstring httpResponseHeader = client.GetResponseHeader();
-            wstring httpResponseContent = client.GetResponseContent();
-
             // init system
             if(!_InitSystem())
                 throw EXCEPTION_FATAL;
@@ -46,21 +25,24 @@ namespace HappyAuction
             if(!_InitApplication())
                 throw EXCEPTION_FATAL;
 
+            if(!_auth.CheckAuth())
+                throw EXCEPTION_FATAL;
+
             // run system
             if(!System::Run())
                 throw EXCEPTION_FATAL;
 
             // stop bot
-            _runner.Stop();
+            _auth.Stop();
         }
 
         /**/
         void ToggleBot()
         {
-            if(_runner.IsActive())
-                _runner.Stop();
+            if(_auth.IsActive())
+                _auth.Stop();
             else
-                _runner.Start();
+                _auth.Start();
         }
 
     private:

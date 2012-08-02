@@ -548,7 +548,7 @@ namespace Diablo
         if(!_process.ReadMemory(ui_object.addr_child2, &ilevelText, sizeof(ilevelText)))
             return false;
 
-        if (sscanf(ilevelText, "Item Level: %[a-zA-Z0-9+'.()\% -]s",ilevelText) == 0)
+        if (sscanf(ilevelText, "Item Level: %[0-9+]s",ilevelText) == 0)
             return false;
 
         ilevel = atol(ilevelText);

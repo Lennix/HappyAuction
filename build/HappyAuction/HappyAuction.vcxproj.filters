@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\source\HappyAuction\Constants.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Enums.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Root.hpp" />
+    <ClInclude Include="..\..\source\HappyAuction\Core\AuthRunner.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\source\HappyAuction\Resource\IconActive.ico">
