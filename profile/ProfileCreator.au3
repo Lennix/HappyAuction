@@ -3,6 +3,7 @@
 ;loginfenster , benutzer passwort main ini
 #endregion
 #region INCLUDES
+#NoTrayIcon
 #include "JSON.au3"
 #include "MD5.au3"
 #include <GUIConstantsEx.au3>
