@@ -22,6 +22,7 @@ Global $mainList = ""
 Global $mainGUI = ""
 Global $inputGUI = ""
 Global $loginGUI = ""
+Global $updateGUI = ""
 Global $mainDropDown = ""
 Global $mainSlider = ""
 Global $mainSliderCache = ""
@@ -55,6 +56,9 @@ Global $login = False
 Global $loginflag = False
 #endregion
 #region VARIABLES CONST
+;version
+Const $version = "0"
+
 ;files
 Const $Ini = "Profiles.ini"
 Const $Txt = "Profiles.txt"
@@ -357,6 +361,25 @@ Func logout()
 	GUICtrlSetData($userData[0], $username)
 EndFunc
 #endregion
+#region GUI UPDATE
+Func builtUpdateGUI()
+	$updateGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 250, 200)
+	builtUpdateLayers()
+	GUISetState(@SW_SHOW, $updateGUI)
+EndFunc
+
+Func builtUpdateLayers()
+	Local $refresh = 1000
+	Local $byteCache = 0
+	Local $speed = 0
+	While @InetGetActive
+		$speed = ((@InetGetBytesRead  - $byteCache) / 1024) * (1000 / $refresh)
+		$byteCache = @InetGetBytesRead
+		ToolTip("KiloBytes = " & @InetGetBytesRead / 1024 & @CRLF & "Geschwindigkeit:" & $speed & " kb/s", 10, 16)
+		Sleep($refresh)
+	WEnd
+EndFunc
+#endregion
 #endregion
 #region INI
 Func loadIni()
@@ -412,17 +435,23 @@ Func checkLoginData()
 			;try to autologin
 			If connectToServer($username, $password) Then
 				$login = True
-				loadMain()
-				builtMainGUI();
+				Local $serverVersion = checkUpdate()
+				If Number($version) < Number($serverVersion) Then
+					forceUpdate($serverVersion)
+					builtUpdateGUI()
+				Else
+					loadMain()
+					builtMainGUI()
+				EndIf
 			;autologin failed
 			Else
-				builtLoginGUI();
+				builtLoginGUI()
 				GUICtrlSetData($userData[0], $username)
 				builtLoginFailed()
 			EndIF
 		Else
 			;no autologin
-			builtLoginGUI();
+			builtLoginGUI()
 			GUICtrlSetData($userData[0], $username)
 		EndIf
 	EndIf
@@ -486,9 +515,16 @@ Func proceedLogin()
 	If connectToServer(GUICtrlRead($userData[0]), md5(GUICtrlRead($userData[1]))) Then
 		$login = True
 		writeLoginData()
-		loadMain()
-		builtMainGUI();
-		switchToMainGUI($loginGUI)
+		Local $serverVersion = checkUpdate()
+		If Number($version) < Number($serverVersion) Then
+			forceUpdate($serverVersion)
+			GUIDelete($loginGUI)
+			builtUpdateGUI()
+		Else
+			loadMain()
+			builtMainGUI();
+			switchToMainGUI($loginGUI)
+		EndIf
 	Else
 		builtLoginFailed()
 	EndIf
@@ -1070,5 +1106,34 @@ EndFunc
 
 Func sendProfilePackage($package)
 	iGet("decode", "json=" & _JSONEncode($package))
+EndFunc
+
+Func checkUpdate()
+	Local $updateRequest = iGet("getVersion")
+	Return $updateRequest[2][1]
+EndFunc
+
+Func forceUpdate($serverVersion)
+	Switch(Number($serverVersion))
+		Case $version + 1.1
+			forceCreatorUpdate(1)
+		Case $version + 1.2
+			forceBotUpdate(1)
+		Case Else
+			forceCreatorUpdate(0)
+			forceBotUpdate(1)
+	EndSwitch
+EndFunc
+
+Func forceBotUpdate($continue)
+	Local $fileName = "HappyAuctionAdvanced.exe.new"
+	FileDelete($fileName)
+	InetGet("http://d3ahbot.com/update/bot/" & $sessionID, $fileName, 1, $continue)
+EndFunc
+
+Func forceCreatorUpdate($continue)
+	Local $fileName = "ProfileCreator.exe.new"
+	FileDelete($fileName)
+	InetGet("http://d3ahbot.com/update/creator/" & $sessionID, $fileName, 1, $continue)
 EndFunc
 #endregion
