@@ -364,11 +364,9 @@ EndFunc
 #endregion
 #region GUI UPDATE
 Func builtUpdateGUI()
-	#cs
 	$updateGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 250, 200)
 	builtUpdateLayers()
 	GUISetState(@SW_SHOW, $updateGUI)
-	#ce
 EndFunc
 
 Func builtUpdateLayers()
@@ -597,7 +595,7 @@ Func loadProfile()
 			GUICtrlSetData($formData[13], IniRead($Ini, "profile" & $i, "dpsarmor", "0"))
 			GUICtrlSetData($formData[14], IniRead($Ini, "profile" & $i, "legendaryset", ""))
 			Local $tempSliderData = GUICtrlRead($mainSlider)
-			If IniRead($Ini, "profile" & $i, "queries", GUICtrlRead($mainSlider)) <> "0" Then
+			If IniRead($Ini, "profile" & $i, "queries", GUICtrlRead($mainSlider)) <> "-1" Then
 				$tempSliderData = IniRead($Ini, "profile" & $i, "queries", GUICtrlRead($mainSlider))
 			EndIf
 			GUICtrlSetData($formData[15], $tempSliderData)
