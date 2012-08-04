@@ -365,18 +365,18 @@ EndFunc
 #region GUI UPDATE
 Func builtUpdateGUI()
 	$updateGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 250, 200)
-	builtUpdateLayers()
+	GUICtrlCreateLabel("UPDATE", 100, 10)
 	GUISetState(@SW_SHOW, $updateGUI)
 EndFunc
 
-Func builtUpdateLayers()
+Func builtUpdateTicker()
 	Local $refresh = 1000
 	Local $byteCache = 0
 	Local $speed = 0
 	While @InetGetActive
 		$speed = ((@InetGetBytesRead  - $byteCache) / 1024) * (1000 / $refresh)
 		$byteCache = @InetGetBytesRead
-		ToolTip("KiloBytes = " & @InetGetBytesRead / 1024 & @CRLF & "Geschwindigkeit:" & $speed & " kb/s", 10, 16)
+		ToolTip("KiloBytes = " & @InetGetBytesRead / 1024 & @CRLF & "Geschwindigkeit:" & $speed & " kb/s", 10, 30)
 		Sleep($refresh)
 	WEnd
 EndFunc
@@ -439,8 +439,8 @@ Func checkLoginData()
 				$login = True
 				Local $serverVersion = checkUpdate()
 				If Number($version) < Number($serverVersion) Then
-					forceUpdate($serverVersion)
 					builtUpdateGUI()
+					forceUpdate($serverVersion)
 				Else
 					loadMain()
 					builtMainGUI()
@@ -519,9 +519,9 @@ Func proceedLogin()
 		writeLoginData()
 		Local $serverVersion = checkUpdate()
 		If Number($version) < Number($serverVersion) Then
-			forceUpdate($serverVersion)
 			GUIDelete($loginGUI)
 			builtUpdateGUI()
+			forceUpdate($serverVersion)
 		Else
 			loadMain()
 			builtMainGUI();
@@ -1126,26 +1126,28 @@ Func forceUpdate($serverVersion)
 	ConsoleWrite($serverVersion & " : " & $version)
 	Switch(Number($serverVersion))
 		Case $version + 1.1
-			forceCreatorUpdate(1)
+			forceCreatorUpdate()
 		Case $version + 1.2
-			forceBotUpdate(1)
+			forceBotUpdate()
 		Case Else
-			forceCreatorUpdate(0)
-			forceBotUpdate(1)
+			forceCreatorUpdate()
+			forceBotUpdate()
 	EndSwitch
 EndFunc
 
-Func forceBotUpdate($continue)
+Func forceBotUpdate()
 	Local $fileName = "HappyAuctionAdvanced.exe.new"
 	FileDelete($fileName)
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName, 1, $continue)
-	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName)
+	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName, 1, 1)
+	builtUpdateTicker()
 EndFunc
 
-Func forceCreatorUpdate($continue)
+Func forceCreatorUpdate()
 	Local $fileName = "ProfileCreator.exe.new"
 	FileDelete($fileName)
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, $continue)
-	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName)
+	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, 1)
+	builtUpdateTicker()
 EndFunc
 #endregion
