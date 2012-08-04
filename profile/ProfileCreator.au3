@@ -58,7 +58,7 @@ Global $loginflag = False
 #endregion
 #region VARIABLES CONST
 ;version
-Const $version = "0"
+Const $version = "1"
 
 ;files
 Const $Ini = "Profiles.ini"
@@ -364,9 +364,11 @@ EndFunc
 #endregion
 #region GUI UPDATE
 Func builtUpdateGUI()
+	#cs
 	$updateGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 250, 200)
 	builtUpdateLayers()
 	GUISetState(@SW_SHOW, $updateGUI)
+	#ce
 EndFunc
 
 Func builtUpdateLayers()
@@ -387,7 +389,7 @@ Func loadIni()
 	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 	Local $arrayProfiles[$profileCounter]
 	For $i = 0 To UBound($arrayProfiles)-1
-		Local $arrayData[17]
+		Local $arrayData[18]
 		Local $arrayFilter[2]
 		Local $arrayStat[7]
 		Local $arrayValue[7]
@@ -417,6 +419,7 @@ Func loadIni()
 		$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error)
 		$arrayData[15] = IniRead($Ini, "profile" & $i, "minlvl", $error)
 		$arrayData[16] = IniRead($Ini, "profile" & $i, "maxlvl", $error)
+		$arrayData[17] = IniRead($Ini, "profile" & $i, "queries", $error)
 		$arrayProfiles[$i] = $arrayData
 	Next
 	Return $arrayProfiles
@@ -551,7 +554,7 @@ Func writeProfile($position, $edit = False)
 	IniWrite($Ini, "profile" & $position, "maxlvl", GUICtrlRead($formData[12]))
 	IniWrite($Ini, "profile" & $position, "dpsarmor", GUICtrlRead($formData[13]))
 	IniWrite($Ini, "profile" & $position, "legendaryset", GUICtrlRead($formData[14]))
-	Local $tempSliderData = "0"
+	Local $tempSliderData = "-1"
 	If GUICtrlRead($mainSlider) <> GUICtrlRead($formData[15]) Then
 		$tempSliderData = GUICtrlRead($formData[15])
 	EndIf
@@ -884,6 +887,13 @@ Func convertProfilesToLua()
 		; check gold (lets do that in the beginning)
 		If $prof[10] > 0 Then WriteLua("if haGetGold() > " & $prof[10] & " then", 1)
 
+		; set target queries per hour
+		If $prof[17] > -1 Then
+			WriteLua("haSettingsQueriesPerHour('" & $prof[17] & "')")
+		ElseIf $prof[17] == -1 Then
+			WriteLua("haSettingsQueriesPerHour('" & IniRead($Ini, "main", "queries", 800) & "')")
+		EndIf
+
 		If StringLen($prof[2]) > 0 Then WriteLua("haFilterClass('" & $prof[2] & "')")
 
 		; itemtype is automatically determined, just use subtype
@@ -1115,6 +1125,7 @@ Func checkUpdate()
 EndFunc
 
 Func forceUpdate($serverVersion)
+	ConsoleWrite($serverVersion & " : " & $version)
 	Switch(Number($serverVersion))
 		Case $version + 1.1
 			forceCreatorUpdate(1)
@@ -1129,12 +1140,14 @@ EndFunc
 Func forceBotUpdate($continue)
 	Local $fileName = "HappyAuctionAdvanced.exe.new"
 	FileDelete($fileName)
-	InetGet("http://d3ahbot.com/update/bot/" & $sessionID, $fileName, 1, $continue)
+	;InetGet("http://d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName, 1, $continue)
+	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName)
 EndFunc
 
 Func forceCreatorUpdate($continue)
 	Local $fileName = "ProfileCreator.exe.new"
 	FileDelete($fileName)
-	InetGet("http://d3ahbot.com/update/creator/" & $sessionID, $fileName, 1, $continue)
+	;InetGet("http://d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, $continue)
+	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName)
 EndFunc
 #endregion
