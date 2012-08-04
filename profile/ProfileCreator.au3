@@ -63,6 +63,7 @@ Const $version = "1"
 ;files
 Const $Ini = "Profiles.ini"
 Const $Txt = "Profiles.txt"
+Const $Bat = "Update.bat"
 
 ;color
 Const $colorRED = 0xF20041
@@ -1149,5 +1150,21 @@ Func forceCreatorUpdate()
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, $continue)
 	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, 1)
 	builtUpdateTicker()
+EndFunc
+#endregion
+#region BATCHFILE
+Func executeBatchFile()
+	FileDelete($Bat)
+	Local $batchContent = 	"@echo off"& @CRLF _
+							"ping localhost -n 2 > nul" & @CRLF _ ;not sure what you're doing here. Giving the script time to exit?
+							":loop" & @CRLF _ ;specify the start of a zone
+							'del /Q "' & @ScriptFullPath & '"' & @CRLF _ ;the quotes are needed for long filepaths, and filepaths with spaces. The @SciptfullPath is for flexibility
+                            'if exist "' & @ScriptFullPath & '" goto loop' & @CRLF _ ;if the delete failed, try again
+                            'move "' & @ScriptFullPath & '.new" "' & @ScriptFullPath & '"' & @CRLF _ ;this is why I changed the new file's name.
+                            'start "' & @ScriptFullPath & '"' & @CRLF _
+                            'del /Q "' & $batchPath & '"' & @CRLF _
+                            "exit"
+	FileWrite($Bat, $batchContent)
+	Run($Bat, "", @SW_HIDE)
 EndFunc
 #endregion
