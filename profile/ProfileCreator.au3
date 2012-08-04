@@ -11,7 +11,7 @@
 #Include <GuiSlider.au3>
 #include <EditConstants.au3>
 #include <ButtonConstants.au3>
-
+#include <WindowsConstants.au3>
 #endregion
 #region OPT
 Opt("GUIOnEventMode", 1)
@@ -34,6 +34,7 @@ Global $editButton = ""
 Global $deleteButton = ""
 Global $loginButton = ""
 Global $logoutButton = ""
+Global $restartButton = ""
 Global $loginCheckBox = ""
 Global $logLabel = ""
 
@@ -44,6 +45,7 @@ Global $profileCounter = "0"
 Global $editingProfile = "-1"
 Global $sliderStartValue = "800"
 Global $startPageDelay = "0"
+
 
 ;arrays
 Global $formData[19] = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
@@ -58,7 +60,7 @@ Global $loginflag = False
 #endregion
 #region VARIABLES CONST
 ;version
-Const $version = "1"
+Const $version = "0"
 
 ;files
 Const $Ini = "Profiles.ini"
@@ -359,17 +361,26 @@ Func logout()
 	IniWrite($Ini, "main", "password", "")
 	IniWrite($Ini, "main", "loginflag", "4")
 	GUIDelete($mainGUI)
-	builtLoginGUI();
+	builtLoginGUI()
 	GUICtrlSetData($userData[0], $username)
 EndFunc
 #endregion
 #region GUI UPDATE
 Func builtUpdateGUI()
 	$updateGUI = GUICreate("ProfileAssembler - Z ©2012 Zero", 250, 200)
-	GUICtrlCreateLabel("UPDATE", 100, 10)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "quit", $updateGUI)
+	;update label line
+	GUICtrlCreateLabel("UPDATE " & ($version + 1), 100, 20)
 	GUISetState(@SW_SHOW, $updateGUI)
+	;changelog line
+	GUICtrlCreateEdit("Changelog" & @CRLF, 30, 50, 190, 80, BitOR($WS_VSCROLL, $ES_AUTOVSCROLL, $ES_READONLY))
+	;restart button line
+	$restartButton = GUICtrlCreateButton("Restart", 100, 150, 50, 30)
+	GUICtrlSetState($restartButton, $GUI_DISABLE)
+	GUICtrlSetOnEvent($restartButton, "executeBatchFile")
 EndFunc
 
+#cs maybe we will need this function in future
 Func builtUpdateTicker()
 	Local $refresh = 1000
 	Local $byteCache = 0
@@ -381,6 +392,7 @@ Func builtUpdateTicker()
 		Sleep($refresh)
 	WEnd
 EndFunc
+#ce
 #endregion
 #endregion
 #region INI
@@ -1124,7 +1136,6 @@ Func checkUpdate()
 EndFunc
 
 Func forceUpdate($serverVersion)
-	ConsoleWrite($serverVersion & " : " & $version)
 	Switch(Number($serverVersion))
 		Case $version + 1.1
 			forceCreatorUpdate()
@@ -1134,22 +1145,21 @@ Func forceUpdate($serverVersion)
 			forceCreatorUpdate()
 			forceBotUpdate()
 	EndSwitch
+	GUICtrlSetState($restartButton, $GUI_ENABLE)
 EndFunc
 
 Func forceBotUpdate()
 	Local $fileName = "HappyAuctionAdvanced.exe.new"
 	FileDelete($fileName)
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName, 1, $continue)
-	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName, 1, 1)
-	builtUpdateTicker()
+	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName)
 EndFunc
 
 Func forceCreatorUpdate()
 	Local $fileName = "ProfileCreator.exe.new"
 	FileDelete($fileName)
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, $continue)
-	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, 1)
-	builtUpdateTicker()
+	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName)
 EndFunc
 #endregion
 #region BATCHFILE
@@ -1165,6 +1175,6 @@ Func executeBatchFile()
                             'del /Q "' & $batchPath & '"' & @CRLF _
                             "exit"
 	FileWrite($Bat, $batchContent)
-	Run($Bat, "", @SW_HIDE)
+	;Run($Bat, "", @SW_HIDE)
 EndFunc
 #endregion
