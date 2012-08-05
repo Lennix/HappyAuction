@@ -78,11 +78,15 @@ namespace Diablo
         Char    d3item  [0x008];    // 024
         Byte    _2      [0x064];
         Char    d3gold  [0x008];    // 090
-        Byte    _3      [0x040];
+        Byte    _3      [0x028];
+        ULong   time;               // 0C0
+        Byte    _4      [0x00c];
+        ULong   bid1;               // 0D0
+        Byte    _5      [0x004];
         ULong   buyout;             // 0D8
-        Byte    _4      [0x004];
-        ULong   bid;                // 0DC
-        Byte    _5      [0x034];
+        Byte    _6      [0x004];
+        ULong   bid2;               // 0DC
+        Byte    _7      [0x034];
     };
 
 
@@ -245,9 +249,18 @@ namespace Diablo
             *(UHuge*)item_object.d3gold != *(UHuge*)_HINT_LISTITEM_GOLD)
             return false;
 
-        // get values
-        item.bid = item_object.bid;
+        // cbid, mbid
+        if(item_object.bid1)
+        {
+            item.current_bid = item_object.bid1;
+            item.max_bid = item_object.bid2;
+        }
+        else
+            item.current_bid = item.max_bid = item_object.bid2;
+        // buyout
         item.buyout = item_object.buyout;
+        // time
+        item.time = item_object.time;
 
         return true;
     }

@@ -109,20 +109,20 @@ namespace Diablo
         va_end(args);
     
         // select input
-        MouseClick(x, y, 50);
+        MouseClick(x, y, GAME_ITEMREAD_DELAY);
 
         // if not empty string
         if(*out)
         {
             // send special to select-all old text to be replaced by new text
-            SendInput("^CA^c", true, 50);
+            SendInput("^CA^c", true, GAME_ITEMREAD_DELAY);
 
             // send new text
-            SendInput(out, false, 50);
+            SendInput(out, false, GAME_ITEMREAD_DELAY);
         }
         // else send special to select-all old text and delete
         else
-            SendInput("^CA^D^c", true, 50);
+            SendInput("^CA^D^c", true, GAME_ITEMREAD_DELAY);
 
         // enable input
         InputEnable(true);
@@ -135,10 +135,10 @@ namespace Diablo
         InputEnable(false);
 
         // select input
-        MouseClick(x, y, 50);
+        MouseClick(x, y, GAME_ITEMREAD_DELAY);
 
         // copy text to clipboard
-        SendInput("^CAC^c", true, 50);
+        SendInput("^CAC^c", true, GAME_ITEMREAD_DELAY);
 
         // get clipboard text
         Bool status = System::GetClipBoard(text, limit);

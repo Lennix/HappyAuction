@@ -54,6 +54,9 @@ namespace Diablo
         Bool    ReadListCount( ULong& count );
         Bool    ReadListItem( Index index, Item& item );
 
+        /**/
+        void    HoverGround();
+
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );
         Bool    _WriteComboRefresh( Id option_id );

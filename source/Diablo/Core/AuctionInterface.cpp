@@ -190,7 +190,7 @@ namespace Diablo
     Bool AuctionInterface::ActionSearch()
     {
         // hit search button
-        _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y, 50);
+        _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y, GAME_ITEMREAD_DELAY);
 
         // wait if requested
         return _WaitSearch();
@@ -200,7 +200,7 @@ namespace Diablo
     Bool AuctionInterface::ActionListSortDpsArmor()
     {
         // click sort column header
-        _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y, 50);
+        _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y, GAME_ITEMREAD_DELAY);
 
         return _WaitSearch();
     }
@@ -209,7 +209,7 @@ namespace Diablo
     Bool AuctionInterface::ActionListSortBuyout()
     {
         // click sort column header
-        _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y, 50);
+        _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y, GAME_ITEMREAD_DELAY);
 
         return _WaitSearch();
     }
@@ -224,13 +224,13 @@ namespace Diablo
         _game.InputEnable(false);
 
         // use opportunity to close any popups
-        //_game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, 50);
+        //_game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, GAME_ITEMREAD_DELAY);
 
         // check listing status
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
             // hit next page button
-            _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, 50);
+            _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, GAME_ITEMREAD_DELAY);
 
             // wait search
             if(_WaitSearch())
@@ -252,19 +252,19 @@ namespace Diablo
         HoverListItem(index, true);
 
         // hit bid button
-        _game.MouseClick(AH_BUTTON_BID.x, AH_BUTTON_BID.y, 100);
+        _game.MouseClick(AH_BUTTON_BID.x, AH_BUTTON_BID.y, GAME_ITEMREAD_DELAY * 2);
 
         // set bid amount if any
         if( bid != 0 )
             _game.SendInputText(AH_INPUT_BID.x, AH_INPUT_BID.y, "%u", bid);
 
         // hit confirm button
-        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y, 100);
+        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y, GAME_ITEMREAD_DELAY * 2);
 
         // hit ok button until done
         do
         {
-            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, 100);
+            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, GAME_ITEMREAD_DELAY * 2);
         }
         while(_trainer.ReadPopupStatus(status) && status);
 
@@ -280,15 +280,15 @@ namespace Diablo
         HoverListItem(index, true);
 
         // hit buyout button
-        _game.MouseClick(AH_BUTTON_BUYOUT.x, AH_BUTTON_BUYOUT.y, 100);
+        _game.MouseClick(AH_BUTTON_BUYOUT.x, AH_BUTTON_BUYOUT.y, GAME_ITEMREAD_DELAY * 2);
 
         // hit confirm button
-        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y, 100);
+        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y, GAME_ITEMREAD_DELAY * 2);
 
         // hit ok button until done
         do
         {
-            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, 100);
+            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, GAME_ITEMREAD_DELAY * 2);
         }
         while(_trainer.ReadPopupStatus(status) && status);
 
@@ -346,6 +346,13 @@ namespace Diablo
         return status;
     }
 
+    //------------------------------------------------------------------------
+    void AuctionInterface::HoverGround()
+    {
+        // hover to reset another hover
+        _game.MouseMove(0, 0.005, GAME_ITEMREAD_DELAY);
+    }
+
     // private
     //------------------------------------------------------------------------
     Bool AuctionInterface::_WriteComboBox( Id combo_id, Id option_id )
@@ -386,7 +393,7 @@ namespace Diablo
         ULong               h;
 
         // open dropdown
-        _game.MouseClick(coordinate.x, coordinate.y, 170);
+        _game.MouseClick(coordinate.x, coordinate.y, GAME_ITEMREAD_DELAY * 3);
 
         // image scan to selection
         window.CaptureScreen(pixels, _game.X(coordinate.x, false), y, 1, height);
@@ -398,7 +405,7 @@ namespace Diablo
             return false;
 
         // click selection
-        _game.MouseClick(_game.X(coordinate.x), y + h + 10, 50);
+        _game.MouseClick(_game.X(coordinate.x), y + h + 10, GAME_ITEMREAD_DELAY);
 
         return true;
     }
@@ -518,7 +525,7 @@ namespace Diablo
             Bool busy;
 
             // poll delay
-            _game.Sleep(50);
+            _game.Sleep(GAME_ITEMREAD_DELAY);
 
             // read listing status
             if(!_trainer.ReadListCount(count))

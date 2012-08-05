@@ -1,6 +1,12 @@
-- raise filter dropdown delay a little hopefully fixing selection failing sometimes
-- fix setting character specific filters for users with more than 1 character
-- allow clearing level filter using haFilterLevel(-1) or haFilterLevel(-1, -1)
+- fix haListSelect failing if called twice in a row
+- add haListItemStat(stat) to quickly get current item stat value by name: see readme
+- add current bid to haListItem(): see readme.
+- make the haSettingsListDelay() delay a factor in all operations not just reading list items. this should help those with cpu lag/low FPS reduces errors better. next update ill try to make this unncessary by throttling against FPS directly.
+
+
+- add readme warning to always check function status
+
+
 
 CENTERED X -> RATIO CONVERSION FUNCTION USING 2560/1600 REZ:
 (x - (2560 / 2)) / 1600

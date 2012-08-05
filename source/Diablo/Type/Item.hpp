@@ -27,32 +27,33 @@ namespace Diablo
         SocketCollection    sockets;
 
         ULong               dpsarmor;
-        ULong               bid;
+        ULong               current_bid;
+        ULong               max_bid;
         ULong               buyout;
+        ULong               time;
 
     public:
         /**/
         Item():
             dpsarmor(0),
-            bid(0),
-            buyout(0)
+            current_bid(0),
+            max_bid(0),
+            buyout(0),
+            time(0)
         {
         }
 
         /**/
-        const ValueCollection& FindStat( const Char* name ) const
+        const Stat* FindStat( const Char* pattern ) const
         {
-            static const ValueCollection _dummy;
             const ComboBox::OptionCollection& options = AH_COMBO_PSTAT.GetOptions();
 
-            if(name != NULL)
-                return _dummy;
+            if(pattern != NULL)
+                for( StatIterator i = stats.Begin(); i != stats.End(); ++i )
+                    if(options[i->id].Match(pattern))
+                        return i;
 
-            for( StatIterator i = stats.Begin(); i != stats.End(); ++i )
-                if(_stricmp(name, options[i->id].name) == 0)
-                    return i->values;
-
-            return _dummy;
+            return NULL;
         }
     };
 }
