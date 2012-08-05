@@ -32,6 +32,7 @@ namespace HappyAuction
         SCRIPT_HABEEP,
         SCRIPT_HASLEEP,
         SCRIPT_HAALERT,
+        SCRIPT_HAPARSETIME,
 
         SCRIPT_HASETTINGSLISTDELAY,
 

@@ -47,6 +47,7 @@ namespace HappyAuction
         "haBeep",
         "haSleep",
         "haAlert",
+        "haParseTime",
 
         "haSettingsListDelay",
         "haSettingsNextDelay",

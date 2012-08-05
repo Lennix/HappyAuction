@@ -253,6 +253,15 @@ namespace HappyAuction
                     System::Message("%s", pstring);
                 return 0;
 
+            case SCRIPT_HAPARSETIME:
+                pstring = _GetStackString(1);
+                if(pstring)
+                {
+                    _PushStackULong(_ahi.ParseTime(pstring));
+                    return 1;
+                }
+                return 0;
+
             // haSettingsListDelay(delay)
             case SCRIPT_HASETTINGSLISTDELAY:
                 GAME_ITEMREAD_DELAY = Tools::Conform(_GetStackULong(1), GAME_ITEMREAD_DELAY_MIN, GAME_ITEMREAD_DELAY_MAX);

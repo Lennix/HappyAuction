@@ -390,6 +390,33 @@ namespace Diablo
         return _trainer.ReadPlayerGold(gold);
     }
 
+    //------------------------------------------------------------------------
+    ULong AuctionInterface::ParseTime( const Char* text )
+    {
+        TextString target1, target2;
+        if (sscanf(text, "%s %s",target1, target2) == 0)
+            return 0;
+
+        long days = 0, hours = 0, minutes = 0;
+
+        if (strchr(target1, 'd'))
+            days = atol(target1);
+
+        if (strchr(target1, 'h'))
+            hours = atol(target1);
+
+        if (strchr(target1, 'm'))
+            minutes = atol(target1);
+
+        if (strchr(target2, 'h'))
+            hours = atol(target2);
+
+        if (strchr(target2, 'm'))
+            minutes = atol(target2);
+
+        return 1440*days + 60*hours + minutes;
+    }
+
     // private
     //------------------------------------------------------------------------
     Bool AuctionInterface::_WriteComboBox( Id combo_id, Id option_id )

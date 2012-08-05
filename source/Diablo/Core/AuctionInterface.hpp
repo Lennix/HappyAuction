@@ -61,6 +61,8 @@ namespace Diablo
 
         Bool    GetGold(ULong& gold);
 
+        ULong    ParseTime( const Char* text );
+
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );
         Bool    _WriteComboRefresh( Id option_id );
