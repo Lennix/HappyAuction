@@ -977,7 +977,7 @@ Func convertProfilesToLua()
 		WriteLua("while haListNext() do", 1)
 
 		; get item information
-		WriteLua("local dpsarmor, bid, buyout, nstats, nsockets, id, currBid, flags, ilvl, timeleft, name = haListItem()")
+		WriteLua("local dpsarmor, max_bid, buyout, nstats, nsockets, current_bid, id, flags, ilvl, timeleft, name = haListItem()")
 
 		; log it?
 		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
@@ -1034,9 +1034,9 @@ Func convertProfilesToLua()
 			; check bid
 			If $prof[7] > 0 Then
 				If $prof[8] > 0 Then
-					WriteLua("elseif bid <= " & $prof[7] & " then", -1)
+					WriteLua("elseif max_bid <= " & $prof[7] & " then", -1)
 				Else
-					WriteLua("if bid <= " & $prof[7] & " then", 1)
+					WriteLua("if max_bid <= " & $prof[7] & " then", 1)
 				EndIf
 				If $prof[11] == 1 Then WriteLua("haLog('Bidding on item for " & $prof[7] & "')")
 				WriteLua("haActionBid(" & $prof[7] & ")",1)
