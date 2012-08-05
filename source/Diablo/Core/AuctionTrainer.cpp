@@ -358,13 +358,8 @@ namespace Diablo
             *(UHuge*)item_object.d3gold != *(UHuge*)_HINT_LISTITEM_GOLD)
             return false;
 
-        if(item_object.current_bid)
-        {
-            item.current_bid = item_object.current_bid;
-            item.max_bid = item_object.max_bid;
-        }
-        else
-            item.current_bid = item.max_bid = item_object.max_bid;
+        item.current_bid = item_object.current_bid;
+        item.max_bid = item_object.max_bid;
 
         // get values
         item.buyout =   item_object.buyout;

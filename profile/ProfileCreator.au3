@@ -1,6 +1,9 @@
 #region COMMENTS
 ;socket infos abfragen (optional)
 ;loginfenster , benutzer passwort main ini
+;flag von server wenn LUA neu erstellt werden muss (nach update / vorher user fragen falls der manuelle änderungen gemacht hat)
+;flag für bid ob current bid abgefragt werden soll (nur bieten wenn noch keiner geboten?)
+;reihenfolge für profile festlegen (ggf. randomisieren)
 #endregion
 #region INCLUDES
 #NoTrayIcon
@@ -980,7 +983,7 @@ Func convertProfilesToLua()
 		WriteLua("local dpsarmor, max_bid, buyout, nstats, nsockets, current_bid, id, flags, ilvl, timeleft, name = haListItem()")
 
 		; log it?
-		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' bid: ' .. bid .. ' buyout: ' .. buyout .. ' currBid: ' .. currBid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
+		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' max bid: ' .. max_bid .. ' buyout: ' .. buyout .. ' current bid: ' .. current_bid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
 
 		WriteLua("local found = 0")
 		$found = 0
