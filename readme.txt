@@ -1,4 +1,4 @@
-HappyAuction v0.9.2
+HappyAuction v0.9.3
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ INSTRUCTIONS
 3. Hit CTRL-F12 to start/stop the main script. The taskbar icon will change
    color while script is active.
 4. The default sample script will run the basic buyout loop you see in other
-   AH bots. It sets the buyout to 200 by default for saftey reasons.
+   AH bots.
 5. See bin/Lua/Main.lua for further details.
 
 
@@ -73,6 +73,10 @@ SCRIPTING
   isnt much to learn to operate this bot besides loops if statements and
   some basic operators.
 - The main entry script is Lua/Main.lua.
+- Always check function return status! Yes they can fail sometimes due to low
+  framerates or system lag.
+- Performance is globally adjusted using haSettingsListDelay() which is high
+  by default.
 
 FUNCTIONS
 The following are the available functions in addition to standard LUA stuff
@@ -137,18 +141,22 @@ AUCTION SEARCH LIST:
         end
     - status:   true if successful
 
-- haListItem() -> dpsarmor, bid, buyout, nstats, nsockets
+- haListItem() -> dpsarmor, mbid, buyout, nstats, nsockets, cbid
     Returns information about the selected item. Values will be 0 if no
     item is selected or if failure occurred.
     - dpsarmor: the DPS or armor value found in tooltip.
-    - bid:      the actual max bid price. not necessarily the shown price.
+    - mbid:     the max bid price as shown in bid button/input box.
     - buyout:   the buyout price or 0 if there is no buyout
     - nstats:   the number of stats
     - nsockets: the number of sockets
+    - cbid:     the current bid price as shown in item list. this will be
+                less than mbid if there are bidders otherwise equal.
 
 - haListItemStat(index) -> stat, value1, value2, value3, value4
+- haListItemStat(stat) -> value1, value2, value3, value4
     Gets individual stat information of the selected item. Loop with
-    up to nstats to get all item stats.
+    up to nstats to get all item stats or use the second form to quickly
+    lookup stat values by name. returns 0 for every value if unsuccessful.
     - index:    the index of the stat to get. range: 1-nstats
     - stat:     the name of the stat. example: 'Attack Speed %'
     - value1-4: stat values. for most stats only value1 will be used.
@@ -210,10 +218,10 @@ UTILITIES:
 SETTINGS:
 - haSettingsListDelay(delay)
     ADVANCED: Sets the global delay between reading list items. The higher
-    your FPS the lower this can be set. At 60 FPS a value of 25 should be
-    fine. The default is 50 which has been tested against the low D3 default
-    background setting of 15 FPS. You can test this using the LogResults
-    bot and ensure the total TOTAL FOUND items is 500 (end of log file).
+    your FPS the lower this can be set. At 55 FPS a value of 25 should be
+    fine. The default is 60 which has been tested against an FPS of around 30.
+    You can test this using the LogResults bot and ensure the TOTAL FOUND
+    items is 500 (end of log file).
     - delay:    delay in milliseconds. range: 5-60000
 
 

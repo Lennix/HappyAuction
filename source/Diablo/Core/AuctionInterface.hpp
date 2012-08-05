@@ -61,7 +61,9 @@ namespace Diablo
 
         Bool    GetGold(ULong& gold);
 
-        ULong    ParseTime( const Char* text );
+        ULong   ParseTime( const Char* text );
+        /**/
+        void    HoverGround();
 
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );

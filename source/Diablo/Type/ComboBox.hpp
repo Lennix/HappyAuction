@@ -12,6 +12,17 @@ namespace Diablo
         const Char* format[2];
         UHuge       group;
         ULong       character;
+
+        /**/
+        Bool Match( const Char* pattern ) const
+        {
+            assert(name);
+
+            // search name and format
+            return Tools::StrSearch(pattern, name) ||
+                (format[0] != NULL && Tools::StrSearch(pattern, format[0])) ||
+                (format[1] != NULL && Tools::StrSearch(pattern, format[1]));
+        }
     };
 
     /**/
@@ -56,10 +67,8 @@ namespace Diablo
                 const ComboOption& option = _options[i];
                 assert(option.name);
 
-                // search name and format
-                if( Tools::StrSearch(pattern, option.name) ||
-                    (option.format[0] != NULL && Tools::StrSearch(pattern, option.format[0])) ||
-                    (option.format[1] != NULL && Tools::StrSearch(pattern, option.format[1])))
+                // match pattern
+                if(option.Match(pattern))
                 {
                     ULong score = strlen(option.name) - pattern_length;
 

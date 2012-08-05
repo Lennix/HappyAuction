@@ -180,39 +180,31 @@ namespace HappyAuction
 
             // haListSelect(index) -> status
             case SCRIPT_HALISTSELECT:
-                index = _GetStackULong(1);
-                if(index > 0 && index <= AH_LIST_ROW_LIMIT && (status = _ahi.ReadListItem(index - 1, _list_item)))
-                    _list_index = index;
-                else
-                    status = false;
-                _PushStackBool(status);
-                return 1;
+                return _haListSelect();
 
             // haListNext() -> status
             case SCRIPT_HALISTNEXT:
-                status = _haListNext();
-                _PushStackBool(status);
-                return 1;
+                return _haListNext();
 
-            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, id, currBid, flags, itemlevel, timeleft, name
+            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, currBid, id, flags, itemlevel, timeleft, name
             case SCRIPT_HALISTITEM:
                 _PushStackULong(_list_item.dpsarmor);
-                _PushStackULong(_list_item.bid);
+                _PushStackULong(_list_item.max_bid);
                 _PushStackULong(_list_item.buyout);
                 _PushStackULong(_list_item.stats.GetCount());
                 _PushStackULong(_list_item.sockets.GetCount());
+                _PushStackULong(_list_item.current_bid);
                 _PushStackULong(_list_item.id);
-                _PushStackULong(_list_item.currBid);
                 _PushStackULong(_list_item.flags);
                 _PushStackULong(_list_item.ilevel);
                 _PushStackString(_list_item.timeleft);
                 _PushStackString(_list_item.name);
                 return 11;
 
-            // haListItemStat(stat) -> stat, value1, value2, value3, value4
+            // haListItemStat(index) -> stat, value1, value2, value3, value4
+            // haListItemStat(stat)  -> value1, value2, value3, value4
             case SCRIPT_HALISTITEMSTAT:
-                index = _GetStackULong(1) - 1;
-                return (index < _list_item.stats.GetCount()) ? _PushItemStat(_list_item.stats[index], false) : _PushZeros(5);
+                return _haListItemStat();
 
             // haListItemSocket(index) -> stat, type, rank, value1, value2, value3, value4
             case SCRIPT_HALISTITEMSOCKET:
@@ -292,22 +284,50 @@ namespace HappyAuction
         }
 
         /**/
-        Bool _haListNext()
+        ULong _haListSelect()
         {
-            ULong list_count;
+            Index   index = _GetStackULong(1);
+            Bool    status = false;
+
+            // check range
+            if(index > 0 && index <= AH_LIST_ROW_LIMIT)
+            {
+                // ground hover to reset previous item select
+                _ahi.HoverGround();
+
+                // read list item
+                if(_ahi.ReadListItem(index - 1, _list_item))
+                {
+                    // update list index
+                    _list_index = index;
+
+                    status = true;
+                }
+            }
+
+            _PushStackBool(status);
+
+            return 1;
+        }
+
+        /**/
+        ULong _haListNext()
+        {
+            ULong   list_count;
+            Bool    status = false;
 
             while(true)
             {
                 // read list count
                 if(!_ahi.ReadListCount(list_count))
-                    return false;
+                    break;
 
                 // past list limit
                 if(++_list_index > list_count)
                 {
                     // go to next next page
                     if(!_ahi.ActionListNextPage())
-                        return false;
+                        break;
 
                     // reset index
                     _list_index = 1;
@@ -315,20 +335,57 @@ namespace HappyAuction
 
                 // read list item and increment index
                 if(_ahi.ReadListItem(_list_index - 1, _list_item))
-                    return true;
+                {
+                    status = true;
+                    break;
+                }
             }
 
-            return true;
+            _PushStackBool(status);
+
+            return 1;
         }
 
         /**/
-        ULong _PushItemStat( const Item::Stat& stat, Bool socket )
+        ULong _haListItemStat()
+        {
+            ULong stat_index = _GetStackULong(1);
+
+            // if index 0 try string
+            if(stat_index == 0)
+            {
+                const Item::Stat* stat = _list_item.FindStat(_GetStackString(1));
+
+                // if stat found
+                if(stat)
+                    _PushItemStat(*stat, false, true);
+                // else zeros
+                else
+                    _PushZeros(5);
+                return 4;
+            }
+            else
+            {
+                // if valid stat index
+                if(stat_index <= _list_item.stats.GetCount())
+                    _PushItemStat(_list_item.stats[stat_index - 1], false);
+                // else zeros
+                else
+                    _PushZeros(5);
+
+                return 5;
+            }
+        }
+
+        /**/
+        ULong _PushItemStat( const Item::Stat& stat, Bool socket, Bool name=true )
         {
             const Item::ValueCollection& values = stat.values;
             Index index;
 
             // name
-            _PushStackString(AH_COMBO_PSTAT[stat.id].name);
+            if(name)
+                _PushStackString(AH_COMBO_PSTAT[stat.id].name);
 
             // gem rank and type
             if(socket)

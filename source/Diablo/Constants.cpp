@@ -301,7 +301,7 @@ namespace Diablo
 
     // public
     //------------------------------------------------------------------------
-    ULong               GAME_ITEMREAD_DELAY = 50; // ms
+    ULong               GAME_ITEMREAD_DELAY = 60; // ms
 
     extern ULong        GAME_NEXTPAGE_DELAY = 50; // ms
 
