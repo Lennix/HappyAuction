@@ -18,6 +18,10 @@
 *.bin
 *.gz
 
+# Ignore log files and ini files
+*.log
+*.ini
+
 #
 # Top-level generic files
 #
@@ -27,18 +31,10 @@ TAGS
 !.gitattributes
 
 #
-# Build generated files
-#
-autom4te.cache
-
-#
 # Editors / debuggers / other output files
 #
 *~
 *.bak
-*.orig
-*.patch
-callgrind.out.*
 
 #
 # Git stuff
@@ -52,6 +48,10 @@ patches-*
 bin/*
 !bin/Lua
 
+*/Debug/*
+
+*/*/Debug/*
+
 #
 # VS temporary files
 #
@@ -64,12 +64,6 @@ bin/*
 ipch
 *.user
 
-#
-# CMake temporary files
-#
-CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
 
 #
 # OS specific
