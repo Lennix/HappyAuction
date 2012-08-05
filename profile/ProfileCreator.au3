@@ -60,7 +60,7 @@ Global $loginflag = False
 #endregion
 #region VARIABLES CONST
 ;version
-Const $version = "0"
+Const $version = "1"
 
 ;files
 Const $Ini = "Profiles.ini"
@@ -236,7 +236,7 @@ Func builtInputLayers()
 	$formData[9] = GUICtrlCreateInput("0", $guiInputX, 315, 200, 20)
 	;timeleft line
 	GUICtrlCreateLabel("Timeleft", 10, 348)
-	$formData[10] = GUICtrlCreateInput("d:hh:mm", $guiInputX, 345, 200, 20)
+	$formData[10] = GUICtrlCreateInput("Xd XXh XXm", $guiInputX, 345, 200, 20)
 	;min lvl, max lvl line
 	GUICtrlCreateLabel("min Lvl", 10, 378)
 	$formData[11] = GUICtrlCreateInput("1", $guiInputX, 375, 60, 20)
@@ -373,7 +373,8 @@ Func builtUpdateGUI()
 	GUICtrlCreateLabel("UPDATE " & ($version + 1), 100, 20)
 	GUISetState(@SW_SHOW, $updateGUI)
 	;changelog line
-	GUICtrlCreateEdit("Changelog" & @CRLF, 30, 50, 190, 80, BitOR($WS_VSCROLL, $ES_AUTOVSCROLL, $ES_READONLY))
+	$changelog = iGet("getChangelog")
+	GUICtrlCreateEdit($changelog[2][1], 30, 50, 190, 80, BitOR($WS_VSCROLL, $ES_AUTOVSCROLL, $ES_READONLY))
 	;restart button line
 	$restartButton = GUICtrlCreateButton("Restart", 100, 150, 50, 30)
 	GUICtrlSetState($restartButton, $GUI_DISABLE)
@@ -400,7 +401,7 @@ Func loadIni()
 	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
 	Local $arrayProfiles[$profileCounter]
 	For $i = 0 To UBound($arrayProfiles)-1
-		Local $arrayData[18]
+		Local $arrayData[19]
 		Local $arrayFilter[2]
 		Local $arrayStat[7]
 		Local $arrayValue[7]
@@ -426,11 +427,12 @@ Func loadIni()
 		$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
 		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
 		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", $error)
-		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", 1) ; NOT AVAILABLE YET SET 1
+		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", $error)
 		$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error)
 		$arrayData[15] = IniRead($Ini, "profile" & $i, "minlvl", $error)
 		$arrayData[16] = IniRead($Ini, "profile" & $i, "maxlvl", $error)
 		$arrayData[17] = IniRead($Ini, "profile" & $i, "queries", $error)
+		$arrayData[18] = IniRead($Ini, "profile" & $i, "timeleft", "")
 		$arrayProfiles[$i] = $arrayData
 	Next
 	Return $arrayProfiles
@@ -560,7 +562,7 @@ Func writeProfile($position, $edit = False)
 	IniWrite($Ini, "profile" & $position, "buyout", GUICtrlRead($formData[7]))
 	IniWrite($Ini, "profile" & $position, "priceflag", GUICtrlRead($formData[8]))
 	IniWrite($Ini, "profile" & $position, "startgold", GUICtrlRead($formData[9]))
-	IniWrite($Ini, "profile" & $position, "timeleft", GUICtrlRead($formData[10]))
+	If GUICtrlRead($formData[10]) <> "Xd XXh XXm" Then IniWrite($Ini, "profile" & $position, "timeleft", GUICtrlRead($formData[10]))
 	IniWrite($Ini, "profile" & $position, "minlvl", GUICtrlRead($formData[11]))
 	IniWrite($Ini, "profile" & $position, "maxlvl", GUICtrlRead($formData[12]))
 	IniWrite($Ini, "profile" & $position, "dpsarmor", GUICtrlRead($formData[13]))
@@ -602,7 +604,7 @@ Func loadProfile()
 				GUICtrlSetState ($formData[8], $GUI_CHECKED)
 			EndIf
 			GUICtrlSetData($formData[9], IniRead($Ini, "profile" & $i, "startgold", "0"))
-			GUICtrlSetData($formData[10], IniRead($Ini, "profile" & $i, "timeleft", "d:hh:mm"))
+			GUICtrlSetData($formData[10], IniRead($Ini, "profile" & $i, "timeleft", "Xd XXh XXm"))
 			GUICtrlSetData($formData[11], IniRead($Ini, "profile" & $i, "minlvl", "1"))
 			GUICtrlSetData($formData[12], IniRead($Ini, "profile" & $i, "maxlvl", "60"))
 			GUICtrlSetData($formData[13], IniRead($Ini, "profile" & $i, "dpsarmor", "0"))
@@ -737,6 +739,7 @@ Func checkInput()
 	Else
 		paintGUI($formData[9])
 	EndIf
+	#cs
 	;check timeleft for right syntax
 	If StringMid(GUICtrlRead($formData[10]), 2, 1) <> ":" Or StringMid(GUICtrlRead($formData[10]), 5, 1) <> ":" Then
 		GUICtrlSetData($formData[10], "d:hh:mm")
@@ -753,6 +756,7 @@ Func checkInput()
 			paintGUI($formData[10])
 		EndIf
 	EndIf
+	#ce
 	;check min and max level
 	If  Number(GUICtrlRead($formData[11])) < 1 Or Number(GUICtrlRead($formData[11])) > 60 Or Number(GUICtrlRead($formData[11])) > Number(GUICtrlRead($formData[12]))  Then
 		paintGUI($formData[11], False)
@@ -905,6 +909,8 @@ Func convertProfilesToLua()
 			WriteLua("haSettingsQueriesPerHour('" & IniRead($Ini, "main", "queries", 800) & "')")
 		EndIf
 
+		If IniRead($Ini, "main", "pagedelay", 0) > 0 Then WriteLua("haSettingsNextDelay('" & IniRead($Ini, "main", "pagedelay", 0) & "')")
+
 		If StringLen($prof[2]) > 0 Then WriteLua("haFilterClass('" & $prof[2] & "')")
 
 		; itemtype is automatically determined, just use subtype
@@ -1006,6 +1012,11 @@ Func convertProfilesToLua()
 		; check itemlevel
 		If $prof[13] > 0 Then
 			WriteLua("if ilvl > " & $prof[13] & " then found = found + 1 end")
+			$found += 1
+		EndIf
+
+		If StringLen($prof[18]) > 0 Then
+			WriteLua("if haParseTime(timeleft) >= haParseTime('" & $prof[18] & "') then found = found + 1 end")
 			$found += 1
 		EndIf
 
