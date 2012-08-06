@@ -1,13 +1,12 @@
-- fix haListSelect failing if called twice in a row
-- add haListItemStat(stat) to quickly get current item stat value by name: see readme
-- add current bid to haListItem(): see readme.
-- make the haSettingsListDelay() delay a factor in all operations not just reading list items. this should help those with cpu lag/low FPS reduces errors better. next update ill try to make this unncessary by throttling against FPS directly.
-
-
-- add readme warning to always check function status
+- actions are now throttled against framerate thereby increasing performance and reliability. this eliminates need to use haSettingsListDelay to increase stability.
+- deprecated haSettingsListDelay, use haSetGlobalDelay instead. default delay is now 0 ms. see README for details.
+- added haActionRelogin(name, password) allowing relogin on error. see README for details.
 
 
 
 CENTERED X -> RATIO CONVERSION FUNCTION USING 2560/1600 REZ:
 (x - (2560 / 2)) / 1600
 y / 1600
+
+
+
