@@ -1,4 +1,5 @@
 #pragma once
+#include <Diablo/Core/Trainer.hpp>
 #include <Diablo/Types.hpp>
 #include <Core/System/Process.hpp>
 #include <Core/System/Window.hpp>
@@ -11,6 +12,7 @@ namespace Diablo
     private:
         Window  _window;
         Process _process;
+        Trainer _trainer;
 
     public:
         /**/
@@ -25,18 +27,19 @@ namespace Diablo
         /**/
         Window& GetWindow();
         Process& GetProcess();
+        Trainer& GetTrainer();
 
         /**/
         void InputEnable( Bool enable );
 
         /**/
-        void MouseClick( ULong x, ULong y, ULong delay=0 );
-        void MouseClick( Double x, Double y, ULong delay=0 );
-        void MouseMove( Double x, Double y, ULong delay=0 );
+        void MouseClick( ULong x, ULong y );
+        void MouseClick( Double x, Double y, Bool centered=true );
+        void MouseMove( Double x, Double y );
         void MouseDrag( Double to_x, Double to_y, Double from_x, Double from_y, Bool random=true );
 
         /**/
-        void SendInput( const Char* text, Bool specials, ULong delay );
+        void SendInput( const Char* text, Bool specials );
         void SendInputText( Double x, Double y, const Char* format, ... );
 
         /**/
@@ -44,6 +47,7 @@ namespace Diablo
 
         /**/
         void Sleep( ULong min, ULong max=0 );
+        Bool SleepFrames( ULong count );
 
         /**/
         ULong X( Double x, Bool random=true );

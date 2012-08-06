@@ -10,7 +10,6 @@ namespace HappyAuction
     //------------------------------------------------------------------------
     extern const Char*  EXCEPTION_FATAL;
     extern const Char*  EXCEPTION_INITIALIZE;
-    extern const Char*  EXCEPTION_TRAIN;
     extern const Char*  EXCEPTION_SCRIPT;
 
     //------------------------------------------------------------------------

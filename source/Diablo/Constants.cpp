@@ -301,7 +301,7 @@ namespace Diablo
 
     // public
     //------------------------------------------------------------------------
-    ULong               GAME_ITEMREAD_DELAY = 60; // ms
+    ULong               GAME_ACTION_DELAY = 0; // ms
 
     extern ULong        GAME_NEXTPAGE_DELAY = 50; // ms
 
@@ -342,7 +342,7 @@ namespace Diablo
     const ComboBox AH_COMBO_RARITY          ( _options_rarity,      ACOUNT(_options_rarity) );
     const ComboBox AH_COMBO_PSTAT           ( _options_pstats,      ACOUNT(_options_pstats) );
 
-    const Coordinate AH_COMBO_COORDS[] = // indexed by AuctionTrainer::COMBO_*
+    const Coordinate AH_COMBO_COORDS[] = // indexed by Trainer::COMBO_*
     {
         { -0.354375, 0.4725 },
 
@@ -369,4 +369,11 @@ namespace Diablo
 
     const Coordinate AH_LIST_SORT_DPSARMOR =        { 0.234375, 0.25625 };
     const Coordinate AH_LIST_SORT_BUYOUT =          { 0.42625,  0.25625 };
+
+    const Coordinate AH_RELOGIN_CLEARERROR =        { 0,        0.5843 };
+    const Coordinate AH_RELOGIN_ACCOUNT =           { 0,        0.54885 };
+    const Coordinate AH_RELOGIN_PASSWORD =          { 0,        0.6523 };
+    const Coordinate AH_RELOGIN_LOGIN =             { 0,        0.79023 };
+    const Coordinate AH_RELOGIN_AUCTIONHOUSE =      { 0.20594,  0.59387 };
+    const Coordinate AH_RELOGIN_EQUIPMENT =         { -0.34195, 0.20977 };
 }

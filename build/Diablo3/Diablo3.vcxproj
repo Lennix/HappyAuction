@@ -84,12 +84,14 @@
     <ClCompile Include="..\..\source\Diablo\Core\AuctionTrainer.cpp" />
     <ClCompile Include="..\..\source\Diablo\Core\Game.cpp" />
     <ClCompile Include="..\..\source\Diablo\Constants.cpp" />
+    <ClCompile Include="..\..\source\Diablo\Core\Trainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\Diablo\Core\AuctionInterface.hpp" />
     <ClInclude Include="..\..\source\Diablo\Core\AuctionTrainer.hpp" />
     <ClInclude Include="..\..\source\Diablo\Core\Game.hpp" />
     <ClInclude Include="..\..\source\Diablo\Core\Support.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Trainer.hpp" />
     <ClInclude Include="..\..\source\Diablo\Type\ComboBox.hpp" />
     <ClInclude Include="..\..\source\Diablo\Type\Item.hpp" />
     <ClInclude Include="..\..\source\Diablo\Constants.hpp" />

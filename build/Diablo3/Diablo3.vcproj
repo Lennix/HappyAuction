@@ -160,14 +160,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\Diablo\Core\AuctionTrainer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\source\Diablo\Core\AuctionTrainer.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\source\Diablo\Core\Game.cpp"
 				>
 			</File>
@@ -177,6 +169,14 @@
 			</File>
 			<File
 				RelativePath="..\..\source\Diablo\Core\Support.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\Diablo\Core\Trainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\Diablo\Core\Trainer.hpp"
 				>
 			</File>
 		</Filter>

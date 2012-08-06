@@ -19,6 +19,9 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\Diablo\Constants.cpp" />
+    <ClCompile Include="..\..\source\Diablo\Core\Trainer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\Diablo\Core\AuctionInterface.hpp">
@@ -43,5 +46,8 @@
     <ClInclude Include="..\..\source\Diablo\Enums.hpp" />
     <ClInclude Include="..\..\source\Diablo\Root.hpp" />
     <ClInclude Include="..\..\source\Diablo\Types.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Trainer.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

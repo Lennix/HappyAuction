@@ -1,4 +1,4 @@
-HappyAuction v0.9.3
+HappyAuction v0.9.4
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ NOTES
   time. This is necessary to run a memory scan of Diablo 3 to detect
   everything HappyAuction needs to operate.
 - Do not use Video/Letterbox option
-- Do not enable either Video/Max FPS option or keep them above 50.
+- Performance depends on your FPS
 - HappyAuction has not been tested with RMAH.
 - Can operate while you do other things so long as the left filter side of
   the screen remains uncovered (if you are using a bot that uses filters).
@@ -73,10 +73,9 @@ SCRIPTING
   isnt much to learn to operate this bot besides loops if statements and
   some basic operators.
 - The main entry script is Lua/Main.lua.
-- Always check function return status! Yes they can fail sometimes due to low
-  framerates or system lag.
-- Performance is globally adjusted using haSettingsListDelay() which is high
-  by default.
+- Always check function return status! Yes they can fail sometimes like when
+  normal operation is interupted by some battle.net error.
+- Use haSetGlobalDelay() to slow everything down (fastest by default!)
 
 FUNCTIONS
 The following are the available functions in addition to standard LUA stuff
@@ -194,6 +193,15 @@ AUCTION ACTIONS:
     Toggles buyout column sorting order
     - status:   true if successful
 
+- haActionReLogin(name, password) -> status
+    Clears any disconnect errors, logs back in, and into the AH. Intended for
+    use with input limit errors to recover script operation. You will know
+    to use this when other script operations begin to fail such as
+    haActionSearch.
+    - name:     account name
+    - password: account password
+    - status:   true if successful
+
 
 UTILITIES:
 - haLog(message)
@@ -216,13 +224,13 @@ UTILITIES:
 
 
 SETTINGS:
-- haSettingsListDelay(delay)
-    ADVANCED: Sets the global delay between reading list items. The higher
-    your FPS the lower this can be set. At 55 FPS a value of 25 should be
-    fine. The default is 60 which has been tested against an FPS of around 30.
-    You can test this using the LogResults bot and ensure the TOTAL FOUND
-    items is 500 (end of log file).
-    - delay:    delay in milliseconds. range: 5-60000
+- haSetGlobalDelay(delay)
+    Adds a global delay to every future action taken. This includes delays
+    not available to haSleep such as the individual actions taken by
+    haActionBuyout. The actual delay will be a random amount between delay
+    and 2*delay. Useful for slowing your script down to avoid input limit
+    errors and being detected. Default value is 0.
+    - delay:    delay in milliseconds. range: 0-60000
 
 
 SOURCE LICENSE

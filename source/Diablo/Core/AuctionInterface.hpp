@@ -1,8 +1,8 @@
 #pragma once
 #include <Diablo/Root.hpp>
 #include <Diablo/Core/Game.hpp>
-#include <Diablo/Core/AuctionTrainer.hpp>
 #include <time.h>
+#include <Diablo/Core/Trainer.hpp>
 
 namespace Diablo
 {
@@ -14,9 +14,9 @@ namespace Diablo
         typedef IgnoreCollection::Iterator              IgnoreIterator;
 
     private:
-        Game&           _game;
-        AuctionTrainer  _trainer;
-        ULong           _search_delay;
+        Game&       _game;
+        Trainer&    _trainer;
+        ULong       _search_delay;
 
         clock_t         init;
         ULong           queries;
@@ -25,13 +25,6 @@ namespace Diablo
     public:
         /**/
         AuctionInterface( Game& game );
-
-        /**/
-        Game&   GetGame();
-
-        /**/
-        Bool    Train();
-        AuctionTrainer& GetTrainer();
 
         /**/
         Bool    WriteBuyout( Long buyout, Bool randomize=false );
@@ -54,6 +47,7 @@ namespace Diablo
         Bool    ActionListNextPage();
         Bool    ActionBid( Index index, ULong bid=0 );
         Bool    ActionBuyout( Index index );
+        Bool    ActionReLogin( const Char* account, const Char* password );
 
         /**/
         Bool    HoverListItem( Index index, Bool select );
@@ -65,6 +59,7 @@ namespace Diablo
         ULong   ParseTime( const Char* text );
         /**/
         void    HoverGround();
+        Bool    WaitFrames( ULong count );
 
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );

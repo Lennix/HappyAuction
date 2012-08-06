@@ -8,7 +8,8 @@ namespace Diablo
 {
     // public
     //------------------------------------------------------------------------
-    Game::Game()
+    Game::Game():
+        _trainer(_process)
     {
     }
 
@@ -33,7 +34,12 @@ namespace Diablo
                     // ensure input enabled
                     InputEnable(true);
 
-                    return true;
+                    // check if already trained
+                    if(_trainer.CheckTrained())
+                        return true;
+
+                    // run trainer
+                    return _trainer.Train();
                 }
             }
         }
@@ -54,28 +60,36 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Trainer& Game::GetTrainer()
+    {
+        return _trainer;
+    }
+
+    //------------------------------------------------------------------------
     void Game::InputEnable( Bool enable )
     {
         _window.InputEnable(enable);
     }
 
     //------------------------------------------------------------------------
-    void Game::MouseClick( ULong x, ULong y, ULong delay )
+    void Game::MouseClick( ULong x, ULong y )
     {
         _window.SendMouseButton(x, y);
-        Sleep(delay, delay * 2);
+        SleepFrames(2);
+        Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
     }
 
-    void Game::MouseClick( Double x, Double y, ULong delay )
+    void Game::MouseClick( Double x, Double y, Bool centered )
     {
-        MouseClick(X(x), Y(y), delay);
+        MouseClick(centered ? X(x) : Y(x), Y(y));
     }
 
     //------------------------------------------------------------------------
-    void Game::MouseMove( Double x, Double y, ULong delay )
+    void Game::MouseMove( Double x, Double y )
     {
         _window.SendMouseMove(X(x), Y(y));
-        Sleep(delay, delay * 2);
+        SleepFrames(2);
+        Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
     }
 
     //------------------------------------------------------------------------
@@ -87,10 +101,11 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    void Game::SendInput( const Char* text, Bool specials, ULong delay )
+    void Game::SendInput( const Char* text, Bool specials )
     {
         _window.SendInput(text, specials);
-        Sleep(delay, delay * 2);
+        SleepFrames(2);
+        Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
     }
 
     //------------------------------------------------------------------------
@@ -109,20 +124,20 @@ namespace Diablo
         va_end(args);
     
         // select input
-        MouseClick(x, y, GAME_ITEMREAD_DELAY);
+        MouseClick(x, y);
 
         // if not empty string
         if(*out)
         {
             // send special to select-all old text to be replaced by new text
-            SendInput("^CA^c", true, GAME_ITEMREAD_DELAY);
+            SendInput("^CA^c", true);
 
             // send new text
-            SendInput(out, false, GAME_ITEMREAD_DELAY);
+            SendInput(out, false);
         }
         // else send special to select-all old text and delete
         else
-            SendInput("^CA^D^c", true, GAME_ITEMREAD_DELAY);
+            SendInput("^CA^D^c", true);
 
         // enable input
         InputEnable(true);
@@ -135,10 +150,10 @@ namespace Diablo
         InputEnable(false);
 
         // select input
-        MouseClick(x, y, GAME_ITEMREAD_DELAY);
+        MouseClick(x, y);
 
         // copy text to clipboard
-        SendInput("^CAC^c", true, GAME_ITEMREAD_DELAY);
+        SendInput("^CAC^c", true);
 
         // get clipboard text
         Bool status = System::GetClipBoard(text, limit);
@@ -164,6 +179,35 @@ namespace Diablo
 
             Thread::Sleep(delay);
         }
+    }
+
+    //------------------------------------------------------------------------
+    Bool Game::SleepFrames( ULong count )
+    {
+        ULong last_count;
+
+        // read last count
+        if(!_trainer.ReadFrameCount(last_count))
+            return false;
+
+        // iterate for each frame
+        for( Index i = 0; i < count; i++ )
+        {
+            // wait for frame to increment
+            ULong current_count;
+            do
+            {
+                if(!_trainer.ReadFrameCount(current_count))
+                    return false;
+            }
+            while(current_count == last_count);
+            last_count = current_count;
+
+            // minimum delay
+            Sleep(1);
+        }
+
+        return true;
     }
 
     //------------------------------------------------------------------------
