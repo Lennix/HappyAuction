@@ -175,7 +175,7 @@ namespace Diablo
 
     ULong Game::Y( Double y, Bool random )
     {
-        ULong out = (ULong)(y * (Double)_window.GetHeight());
+        ULong out = (ULong)((y * (Double)_window.GetHeight()) + 0.5);
         return random ? _RandomizeXY(out) : out;
     }
 

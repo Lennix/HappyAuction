@@ -30,24 +30,27 @@ namespace HappyAuction
         /**/
         void Run()
         {
+            Bool error = false;
             _runner.Start();
             running = true;
-            while (running)
+            while (running && !error)
             {
                 if (CheckAuth())
                     Thread::Sleep(60000);
                 else
-                    running = false;
+                    error = true;
             }
             _runner.Stop();
-            System::Message("Session expired");
+            if (error)
+                System::Message("Session expired");
         }
 
         /**/
         void Stop()
         {
             _runner.Stop();
-            Thread::Wait();
+            running = false;
+            //Thread::Wait();
         }
 
         Bool CheckAuth()
