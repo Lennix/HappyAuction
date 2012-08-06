@@ -84,6 +84,7 @@ Const $guiInputX = 100
 #endregion
 #region CORE
 #region CORE START
+FileDelete($Bat)
 checkIniFile()
 checkLoginData()
 #endregion
@@ -1179,16 +1180,17 @@ EndFunc
 #region BATCHFILE
 Func executeBatchFile()
 	FileDelete($Bat)
-	Local $batchContent = 	"@echo off"& @CRLF _
-							"ping localhost -n 2 > nul" & @CRLF _ ;not sure what you're doing here. Giving the script time to exit?
-							":loop" & @CRLF _ ;specify the start of a zone
-							'del /Q "' & @ScriptFullPath & '"' & @CRLF _ ;the quotes are needed for long filepaths, and filepaths with spaces. The @SciptfullPath is for flexibility
-                            'if exist "' & @ScriptFullPath & '" goto loop' & @CRLF _ ;if the delete failed, try again
-                            'move "' & @ScriptFullPath & '.new" "' & @ScriptFullPath & '"' & @CRLF _ ;this is why I changed the new file's name.
-                            'start "' & @ScriptFullPath & '"' & @CRLF _
-                            'del /Q "' & $batchPath & '"' & @CRLF _
-                            "exit"
+	Local $batchContent = 	"@echo off" & @CRLF & _
+							":loop" & @CRLF & _
+							"del /Q ProfileCreator.exe" & @CRLF & _
+							"if exist ProfileCreator.exe goto loop" & @CRLF & _
+							"if exist ProfileCreator.exe.new REN ProfileCreator.exe.new ProfileCreator.exe" & @CRLF & _
+							"if exist HappyAuctionAdvanced.exe.new del /Q HappyAuctionAdvanced.exe" & @CRLF & _
+							"if exist HappyAuctionAdvanced.exe.new REN HappyAuctionAdvanced.exe.new HappyAuctionAdvanced.exe" & @CRLF & _
+							"start ProfileCreator.exe" & @CRLF & _
+							"exit"
 	FileWrite($Bat, $batchContent)
-	;Run($Bat, "", @SW_HIDE)
+	Run($Bat, "", @SW_HIDE)
+	quit()
 EndFunc
 #endregion
