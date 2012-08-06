@@ -403,43 +403,45 @@ EndFunc
 #region INI
 Func loadIni()
 	$profileCounter = IniRead($Ini, "main", "profilecounter", $error)
-	Local $arrayProfiles[$profileCounter]
-	For $i = 0 To UBound($arrayProfiles)-1
-		Local $arrayData[19]
-		Local $arrayFilter[2]
-		Local $arrayStat[7]
-		Local $arrayValue[7]
-		$fcount = 0
-		For $t = 1 To 6
-			$arrayStat[$t] = IniRead($Ini, "profile" & $i, "filter" & $t, $error)
-			If $arrayStat[$t] <> $error And $arrayStat[$t] <> "stat" Then $fcount += 1
-			$arrayValue[$t] = IniRead($Ini, "profile" & $i, "value" & $t, $error)
+	If $profileCounter <> "0" Then
+		Local $arrayProfiles[$profileCounter]
+		For $i = 0 To UBound($arrayProfiles)-1
+			Local $arrayData[19]
+			Local $arrayFilter[2]
+			Local $arrayStat[7]
+			Local $arrayValue[7]
+			$fcount = 0
+			For $t = 1 To 6
+				$arrayStat[$t] = IniRead($Ini, "profile" & $i, "filter" & $t, $error)
+				If $arrayStat[$t] <> $error And $arrayStat[$t] <> "stat" Then $fcount += 1
+				$arrayValue[$t] = IniRead($Ini, "profile" & $i, "value" & $t, $error)
+			Next
+			$arrayStat[0] = $fcount
+			$arrayFilter[0] = $arrayStat
+			$arrayFilter[1] = $arrayValue
+			$arrayData[0] = $arrayFilter
+			$arrayData[1] = IniRead($Ini, "profile" & $i, "name", $error)
+			$arrayData[2] = IniRead($Ini, "profile" & $i, "class", $error)
+			$arrayData[3] = IniRead($Ini, "profile" & $i, "itemtype", $error)
+			$arrayData[4] = IniRead($Ini, "profile" & $i, "subtype", $error)
+			$arrayData[5] = IniRead($Ini, "profile" & $i, "rarity", $error)
+			$arrayData[6] = IniRead($Ini, "profile" & $i, "price", $error)
+			$arrayData[7] = IniRead($Ini, "profile" & $i, "bid", $error)
+			$arrayData[8] = IniRead($Ini, "profile" & $i, "buyout", $error)
+			$arrayData[9] = IniRead($Ini, "profile" & $i, "priceflag", $error)
+			$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
+			$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
+			$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", $error)
+			$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", $error)
+			$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error)
+			$arrayData[15] = IniRead($Ini, "profile" & $i, "minlvl", $error)
+			$arrayData[16] = IniRead($Ini, "profile" & $i, "maxlvl", $error)
+			$arrayData[17] = IniRead($Ini, "profile" & $i, "queries", $error)
+			$arrayData[18] = IniRead($Ini, "profile" & $i, "timeleft", "")
+			$arrayProfiles[$i] = $arrayData
 		Next
-		$arrayStat[0] = $fcount
-		$arrayFilter[0] = $arrayStat
-		$arrayFilter[1] = $arrayValue
-		$arrayData[0] = $arrayFilter
-		$arrayData[1] = IniRead($Ini, "profile" & $i, "name", $error)
-		$arrayData[2] = IniRead($Ini, "profile" & $i, "class", $error)
-		$arrayData[3] = IniRead($Ini, "profile" & $i, "itemtype", $error)
-		$arrayData[4] = IniRead($Ini, "profile" & $i, "subtype", $error)
-		$arrayData[5] = IniRead($Ini, "profile" & $i, "rarity", $error)
-		$arrayData[6] = IniRead($Ini, "profile" & $i, "price", $error)
-		$arrayData[7] = IniRead($Ini, "profile" & $i, "bid", $error)
-		$arrayData[8] = IniRead($Ini, "profile" & $i, "buyout", $error)
-		$arrayData[9] = IniRead($Ini, "profile" & $i, "priceflag", $error)
-		$arrayData[10] = IniRead($Ini, "profile" & $i, "startgold", $error)
-		$arrayData[11] = IniRead($Ini, "profile" & $i, "logflag", $error)
-		$arrayData[12] = IniRead($Ini, "profile" & $i, "dpsarmor", $error)
-		$arrayData[13] = IniRead($Ini, "profile" & $i, "itemlevel", $error)
-		$arrayData[14] = IniRead($Ini, "profile" & $i, "legendaryset", $error)
-		$arrayData[15] = IniRead($Ini, "profile" & $i, "minlvl", $error)
-		$arrayData[16] = IniRead($Ini, "profile" & $i, "maxlvl", $error)
-		$arrayData[17] = IniRead($Ini, "profile" & $i, "queries", $error)
-		$arrayData[18] = IniRead($Ini, "profile" & $i, "timeleft", "")
-		$arrayProfiles[$i] = $arrayData
-	Next
-	Return $arrayProfiles
+		Return $arrayProfiles
+	EndIf
 EndFunc
 
 Func checkLoginData()
@@ -643,14 +645,14 @@ Func deleteProfile($position)
 	$mainList = StringReplace($mainList, "|" & $tempProfile, "")
 	_GUICtrlComboBox_ResetContent($mainDropDown)
 	GUICtrlSetData($mainDropDown, $mainList)
-	;update ini profiles
+	;update ini profilesf
 	If $position + 1 < $profileCounter Then
 		For $i = $position To $profileCounter - 2
 			IniRenameSection($Ini, "profile" & ($i + 1), "profile" & $i)
 		Next
 	EndIf
 	;update profile counter
-	$profileCounter -= 1
+	$profileCounter = Number($profileCounter) - 1
 	IniWrite($Ini, "main", "profilecounter", $profileCounter)
 EndFunc
 
