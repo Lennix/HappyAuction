@@ -53,6 +53,7 @@ namespace Diablo
     extern const ComboBox       AH_COMBO_RARITY;
     extern const ComboBox       AH_COMBO_PSTAT;
     extern const Coordinate     AH_COMBO_COORDS[];
+    extern const Coordinate     AH_COMBO_OFFSET;
     extern const Coordinate     AH_BUTTON_SEARCH;
     extern const Coordinate     AH_BUTTON_BID;
     extern const Coordinate     AH_BUTTON_BUYOUT;

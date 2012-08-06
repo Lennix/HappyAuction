@@ -18,8 +18,9 @@ namespace Diablo
         AuctionTrainer  _trainer;
         ULong           _search_delay;
 
-        clock_t init;
+        clock_t         init;
         ULong           queries;
+        ULong           use_color;
 
     public:
         /**/
@@ -67,7 +68,7 @@ namespace Diablo
 
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );
-        Bool    _WriteComboRefresh( Id option_id );
+        Bool    _WriteComboRefresh( Id option_id, Index index = INVALID_INDEX);
 
         Bool    _CalculateComboIndex( Index& option_index, Id combo_id, Id option_id );
         Id      _OptionIndexToId( Index option_index, Id group_id, const ComboBox& box ) const;

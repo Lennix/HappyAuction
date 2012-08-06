@@ -50,6 +50,11 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::Train()
     {
+        TextString path;
+        GetCurrentDirectory(sizeof(path), path);
+        strcat(path, "\\Profiles.ini");
+        use_color = GetPrivateProfileInt("main", "usecolor", 0, path);
+
         // check if already trained
         if(_trainer.CheckTrained())
             return true;
@@ -426,7 +431,7 @@ namespace Diablo
 
     // private
     //------------------------------------------------------------------------
-    Bool AuctionInterface::_WriteComboBox( Id combo_id, Id option_id )
+    Bool AuctionInterface::_WriteComboBox( Id combo_id, Id option_id)
     {
         assert(combo_id >= AuctionTrainer::COMBO_RARITY && combo_id <= AuctionTrainer::COMBO_PSTAT2);
         Index   option_index;
@@ -442,7 +447,11 @@ namespace Diablo
             if(_trainer.WriteComboBox(combo_id, option_index))
             {
                 // visual refresh
-                if(_WriteComboRefresh(combo_id))
+                if(use_color > 0 && _WriteComboRefresh(combo_id))
+                    status = true;
+
+                // color find failed or wasn't used
+                if (!status && _WriteComboRefresh(combo_id, option_index))
                     status = true;
             }
         }
@@ -454,26 +463,54 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::_WriteComboRefresh( Id combo_id )
+    Bool AuctionInterface::_WriteComboRefresh( Id combo_id, Index index)
     {
         const Coordinate&   coordinate =    AH_COMBO_COORDS[combo_id];
-        Window&             window =        _game.GetWindow();
         ULong               y =             _game.Y(coordinate.y, false);
-        ULong               height =        window.GetHeight() - y;
-        Window::Color*      pixels =        new Window::Color[height];
-        ULong               h;
+        ULong               h =             0;
 
         // open dropdown
         _game.MouseClick(coordinate.x, coordinate.y, GAME_ITEMREAD_DELAY * 3);
 
-        // image scan to selection
-        window.CaptureScreen(pixels, _game.X(coordinate.x, false), y, 1, height);
+        // do screen method with INVALID_INDEX
+        if (index == INVALID_INDEX)
+        {
+            Window&             window =        _game.GetWindow();
+            ULong               height =        window.GetHeight() - y;
+            Window::Color*      pixels =        new Window::Color[height];
 
-        // determine selection y
-        for( h = 0; h < height && (pixels[h].r <= (pixels[h].g + pixels[h].b)); h++ );
-        delete[] pixels;
-        if(h == height)
-            return false;
+            // image scan to selection
+            window.CaptureScreen(pixels, _game.X(coordinate.x, false), y, 1, height);
+
+            // determine selection y
+            for( h = 0; h < height && (pixels[h].r <= (pixels[h].g + pixels[h].b)); h++ );
+            delete[] pixels;
+            if(h == height)
+                return false;
+        }
+        else
+        {
+            ULong count;
+            Index tmp;
+            _trainer.ReadComboBox(combo_id, tmp, count);
+            if (tmp != index)
+                return false; // somethings wrong
+
+            if (combo_id == AuctionTrainer::COMBO_SECONDARY && count > 11 && index > 0)
+                h = index;
+            else if (combo_id >= AuctionTrainer::COMBO_PSTAT0)
+            {
+                if (index > count - 10)
+                    h = index - (count - 11);
+                else
+                    h = 1;
+            }
+
+            if (h == 0) // either something went wrong or h not set yet
+                h = index + 1;
+
+            h *= _game.Y(AH_COMBO_OFFSET.y, false); // pixel per entry
+        }
 
         // click selection
         _game.MouseClick(_game.X(coordinate.x), y + h + 10, GAME_ITEMREAD_DELAY);

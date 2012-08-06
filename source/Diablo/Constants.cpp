@@ -355,6 +355,8 @@ namespace Diablo
         { -0.4375, 0.62375 }
     };
 
+    const Coordinate AH_COMBO_OFFSET =              { 0,        0.029869 };
+
     const Coordinate AH_BUTTON_SEARCH =             { -0.4075,  0.77625 };
     const Coordinate AH_BUTTON_BID =                { 0.229375, 0.813125 };
     const Coordinate AH_BUTTON_BUYOUT =             { 0.4475,   0.813125 };
