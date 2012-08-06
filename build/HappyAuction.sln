@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bots", "Bots", "{731DD03F-5
 		..\bin\Lua\Bots\SnipeDps.lua = ..\bin\Lua\Bots\SnipeDps.lua
 		..\bin\Lua\Bots\Test1.lua = ..\bin\Lua\Bots\Test1.lua
 		..\bin\Lua\Bots\Test2.lua = ..\bin\Lua\Bots\Test2.lua
+		..\bin\Lua\Bots\Test3.lua = ..\bin\Lua\Bots\Test3.lua
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{BEBB7AF7-E0F1-43D1-ACEB-6BD56CA94018}"

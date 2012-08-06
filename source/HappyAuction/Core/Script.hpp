@@ -38,10 +38,6 @@ namespace HappyAuction
                 if(!_game.Initialize())
                     throw EXCEPTION_INITIALIZE;
 
-                // train auction interface
-                if(!_ahi.Train())
-                    throw EXCEPTION_TRAIN;
-
                 // start lua script
                 if(!Lua::Start(SCRIPT_PATH))
                     System::Message(EXCEPTION_SCRIPT, Lua::GetError());
@@ -75,16 +71,17 @@ namespace HappyAuction
             Bool        status;
             Index       index;
             Long        snumber;
-            const Char* pstring;
+            const Char* pstring1;
+            const Char* pstring2;
             TextString  string;
 
             switch(id)
             {
             // haFilterType(id) -> status
             case SCRIPT_HAFILTERTYPE:
-                pstring = _GetStackString(1);
-                status = pstring && _ahi.WriteFilterType(
-                    Tools::Conform(static_cast<FilterSecondaryId>(AH_COMBO_SECONDARY.Find(pstring)), FILTER_SEC_1H_ALL, FILTER_SEC_FOLLOWER_TEMPLAR));
+                pstring1 = _GetStackString(1);
+                status = pstring1 && _ahi.WriteFilterType(
+                    Tools::Conform(static_cast<FilterSecondaryId>(AH_COMBO_SECONDARY.Find(pstring1)), FILTER_SEC_1H_ALL, FILTER_SEC_FOLLOWER_TEMPLAR));
                 _PushStackBool(status);
                 return 1;
 
@@ -102,17 +99,17 @@ namespace HappyAuction
 
             // haFilterRarity(id) -> status
             case SCRIPT_HAFILTERRARITY:
-                pstring = _GetStackString(1);
-                status = pstring && _ahi.WriteFilterRarity(Tools::Conform(static_cast<FilterRarityId>(AH_COMBO_RARITY.Find(pstring)), EQRARITY_ALL, EQRARITY_LEGENDARY));
+                pstring1 = _GetStackString(1);
+                status = pstring1 && _ahi.WriteFilterRarity(Tools::Conform(static_cast<FilterRarityId>(AH_COMBO_RARITY.Find(pstring1)), EQRARITY_ALL, EQRARITY_LEGENDARY));
                 _PushStackBool(status);
                 return 1;
 
             // haFilterStat(index, id, value) -> status
             case SCRIPT_HAFILTERSTAT:
-                pstring = _GetStackString(2);
-                status = pstring && _ahi.WriteFilterStat(
+                pstring1 = _GetStackString(2);
+                status = pstring1 && _ahi.WriteFilterStat(
                     Tools::Conform<Index>(_GetStackULong(1), 1, AH_INPUT_PSTAT_LIMIT) - 1,
-                    Tools::Conform(static_cast<ItemStatId>(AH_COMBO_PSTAT.Find(pstring)), ITEM_STAT_NONE, ITEM_STAT_REDUCEDLEVELREQUIREMENT),
+                    Tools::Conform(static_cast<ItemStatId>(AH_COMBO_PSTAT.Find(pstring1)), ITEM_STAT_NONE, ITEM_STAT_REDUCEDLEVELREQUIREMENT),
                     Tools::Conform<ULong>(_GetStackULong(3), 0, ITEM_STAT_VALUE_MAX));
                 _PushStackBool(status);
                 return 1;
@@ -130,9 +127,9 @@ namespace HappyAuction
             // haFilterUnique(name) -> status
             // haFilterUnique() -> name
             case SCRIPT_HAFILTERUNIQUE:
-                pstring = _GetStackString(1);
-                if(pstring)
-                    _PushStackBool(_ahi.WriteUnique(pstring));
+                pstring1 = _GetStackString(1);
+                if(pstring1)
+                    _PushStackBool(_ahi.WriteUnique(pstring1));
                 else
                     _PushStackString(_ahi.ReadUnique(string) ? string : "");
                 return 1;
@@ -168,6 +165,17 @@ namespace HappyAuction
                 _PushStackBool(status);
                 return 1;
 
+            // haActionReLogin(name, password) -> status
+            case SCRIPT_HAACTIONRELOGIN:
+                pstring1 = _GetStackString(1);
+                pstring2 = _GetStackString(2);
+                if(pstring1 && pstring1)
+                    status = _ahi.ActionReLogin(pstring1, pstring2);
+                else
+                    status = false;
+                _PushStackBool(status);
+                return 1;
+
             // haListSelect(index) -> status
             case SCRIPT_HALISTSELECT:
                 return _haListSelect();
@@ -199,9 +207,9 @@ namespace HappyAuction
 
             // haLog(message)
             case SCRIPT_HALOG:
-                pstring = _GetStackString(1);
-                if(pstring)
-                    Tools::Log(LOG_USER, "%s\n", pstring);
+                pstring1 = _GetStackString(1);
+                if(pstring1)
+                    Tools::Log(LOG_USER, "%s\n", pstring1);
                 return 0;
 
             // haBeep()
@@ -217,14 +225,17 @@ namespace HappyAuction
 
             // haAlert(message)
             case SCRIPT_HAALERT:
-                pstring = _GetStackString(1);
-                if(pstring)
-                    System::Message("%s", pstring);
+                pstring1 = _GetStackString(1);
+                if(pstring1)
+                    System::Message("%s", pstring1);
                 return 0;
 
             // haSettingsListDelay(delay)
+            // haSetGlobalDelay(delay)
             case SCRIPT_HASETTINGSLISTDELAY:
-                GAME_ITEMREAD_DELAY = Tools::Conform(_GetStackULong(1), GAME_ITEMREAD_DELAY_MIN, GAME_ITEMREAD_DELAY_MAX);
+                //DEPRECATED
+            case SCRIPT_HASETGLOBALDELAY:
+                GAME_ACTION_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_ACTION_DELAY_MAX);
                 return 0;
 
             default:

@@ -11,10 +11,8 @@ namespace HappyAuction
     const Char* EXCEPTION_INITIALIZE =  "Open Fail\n\nPossible Causes:\n"
                                         "- Diablo 3 not running\n"
                                         "- Diablo 3 minimized\n"
-                                        "- Not latest HappyAuction";
-    const Char* EXCEPTION_TRAIN =       "Training Fail\n\nPossible Causes:\n"
                                         "- Not at AuctionHouse/Search/Equipment\n"
-                                        "- Not latest HappyAuction";
+                                        "- Not latest HappyAuction\n";
     const Char* EXCEPTION_SCRIPT =      "LUA Error:\n%s";
     
 
@@ -34,6 +32,7 @@ namespace HappyAuction
         "haActionSearch",
         "haActionSortDpsArmor",
         "haActionSortBuyout",
+        "haActionReLogin",
 
         "haListSelect",
         "haListNext",
@@ -46,6 +45,7 @@ namespace HappyAuction
         "haSleep",
         "haAlert",
 
-        "haSettingsListDelay",
+        "haSettingsListDelay",//DEPRECATED
+        "haSetGlobalDelay",
     };
 }

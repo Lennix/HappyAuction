@@ -1,6 +1,6 @@
 #pragma once
 #include <Diablo/Core/AuctionInterface.hpp>
-#include <Diablo/Core/AuctionTrainer.hpp>
+#include <Diablo/Core/Trainer.hpp>
 
 namespace Diablo
 {
@@ -35,31 +35,8 @@ namespace Diablo
     //------------------------------------------------------------------------
     AuctionInterface::AuctionInterface( Game& game ):
         _game(game),
-        _trainer(game.GetProcess())
+        _trainer(game.GetTrainer())
     {
-    }
-
-    //------------------------------------------------------------------------
-    Game& AuctionInterface::GetGame()
-    {
-        return _game;
-    }
-
-    //------------------------------------------------------------------------
-    Bool AuctionInterface::Train()
-    {
-        // check if already trained
-        if(_trainer.CheckTrained())
-            return true;
-
-        // run trainer
-        return _trainer.Train();
-    }
-
-    //------------------------------------------------------------------------
-    AuctionTrainer& AuctionInterface::GetTrainer()
-    {
-        return _trainer;
     }
 
     //------------------------------------------------------------------------
@@ -117,7 +94,7 @@ namespace Diablo
         FilterPrimaryId requested_primary_id = _SecondaryToPrimaryId(secondary_id);
 
         // read character id
-        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_CHARACTER, reinterpret_cast<Index&>(char_id), option_count) || option_count <= FILTER_CHAR_COUNT)
+        if(!_trainer.ReadComboBox(Trainer::COMBO_CHARACTER, reinterpret_cast<Index&>(char_id), option_count) || option_count <= FILTER_CHAR_COUNT)
             return false;
         char_option_offset = (option_count - FILTER_CHAR_COUNT);
 
@@ -127,21 +104,21 @@ namespace Diablo
             char_id = static_cast<FilterCharId>(Tools::FirstBitIndex(chars_allowed));
 
             // select character
-            if(!_WriteComboBox(AuctionTrainer::COMBO_CHARACTER, char_id + char_option_offset))
+            if(!_WriteComboBox(Trainer::COMBO_CHARACTER, char_id + char_option_offset))
                 return false;
         }
 
         // read primary id
-        if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_PRIMARY, reinterpret_cast<Index&>(primary_id), option_count))
+        if(!_trainer.ReadComboBox(Trainer::COMBO_PRIMARY, reinterpret_cast<Index&>(primary_id), option_count))
             return false;
 
         // select requested primary id if different from read primary id
         if(primary_id != requested_primary_id)
-            if(!_WriteComboBox(AuctionTrainer::COMBO_PRIMARY, requested_primary_id))
+            if(!_WriteComboBox(Trainer::COMBO_PRIMARY, requested_primary_id))
                 return false;
 
         // select secondary
-        if(!_WriteComboBox(AuctionTrainer::COMBO_SECONDARY, secondary_id))
+        if(!_WriteComboBox(Trainer::COMBO_SECONDARY, secondary_id))
             return false;
 
         return true;
@@ -170,14 +147,14 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterRarity( FilterRarityId id )
     {
-        return _WriteComboBox(AuctionTrainer::COMBO_RARITY, id);
+        return _WriteComboBox(Trainer::COMBO_RARITY, id);
     }
 
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterStat( Index index, ItemStatId id, ULong value )
     {
         // select stat
-        if(!_WriteComboBox(AuctionTrainer::COMBO_PSTAT0 + index, id))
+        if(!_WriteComboBox(Trainer::COMBO_PSTAT0 + index, id))
             return false;
 
         // set value
@@ -190,7 +167,7 @@ namespace Diablo
     Bool AuctionInterface::ActionSearch()
     {
         // hit search button
-        _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y, GAME_ITEMREAD_DELAY);
+        _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y);
 
         // wait if requested
         return _WaitSearch();
@@ -200,7 +177,7 @@ namespace Diablo
     Bool AuctionInterface::ActionListSortDpsArmor()
     {
         // click sort column header
-        _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y, GAME_ITEMREAD_DELAY);
+        _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y);
 
         return _WaitSearch();
     }
@@ -209,7 +186,7 @@ namespace Diablo
     Bool AuctionInterface::ActionListSortBuyout()
     {
         // click sort column header
-        _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y, GAME_ITEMREAD_DELAY);
+        _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y);
 
         return _WaitSearch();
     }
@@ -224,13 +201,13 @@ namespace Diablo
         _game.InputEnable(false);
 
         // use opportunity to close any popups
-        //_game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, GAME_ITEMREAD_DELAY);
+        //_game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
 
         // check listing status
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
             // hit next page button
-            _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y, GAME_ITEMREAD_DELAY);
+            _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y);
 
             // wait search
             if(_WaitSearch())
@@ -252,19 +229,19 @@ namespace Diablo
         HoverListItem(index, true);
 
         // hit bid button
-        _game.MouseClick(AH_BUTTON_BID.x, AH_BUTTON_BID.y, GAME_ITEMREAD_DELAY * 2);
+        _game.MouseClick(AH_BUTTON_BID.x, AH_BUTTON_BID.y);
 
         // set bid amount if any
         if( bid != 0 )
             _game.SendInputText(AH_INPUT_BID.x, AH_INPUT_BID.y, "%u", bid);
 
         // hit confirm button
-        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y, GAME_ITEMREAD_DELAY * 2);
+        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y);
 
         // hit ok button until done
         do
         {
-            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, GAME_ITEMREAD_DELAY * 2);
+            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
         }
         while(_trainer.ReadPopupStatus(status) && status);
 
@@ -280,15 +257,15 @@ namespace Diablo
         HoverListItem(index, true);
 
         // hit buyout button
-        _game.MouseClick(AH_BUTTON_BUYOUT.x, AH_BUTTON_BUYOUT.y, GAME_ITEMREAD_DELAY * 2);
+        _game.MouseClick(AH_BUTTON_BUYOUT.x, AH_BUTTON_BUYOUT.y);
 
         // hit confirm button
-        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y, GAME_ITEMREAD_DELAY * 2);
+        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y);
 
         // hit ok button until done
         do
         {
-            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y, GAME_ITEMREAD_DELAY * 2);
+            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
         }
         while(_trainer.ReadPopupStatus(status) && status);
 
@@ -302,11 +279,13 @@ namespace Diablo
         Double y = AH_LIST_BEGIN.y + (AH_LIST_ICON.y / 2) + index * AH_LIST_ICON.y;
 
         // hover item to update current item tooltip
-        _game.MouseMove(x, y, GAME_ITEMREAD_DELAY);
+        _game.MouseMove(x, y);
 
         // also click to select (for use with bid/buyout)
         if(select)
-            _game.MouseClick(x, y, GAME_ITEMREAD_DELAY);
+        {
+            _game.MouseClick(x, y);
+        }
 
         return true;
     }
@@ -347,17 +326,51 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool AuctionInterface::ActionReLogin( const Char* account, const Char* password )
+    {
+        // clear errors
+        _game.MouseClick(AH_RELOGIN_CLEARERROR.x, AH_RELOGIN_CLEARERROR.y);
+
+        // clear error delay
+        _game.Sleep(AH_RELOGIN_CLEARERROR_DELAY);
+
+        // set account
+        _game.SendInputText(AH_RELOGIN_ACCOUNT.x, AH_RELOGIN_ACCOUNT.y, account);
+
+        // set password
+        _game.SendInputText(AH_RELOGIN_PASSWORD.x, AH_RELOGIN_PASSWORD.y, password);
+
+        // login
+        _game.MouseClick(AH_RELOGIN_LOGIN.x, AH_RELOGIN_LOGIN.y);
+
+        // login delay
+        _game.Sleep(AH_RELOGIN_LOGIN_DELAY);
+
+        // auction house
+        _game.MouseClick(AH_RELOGIN_AUCTIONHOUSE.x, AH_RELOGIN_AUCTIONHOUSE.y, false);
+
+        // auction house delay
+        _game.Sleep(AH_RELOGIN_AUCTIONHOUSE_DELAY);
+
+        // click search/equipment
+        _game.MouseClick(AH_RELOGIN_EQUIPMENT.x, AH_RELOGIN_EQUIPMENT.y);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     void AuctionInterface::HoverGround()
     {
         // hover to reset another hover
-        _game.MouseMove(0, 0.005, GAME_ITEMREAD_DELAY);
+        _game.MouseMove(0, 0.005);
+
     }
 
     // private
     //------------------------------------------------------------------------
     Bool AuctionInterface::_WriteComboBox( Id combo_id, Id option_id )
     {
-        assert(combo_id >= AuctionTrainer::COMBO_RARITY && combo_id <= AuctionTrainer::COMBO_PSTAT2);
+        assert(combo_id >= Trainer::COMBO_RARITY && combo_id <= Trainer::COMBO_PSTAT2);
         Index   option_index;
         Bool    status = false;
 
@@ -393,7 +406,7 @@ namespace Diablo
         ULong               h;
 
         // open dropdown
-        _game.MouseClick(coordinate.x, coordinate.y, GAME_ITEMREAD_DELAY * 3);
+        _game.MouseClick(coordinate.x, coordinate.y);
 
         // image scan to selection
         window.CaptureScreen(pixels, _game.X(coordinate.x, false), y, 1, height);
@@ -405,7 +418,7 @@ namespace Diablo
             return false;
 
         // click selection
-        _game.MouseClick(_game.X(coordinate.x), y + h + 10, GAME_ITEMREAD_DELAY);
+        _game.MouseClick(_game.X(coordinate.x), y + h + 10);
 
         return true;
     }
@@ -418,22 +431,22 @@ namespace Diablo
         option_index = 0;
 
         // calculate option index
-        if(combo_id >= AuctionTrainer::COMBO_SECONDARY)
+        if(combo_id >= Trainer::COMBO_SECONDARY)
         {
             Index primary_id;
 
             // read primary
-            if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_PRIMARY, primary_id, option_count))
+            if(!_trainer.ReadComboBox(Trainer::COMBO_PRIMARY, primary_id, option_count))
                 return false;
 
             // stat
-            if(combo_id >= AuctionTrainer::COMBO_PSTAT0)
+            if(combo_id >= Trainer::COMBO_PSTAT0)
             {
                 Index   secondary_index;
                 Id      secondary_id;
 
                 // read secondary
-                if(!_trainer.ReadComboBox(AuctionTrainer::COMBO_SECONDARY, secondary_index, option_count))
+                if(!_trainer.ReadComboBox(Trainer::COMBO_SECONDARY, secondary_index, option_count))
                     return false;
 
                 // get secondary id
@@ -443,7 +456,7 @@ namespace Diablo
                 // read current stat indexes and build ignore list
                 if(combo_id != ITEM_STAT_NONE)
                 {
-                    for( Id stat_id = AuctionTrainer::COMBO_PSTAT0; stat_id <= AuctionTrainer::COMBO_PSTAT2; stat_id++ )
+                    for( Id stat_id = Trainer::COMBO_PSTAT0; stat_id <= Trainer::COMBO_PSTAT2; stat_id++ )
                     {
                         // ignore target
                         if(stat_id != combo_id)
@@ -525,7 +538,7 @@ namespace Diablo
             Bool busy;
 
             // poll delay
-            _game.Sleep(GAME_ITEMREAD_DELAY);
+            _game.SleepFrames(1);
 
             // read listing status
             if(!_trainer.ReadListCount(count))
