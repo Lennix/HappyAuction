@@ -7,11 +7,15 @@ namespace HappyAuction
     const Char* APPLICATION_NAME =      "HappyAuction";
 
     //------------------------------------------------------------------------
-    const Char* EXCEPTION_FATAL =       "Fatal Fail!";
-    const Char* EXCEPTION_INITIALIZE =  "Open Fail\n\nPossible Causes:\n"
+    const Char* EXCEPTION_FATAL =       "Fatal Fail\n\n"
+                                        "Possible Causes:\n"
+                                        "- HappyAuction already running\n"
+                                        "- Something else hogging CTRL-F12 hotkey\n";
+    const Char* EXCEPTION_INITIALIZE =  "Open Fail\n\n"
+                                        "Possible Causes:\n"
                                         "- Diablo 3 not running\n"
                                         "- Diablo 3 minimized\n"
-                                        "- Not at AuctionHouse/Search/Equipment\n"
+                                        "- Not at auction house\n"
                                         "- Not latest HappyAuction\n";
     const Char* EXCEPTION_SCRIPT =      "LUA Error:\n%s";
     
@@ -36,9 +40,15 @@ namespace HappyAuction
 
         "haListSelect",
         "haListNext",
-        "haListItem",
-        "haListItemStat",
-        "haListItemSocket",
+        "haListItem",//DEPRECATED
+        "haListItemStat",//DEPRECATED
+        "haListItemSocket",//DEPRECATED
+
+        "haStashSell",
+        "haStashNext",
+
+        "haItem",
+        "haItemStat",
 
         "haLog",
         "haBeep",
@@ -47,5 +57,7 @@ namespace HappyAuction
 
         "haSettingsListDelay",//DEPRECATED
         "haSetGlobalDelay",
+
+        "haTest",
     };
 }

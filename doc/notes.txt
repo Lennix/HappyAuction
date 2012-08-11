@@ -1,12 +1,9 @@
-- actions are now throttled against framerate thereby increasing performance and reliability. this eliminates need to use haSettingsListDelay to increase stability.
-- deprecated haSettingsListDelay, use haSetGlobalDelay instead. default delay is now 0 ms. see README for details.
-- added haActionRelogin(name, password) allowing relogin on error. see README for details.
-
-
-
-CENTERED X -> RATIO CONVERSION FUNCTION USING 2560/1600 REZ:
-(x - (2560 / 2)) / 1600
-y / 1600
-
-
-
+- added haStashNext() and haStashSell() allowing you to scan your stash and sell stuff (see README).
+- added haItem(), haItemStat() (see README) and deprecated haListItem(), haListItemStat(), haListItemSocket().
+- updated input method. now requires d3 window to be in foreground
+- greatly improved haActionReLogin(). see README and example in Bots/GemMiner.
+- improve responsiveness when stopping a script
+- fixed a stat filter bug sometimes causing wrong filter to be selected
+- improved performance even more. now will reach input limit twice as fast! :D
+- updated all sample bots to use haItem() instead.
+- sample bots are now be enabled by uncommenting the corresponding require() in Main.lua.

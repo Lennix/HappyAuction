@@ -13,6 +13,7 @@ namespace Diablo
         Window  _window;
         Process _process;
         Trainer _trainer;
+        Bool    _active;
 
     public:
         /**/
@@ -22,7 +23,8 @@ namespace Diablo
         Bool IsActive() const;
 
         /**/
-        Bool Initialize();
+        Bool Start();
+        void Stop();
 
         /**/
         Window& GetWindow();
@@ -39,7 +41,7 @@ namespace Diablo
         void MouseDrag( Double to_x, Double to_y, Double from_x, Double from_y, Bool random=true );
 
         /**/
-        void SendInput( const Char* text, Bool specials );
+        void SendInputKeys( const Char* text, Bool specials );
         void SendInputText( Double x, Double y, const Char* format, ... );
 
         /**/

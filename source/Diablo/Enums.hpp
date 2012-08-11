@@ -264,9 +264,33 @@ namespace Diablo
     /**/
     enum GemTypeId
     {
+        GEM_TYPE_EMPTY,
         GEM_TYPE_AMETHYST,
         GEM_TYPE_EMERALD,
         GEM_TYPE_RUBY,
         GEM_TYPE_TOPAZ,
+    };
+
+    /**/
+    enum UiId
+    {
+        UI_TAB_SEARCH,
+        UI_TAB_SEARCH_EQUIPMENT,
+        UI_TAB_SELL,
+
+        UI_STASH_BOX_SIZE,
+        UI_STASH_BOX_BEGIN,
+        UI_STASH_BAG_1,
+        UI_STASH_BAG_2,
+        UI_STASH_BAG_3,
+
+        UI_SELL_STARTING,
+        UI_SELL_BUYOUT,
+        UI_SELL_CREATEAUCTION,
+
+        UI_POPUP_ERROR,
+        UI_POPUP_OK,
+
+        UI_COUNT
     };
 }

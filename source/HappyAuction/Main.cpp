@@ -18,7 +18,6 @@ int WINAPI WinMain(
     int         iCmdShow)
 {
     using namespace Core;
-    //_unit_test(); return 0;
 
     try
     {

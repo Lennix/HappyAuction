@@ -30,6 +30,8 @@ namespace Diablo
             LIST_SEARCHBUTTON,
 
             MAIN_POPUP,
+            MAIN_LOGINBUTTON,
+            MAIN_AUCTION,
 
             ID_COUNT,
         };
@@ -73,7 +75,7 @@ namespace Diablo
         Trainer( Process& process );
 
         /**/
-        Bool Train();
+        Bool Train( Bool partial=false );
         Bool CheckTrained();
 
         /**/
@@ -88,10 +90,14 @@ namespace Diablo
         Bool ReadListItem( Index index, Item& item );
         Bool ReadListCount( ULong& count );
         Bool ReadListNextStatus( Bool& status );
-        Bool ReadListBusyStatus( Bool& status );
+        Bool ReadSearchBusyStatus( Bool& status );
 
         /**/
         Bool ReadPopupStatus( Bool& active );
+        Bool ReadLoginStatus( Bool& active );
+        Bool ReadAuctionMainStatus( Bool& active );
+
+        /**/
         Bool ReadFrameCount( ULong& count );
 
     private:

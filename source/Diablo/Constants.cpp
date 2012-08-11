@@ -1,9 +1,17 @@
+//TODO: move all coordinates to COORD[] table
+//TODO: recalculate all coordinates using base res of 1600/1200
 #pragma once
 #include <Diablo/Constants.hpp>
 #include <Diablo/Enums.hpp>
 
 namespace Diablo
 {
+    #define FIXED_REZ_X 2560
+    #define FIXED_REZ_Y 1600
+    #define F2R_Y(y)    ((Double)y / (Double)FIXED_REZ_Y)
+    #define F2R_X(x)    F2R_Y(x)
+    #define F2R_XC(x)   ((Double)(x - (FIXED_REZ_X / 2)) / (Double)FIXED_REZ_Y)
+
     //------------------------------------------------------------------------
     static const ULong _C_ALL =         ~0;
     static const ULong _C_BARB =        BIT(FILTER_CHAR_BARBARIAN);
@@ -312,6 +320,7 @@ namespace Diablo
     const ULongArray    ITEM_GEM_PHYSICALDAMAGETOATTACKER(_item_gem_physicaldamagetoattacker, ACOUNT(_item_gem_physicaldamagetoattacker));
     const Char*         ITEM_GEM_TYPE_STRINGS[] =
     {
+        "Empty",
         "Amethyst",
         "Emerald",
         "Ruby",
@@ -363,10 +372,45 @@ namespace Diablo
     const Coordinate AH_LIST_SORT_DPSARMOR =        { 0.234375, 0.25625 };
     const Coordinate AH_LIST_SORT_BUYOUT =          { 0.42625,  0.25625 };
 
-    const Coordinate AH_RELOGIN_CLEARERROR =        { 0,        0.5843 };
     const Coordinate AH_RELOGIN_ACCOUNT =           { 0,        0.54885 };
     const Coordinate AH_RELOGIN_PASSWORD =          { 0,        0.6523 };
     const Coordinate AH_RELOGIN_LOGIN =             { 0,        0.79023 };
     const Coordinate AH_RELOGIN_AUCTIONHOUSE =      { 0.20594,  0.59387 };
-    const Coordinate AH_RELOGIN_EQUIPMENT =         { -0.34195, 0.20977 };
+
+    const Coordinate COORD[UI_COUNT] =
+    {
+        // UI_TAB_SEARCH
+        { F2R_XC(791), F2R_Y(241) },
+
+        // UI_TAB_SEARCH_EQUIPMENT
+        { F2R_XC(699), F2R_Y(353) },
+
+        // UI_TAB_SELL
+        { F2R_XC(1122), F2R_Y(241) },
+
+        // UI_STASH_BOX_SIZE
+        { F2R_X(79.57), F2R_Y(82.3) },
+
+        // UI_STASH_BOX_BEGIN
+        { F2R_XC(472), F2R_Y(445) },
+
+        // UI_STASH_BAG_1-3
+        { F2R_XC(1066), F2R_Y(482) },
+        { F2R_XC(1066), F2R_Y(650) },
+        { F2R_XC(1066), F2R_Y(808) },
+
+        // UI_SELL_STARTING
+        { F2R_XC(1278), F2R_Y(706) },
+
+        // UI_SELL_BUYOUT
+        { F2R_XC(1278), F2R_Y(826) },
+
+        // UI_SELL_CREATEAUCTION
+        { F2R_XC(1278), F2R_Y(1299) },
+
+        // UI_POPUP_ERROR
+        { 0,            0.5843 },
+        // UI_POPUP_OK
+        { 0,            0.4275 },
+    };
 }

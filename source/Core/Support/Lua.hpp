@@ -9,7 +9,7 @@ namespace HappyAuction
     /**/
     class Lua
     {
-    protected:
+    private:
         lua_State*  _lua;
         TextString  _error;
         Bool        _active;
@@ -131,24 +131,46 @@ namespace HappyAuction
         }
 
         /**/
-        void _PushStackBool( Bool boolean )
+        void _PushStack( Bool boolean )
         {
             lua_pushboolean( _lua, boolean );
         }
 
-        void _PushStackLong( Long value )
+        void _PushStack( Long value )
         {
             lua_pushinteger( _lua, value );
         }
 
-        void _PushStackULong( ULong value )
+        void _PushStack( ULong value )
         {
             lua_pushunsigned( _lua, value );
         }
 
-        void _PushStackString( const Char* string )
+        void _PushStack( const Char* string )
         {
             lua_pushstring( _lua, string );
+        }
+
+        /**/
+        template<typename KEY>
+        void _PushTable( KEY key=0 )
+        {
+            if(key)
+                _PushStack(key);
+            lua_newtable(_lua);
+        }
+
+        void _PopTable()
+        {
+            lua_settable(_lua, -3);
+        }
+
+        template<typename KEY, typename VALUE>
+        void _SetTable( KEY key, VALUE value )
+        {
+            _PushStack(key);
+            _PushStack(value);
+            lua_settable(_lua, -3);
         }
 
     private:

@@ -90,14 +90,18 @@ namespace Diablo
                     rank_index = ITEM_GEM_PHYSICALDAMAGETOATTACKER.IndexOf(ITEM_GEM_PHYSICALDAMAGETOATTACKER.FlatSearch(value)) + 1;
                     break;
                 }
+
                 if(rank_index >= GEM_RANK_LIMIT)
                     return false;
                 rank = static_cast<GemRankId>(rank_index);
-
-                return true;
+            }
+            else
+            {
+                type = GEM_TYPE_EMPTY;
+                rank = GEM_RANK_NONE;
             }
 
-            return false;
+            return true;
         }
 
         /**/

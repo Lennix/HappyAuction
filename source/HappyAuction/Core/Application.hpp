@@ -16,16 +16,12 @@ namespace HappyAuction
         /**/
         void Run()
         {
-            // init system
-            if(!_InitSystem())
-                throw EXCEPTION_FATAL;
-
             // init application
             if(!_InitApplication())
                 throw EXCEPTION_FATAL;
 
             // run system
-            if(!System::Run())
+            if(!_RunSystem())
                 throw EXCEPTION_FATAL;
 
             // stop bot
@@ -49,14 +45,14 @@ namespace HappyAuction
         }
 
         /**/
-        Bool _InitSystem()
+        Bool _RunSystem()
         {
             // init system
             System::SetStatusIcon(System::STATUS_IDLE, IDI_ICON_IDLE);
             System::SetStatusIcon(System::STATUS_ACTIVE, IDI_ICON_ACTIVE);
 
             // init system
-            return System::Initialize(APPLICATION_NAME);
+            return System::Run(APPLICATION_NAME);
         }
 
         /**/

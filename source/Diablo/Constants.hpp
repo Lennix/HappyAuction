@@ -1,6 +1,7 @@
 #pragma once
 #include <Diablo/Type/ComboBox.hpp>
 #include <Diablo/Types.hpp>
+#include <Diablo/Enums.hpp>
 
 namespace Diablo
 {
@@ -51,15 +52,19 @@ namespace Diablo
     extern const Coordinate     AH_LIST_NEXT_BUTTON;
     extern const Coordinate     AH_LIST_SORT_DPSARMOR;
     extern const Coordinate     AH_LIST_SORT_BUYOUT;
-    static const ULong          AH_LIST_WAIT_ITERATIONS = 200;
+    static const ULong          AH_LIST_WAIT_ITERATIONS = 600;
     static const ULong          AH_LIST_ROW_LIMIT = 11;
-    static const ULong          AH_RELOGIN_CLEARERROR_DELAY = 4000;
-    static const ULong          AH_RELOGIN_LOGIN_DELAY = 10000;
+    static const ULong          AH_RELOGIN_LOGOUT_DELAY = 3000;
+    static const ULong          AH_RELOGIN_RETRY_DELAY = 3000;
+    static const ULong          AH_RELOGIN_POSTLOGIN_DELAY = 2500;
     static const ULong          AH_RELOGIN_AUCTIONHOUSE_DELAY = 1000;
-    extern const Coordinate     AH_RELOGIN_CLEARERROR;
     extern const Coordinate     AH_RELOGIN_ACCOUNT;
     extern const Coordinate     AH_RELOGIN_PASSWORD;
     extern const Coordinate     AH_RELOGIN_LOGIN;
     extern const Coordinate     AH_RELOGIN_AUCTIONHOUSE;
-    extern const Coordinate     AH_RELOGIN_EQUIPMENT;
+    static const ULong          AH_STASH_COLUMNS = 7;
+    static const ULong          AH_STASH_ROWS = 10;
+    static const ULong          AH_STASH_BAGS = 3;
+
+    extern const Coordinate     COORD[UI_COUNT];
 }

@@ -21,8 +21,7 @@ namespace Core
 
     public:
         /**/
-        static Bool Initialize( const Char* title=NULL );
-        static Bool Run();
+        static Bool Run( const Char* title=NULL );
 
         /**/
         static void SetStatus( Status status );

@@ -1,17 +1,16 @@
-HappyAuction v0.9.4
+HappyAuction v0.9.5
 
 DESCRIPTION
 ------------------------------------------------------------------------------
 HappyAuction is a C++ open source LUA scriptable Diablo 3 auction house bot.
-It offers full control over the AH search/equipment section and possibly the
-entire AH interface in the future. Some popular bot scripts are included.
-Happy botting! :D
+It offers full control over the AH search/equipment and sell sections. Some
+popular bot scripts are included. Happy botting! :D
 
 
 INSTRUCTIONS
 ------------------------------------------------------------------------------
 1. Run bin/HappyAuction.exe
-2. In Diablo 3 visit AuctionHouse/Search/Equipment.
+2. In Diablo 3 visit the auction house
 3. Hit CTRL-F12 to start/stop the main script. The taskbar icon will change
    color while script is active.
 4. The default sample script will run the basic buyout loop you see in other
@@ -23,7 +22,7 @@ INCLUDED BOTS
 ------------------------------------------------------------------------------
 - SnipeBuyout:  Traditional buyout bot that will buyout loop first item.
 - SnipeDps:     Will buyout loop first item if when desired DPS.
-- LogResults:	Sets filters and scans all results logging all items to a file
+- LogResults:   Sets filters and scans all results logging all items to a file
 - GemMiner:	    More complex bot that searches across multiple filters finding
                 and buying cheap items with expensive gems.
 
@@ -35,10 +34,7 @@ NOTES
   everything HappyAuction needs to operate.
 - Do not use Video/Letterbox option
 - Performance depends on your FPS
-- HappyAuction has not been tested with RMAH.
-- Can operate while you do other things so long as the left filter side of
-  the screen remains uncovered (if you are using a bot that uses filters).
-  CTRL-F12 is a global hotkey that can be called any time.
+- HappyAuction has not been tested with RMAH but should work.
 
 
 SECURITY
@@ -55,16 +51,10 @@ SECURITY
       altered, not instruction memory. It's used only to set the filter
       combobox values and clear item tooltip state.
 - The following is recommended as additional security:
-    - Include additional delays with haSleep()
+    - Include additional delays with haSleep() and haSetGlobalDelay()
 - I am aware of other security measures and will be adding them in the future.
 - There is no guarantee HappyAuction is 100% safe from detection. Use at your
   own risk.
-
-
-KNOWN BUGS
-------------------------------------------------------------------------------
-- Focusing away from the D3 window may cause an active script to fail. Avoid
-  by staying either focused on D3 or unfocsed (doing other stuff in windows).
 
 
 SCRIPTING
@@ -124,7 +114,7 @@ AUCTION FILTERS:
     - status:   true if successful
 
 
-AUCTION SEARCH LIST:
+SEARCH RESULTS LIST:
 - haListSelect(index) -> status
     Selects the current item given a row index from search results.
     - index:    index of item to select. range: 1-11
@@ -140,37 +130,57 @@ AUCTION SEARCH LIST:
         end
     - status:   true if successful
 
-- haListItem() -> dpsarmor, mbid, buyout, nstats, nsockets, cbid
-    Returns information about the selected item. Values will be 0 if no
+
+STASH
+- haStashNext() -> status
+    Iterates through each slot of each bag in sell/stash. Assumes user owns
+    all bags but will work regardless.
+    example:
+        -- will sell every stash item with over 20 intelligence for 1000/2000g
+        while haStashNext() do
+            if haItemStat('Intelligence').value1 > 20 then
+                haStashSell(1000, 2000)
+            end
+        end
+    - status:   true if successful
+
+- haStashSell(starting, buyout) -> status
+    Sells currently selected stash item for the given starting and optional
+    buyout price. Typical reason for failure due to auction limit reached.
+    - starting: starting price
+    - buyout:   optional buyout price
+    - status:   true if successful.
+
+ITEM INFORMATION
+- haItem() -> item
+    Returns information about the last selected item. Values will be 0 if no
     item is selected or if failure occurred.
-    - dpsarmor: the DPS or armor value found in tooltip.
-    - mbid:     the max bid price as shown in bid button/input box.
-    - buyout:   the buyout price or 0 if there is no buyout
-    - nstats:   the number of stats
-    - nsockets: the number of sockets
-    - cbid:     the current bid price as shown in item list. this will be
-                less than mbid if there are bidders otherwise equal.
+    - item.dps:     the DPS or armor value found in tooltip.
+    - item.mbid:    the max bid price as shown in bid button/input box.
+    - item.cbid:    the current bid price as shown in item list. this will be
+                    less than mbid if there are bidders, otherwise equal.
+    - item.buyout:  the buyout price or 0 if there is no buyout
+    - item.stats:   a list of stat objects containing:
+        - name:     the name of the stat. example: 'Intelligence'
+        - value1-4: stat values. for most stats only value1 will be used.
+    - item.sockets: a list of socket objects containing:
+        - name:     gem stat name. example: 'Dexterity'
+        - gem:      gem name. example: 'Topaz'
+        - rank:     gem rank. example: 14 for Radiant Star
+        - value1-4: stat values. for most stats only value1 will be used.
 
-- haListItemStat(index) -> stat, value1, value2, value3, value4
-- haListItemStat(stat) -> value1, value2, value3, value4
-    Gets individual stat information of the selected item. Loop with
-    up to nstats to get all item stats or use the second form to quickly
-    lookup stat values by name. returns 0 for every value if unsuccessful.
-    - index:    the index of the stat to get. range: 1-nstats
-    - stat:     the name of the stat. example: 'Attack Speed %'
-    - value1-4: stat values. for most stats only value1 will be used.
-
-- haListItemSocket(index) -> stat, type, rank, value1, value2, value3, value4
-    Gets individual stat information of the selected socket. Loop with
-    up to nsockets to get all socket stats.
-    - index:    the index of the socket to get. range: 1-nsockets
-    - stat:     the name of the stat. example: 'Intelligence'
-    - type:     gem type: 'Amethyst','Emerald','Ruby', or 'Topaz'
-    - rank:     gem rank up to radiant star. range: 1-14 or 0 if empty
-    - value1-4: stat values. for most stats only value1 will be used.
+- haItemStat(stat) -> stat
+    Convenience function for looking up an item stat quickly. Always returns
+    a stat object. Will contain 0 values if not found. This allows example:
+        if haListItemStat('dexterity').value1 > 200 then
+            -- i has item over 200 dex
+        end
+    to always succeed even if the item has no dexterity stat.
+    - stat.name:     stat name. example: 'Attack Speed %'
+    - stat.value1-4: stat values. for most stats only value1 will be used.
 
 
-AUCTION ACTIONS:
+ACTIONS:
 - haActionBid() -> status
 - haActionBid(bid) -> status
     Bids on current item and sets an optional bid price.
@@ -194,13 +204,17 @@ AUCTION ACTIONS:
     - status:   true if successful
 
 - haActionReLogin(name, password) -> status
-    Clears any disconnect errors, logs back in, and into the AH. Intended for
-    use with input limit errors to recover script operation. You will know
-    to use this when other script operations begin to fail such as
-    haActionSearch.
+    If any disconnect errors exist returns to main login and attempts to log
+    back in and back to the auction house to continue scripting as usual. If
+    login fails will retry with 3 second delay.
+    
+    Call this each iteration in your main loop. If other operations are
+    suddenly failing its a sign you've been disconnected at which point
+    haActionReLogin will take over. See working example in GemMiner.
+
     - name:     account name
     - password: account password
-    - status:   true if successful
+    - status:   true if successful login or not disconnected
 
 
 UTILITIES:

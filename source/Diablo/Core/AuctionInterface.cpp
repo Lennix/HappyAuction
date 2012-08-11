@@ -35,13 +35,32 @@ namespace Diablo
     //------------------------------------------------------------------------
     AuctionInterface::AuctionInterface( Game& game ):
         _game(game),
-        _trainer(game.GetTrainer())
+        _trainer(game.GetTrainer()),
+        _tab_primary(INVALID_ID),
+        _tab_secondary(INVALID_ID),
+        _active(false)
     {
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::Start()
+    {
+        _active = true;
+        _Reset();
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    void AuctionInterface::Stop()
+    {
+        _active = false;
     }
 
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteBuyout( Long buyout, Bool randomize )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         if(buyout < 0)
             _game.SendInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, "");
         else
@@ -58,6 +77,8 @@ namespace Diablo
     {
         TextString buyout_text;
 
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // read buyout text
         _game.GetInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, buyout_text, sizeof(buyout_text));
 
@@ -70,13 +91,19 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteUnique( const Char* string )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
+        // write unique text
         _game.SendInputText(AH_INPUT_UNIQUE.x, AH_INPUT_UNIQUE.y, "%s", string);
+
         return true;
     }
     
     //------------------------------------------------------------------------
     Bool AuctionInterface::ReadUnique( TextString& string )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // read unique text
         _game.GetInputText(AH_INPUT_UNIQUE.x, AH_INPUT_UNIQUE.y, string, sizeof(TextString));
 
@@ -92,6 +119,8 @@ namespace Diablo
         FilterCharId    char_id;
         FilterPrimaryId primary_id;
         FilterPrimaryId requested_primary_id = _SecondaryToPrimaryId(secondary_id);
+
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // read character id
         if(!_trainer.ReadComboBox(Trainer::COMBO_CHARACTER, reinterpret_cast<Index&>(char_id), option_count) || option_count <= FILTER_CHAR_COUNT)
@@ -127,32 +156,42 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterLevelMin( Long level )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         if( level <= 0 )
             _game.SendInputText(AH_INPUT_LEVEL_MIN.x, AH_INPUT_LEVEL_MIN.y, "");
         else
             _game.SendInputText(AH_INPUT_LEVEL_MIN.x, AH_INPUT_LEVEL_MIN.y, "%u", level);
+
         return true;
     }
 
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterLevelMax( Long level )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         if( level <= 0 )
             _game.SendInputText(AH_INPUT_LEVEL_MAX.x, AH_INPUT_LEVEL_MAX.y, "");
         else
             _game.SendInputText(AH_INPUT_LEVEL_MAX.x, AH_INPUT_LEVEL_MAX.y, "%u", level);
+
         return true;
     }
 
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterRarity( FilterRarityId id )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         return _WriteComboBox(Trainer::COMBO_RARITY, id);
     }
 
     //------------------------------------------------------------------------
     Bool AuctionInterface::WriteFilterStat( Index index, ItemStatId id, ULong value )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // select stat
         if(!_WriteComboBox(Trainer::COMBO_PSTAT0 + index, id))
             return false;
@@ -166,6 +205,8 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionSearch()
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // hit search button
         _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y);
 
@@ -176,6 +217,8 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionListSortDpsArmor()
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // click sort column header
         _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y);
 
@@ -185,6 +228,8 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionListSortBuyout()
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // click sort column header
         _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y);
 
@@ -197,8 +242,7 @@ namespace Diablo
         Bool listing_status;
         Bool status = false;
 
-        // disable input
-        _game.InputEnable(false);
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // use opportunity to close any popups
         //_game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
@@ -214,9 +258,6 @@ namespace Diablo
                 status = true;
         }
 
-        // enable input
-        _game.InputEnable(true);
-
         return status;
     }
 
@@ -224,6 +265,8 @@ namespace Diablo
     Bool AuctionInterface::ActionBid( Index index, ULong bid )
     {
         Bool status;
+
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // select item index
         HoverListItem(index, true);
@@ -243,7 +286,7 @@ namespace Diablo
         {
             _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
         }
-        while(_trainer.ReadPopupStatus(status) && status);
+        while(_active && _trainer.ReadPopupStatus(status) && status);
 
         return true;
     }
@@ -252,6 +295,8 @@ namespace Diablo
     Bool AuctionInterface::ActionBuyout( Index index )
     {
         Bool status;
+
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // select item index
         HoverListItem(index, true);
@@ -267,7 +312,99 @@ namespace Diablo
         {
             _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
         }
-        while(_trainer.ReadPopupStatus(status) && status);
+        while(_active && _trainer.ReadPopupStatus(status) && status);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::ActionReLogin( const Char* account, const Char* password )
+    {
+        Bool status;
+
+        // read auction status
+        if(!_trainer.ReadAuctionMainStatus(status))
+            return false;
+        
+        // if auction main still alive keep going!
+        if(status)
+            return true;
+
+        // clear error
+        _game.MouseClick(COORD[UI_POPUP_ERROR].x, COORD[UI_POPUP_ERROR].y);
+
+        // logout delay
+        _game.Sleep(AH_RELOGIN_LOGOUT_DELAY);
+
+        // partial retrain
+        if(!_trainer.Train(true))
+            return false;
+
+        for( Bool ready = false; !ready; )
+        {
+            // set account
+            _game.SendInputText(AH_RELOGIN_ACCOUNT.x, AH_RELOGIN_ACCOUNT.y, account);
+
+            // set password
+            _game.SendInputText(AH_RELOGIN_PASSWORD.x, AH_RELOGIN_PASSWORD.y, password);
+
+            // login
+            _game.MouseClick(AH_RELOGIN_LOGIN.x, AH_RELOGIN_LOGIN.y);
+
+            while(true)
+            {
+                // wait a little
+                _game.Sleep(100);
+
+                // active check
+                if(!_active)
+                    return false;
+
+                // read popup status
+                if(!_trainer.ReadPopupStatus(status))
+                    return false;
+                
+                // if popup
+                if(status)
+                {
+                    // close popup
+                    _game.MouseClick(COORD[UI_POPUP_ERROR].x, COORD[UI_POPUP_ERROR].y);
+
+                    // retry delay
+                    _game.Sleep(AH_RELOGIN_RETRY_DELAY);
+                    break;
+                }
+                else
+                {
+                    // read login status
+                    if(!_trainer.ReadLoginStatus(status))
+                        return false;
+
+                    // break if logged in
+                    if(status)
+                    {
+                        ready = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // post login delay
+        _game.Sleep(AH_RELOGIN_POSTLOGIN_DELAY);
+
+        // auction house
+        _game.MouseClick(AH_RELOGIN_AUCTIONHOUSE.x, AH_RELOGIN_AUCTIONHOUSE.y, false);
+
+        // auction house delay
+        _game.Sleep(AH_RELOGIN_AUCTIONHOUSE_DELAY);
+
+        // run retrain again
+        if(!_active || !_trainer.Train())
+            return false;
+
+        // reset tabs
+        _Reset();
 
         return true;
     }
@@ -278,14 +415,14 @@ namespace Diablo
         Double x = AH_LIST_BEGIN.x + AH_LIST_ICON.x / 2;
         Double y = AH_LIST_BEGIN.y + (AH_LIST_ICON.y / 2) + index * AH_LIST_ICON.y;
 
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
         // hover item to update current item tooltip
         _game.MouseMove(x, y);
 
         // also click to select (for use with bid/buyout)
         if(select)
-        {
             _game.MouseClick(x, y);
-        }
 
         return true;
     }
@@ -293,6 +430,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ReadListCount( ULong& count )
     {
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
         return _trainer.ReadListCount(count);
     }
 
@@ -301,8 +439,10 @@ namespace Diablo
     {
         Bool status = false;
 
-        // disable input
-        _game.InputEnable(false);
+        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
+        // empty item
+        item.Empty();
 
         // clear hover item
         if(_trainer.ClearHoverItem())
@@ -319,41 +459,115 @@ namespace Diablo
             }
         }
 
-        // enable input
-        _game.InputEnable(true);
+        return status;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::SellStashItem( Index column, Index row, ULong starting, ULong buyout )
+    {
+        Bool status;
+
+        Tab(UI_TAB_SELL);
+
+        // select item
+        HoverStashItem(column, row, true);
+
+        // get popup status
+        if(!_trainer.ReadPopupStatus(status))
+            return false;
+
+        // clear popup if true and fail
+        if(status)
+        {
+            _game.MouseClick(COORD[UI_POPUP_ERROR].x, COORD[UI_POPUP_ERROR].y);
+            return false;
+        }
+
+        // write starting price
+        _game.SendInputText(COORD[UI_SELL_STARTING].x, COORD[UI_SELL_STARTING].y, "%u", starting);
+
+        // write buyout price
+        _game.SendInputText(COORD[UI_SELL_BUYOUT].x, COORD[UI_SELL_BUYOUT].y, "%u", buyout);
+
+        // create auction
+        _game.MouseClick(COORD[UI_SELL_CREATEAUCTION].x, COORD[UI_SELL_CREATEAUCTION].y);
+
+        // wait a few frames
+        _game.SleepFrames(4);
+
+        // there should be a popup. fail otherwise
+        if(!_trainer.ReadPopupStatus(status) || !status)
+            return false;
+
+        // hit ok button until done
+        do
+        {
+            _game.MouseClick(COORD[UI_POPUP_OK].x, COORD[UI_POPUP_OK].y);
+        }
+        while(_active && _trainer.ReadPopupStatus(status) && status);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::HoverStashItem( Index column, Index row, Bool select )
+    {
+        Double x = COORD[UI_STASH_BOX_BEGIN].x + (column * COORD[UI_STASH_BOX_SIZE].x);
+        Double y = COORD[UI_STASH_BOX_BEGIN].y + (row * COORD[UI_STASH_BOX_SIZE].y);
+
+        Tab(UI_TAB_SELL);
+
+        // hover item to update current item tooltip
+        _game.MouseMove(x, y);
+
+        // also click to select (for use with bid/buyout)
+        if(select)
+            _game.MouseClick(x, y);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::ReadStashItem( Index column, Index row, Item& item )
+    {
+        Bool status = false;
+
+        Tab(UI_TAB_SELL);
+
+        // empty item
+        item.Empty();
+
+        // clear hover item
+        if(_trainer.ClearHoverItem())
+        {
+            // select item
+            HoverStashItem(column, row, false);
+
+            // read item stat
+            if(_trainer.ReadHoverItem(item))
+                status = true;
+        }
 
         return status;
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::ActionReLogin( const Char* account, const Char* password )
+    Bool AuctionInterface::Tab( Id primary, Id secondary )
     {
-        // clear errors
-        _game.MouseClick(AH_RELOGIN_CLEARERROR.x, AH_RELOGIN_CLEARERROR.y);
+        // set primary tab
+        if(primary != _tab_primary)
+        {
+            _game.MouseClick(COORD[primary].x, COORD[primary].y);
+            _tab_primary = primary;
+            _tab_secondary = INVALID_ID;
+        }
 
-        // clear error delay
-        _game.Sleep(AH_RELOGIN_CLEARERROR_DELAY);
-
-        // set account
-        _game.SendInputText(AH_RELOGIN_ACCOUNT.x, AH_RELOGIN_ACCOUNT.y, account);
-
-        // set password
-        _game.SendInputText(AH_RELOGIN_PASSWORD.x, AH_RELOGIN_PASSWORD.y, password);
-
-        // login
-        _game.MouseClick(AH_RELOGIN_LOGIN.x, AH_RELOGIN_LOGIN.y);
-
-        // login delay
-        _game.Sleep(AH_RELOGIN_LOGIN_DELAY);
-
-        // auction house
-        _game.MouseClick(AH_RELOGIN_AUCTIONHOUSE.x, AH_RELOGIN_AUCTIONHOUSE.y, false);
-
-        // auction house delay
-        _game.Sleep(AH_RELOGIN_AUCTIONHOUSE_DELAY);
-
-        // click search/equipment
-        _game.MouseClick(AH_RELOGIN_EQUIPMENT.x, AH_RELOGIN_EQUIPMENT.y);
+        // set secondary tab
+        if(secondary != INVALID_ID && secondary != _tab_secondary)
+        {
+            _game.MouseClick(COORD[secondary].x, COORD[secondary].y);
+            _tab_secondary = secondary;
+        }
 
         return true;
     }
@@ -374,9 +588,6 @@ namespace Diablo
         Index   option_index;
         Bool    status = false;
 
-        // disable input
-        _game.InputEnable(false);
-
         // calculate option index
         if(_CalculateComboIndex(option_index, combo_id, option_id))
         {
@@ -388,9 +599,6 @@ namespace Diablo
                     status = true;
             }
         }
-
-        // enable input
-        _game.InputEnable(true);
 
         return status;
     }
@@ -513,14 +721,12 @@ namespace Diablo
             {
                 IgnoreIterator ignore = ignores.FlatSearch(index);
 
+                if(i == option_id)
+                    return index;
                 if(ignore != ignores.End())
                     *ignore = INVALID_ID;
                 else
-                {
-                    if(i == option_id)
-                        return index;
                     index++;
-                }
             }
         }
 
@@ -533,7 +739,7 @@ namespace Diablo
         ULong count = 0;
 
         // poll listing status
-        for( Index i = 0; i <AH_LIST_WAIT_ITERATIONS; i++ )
+        for( Index i = 0; _active && i < AH_LIST_WAIT_ITERATIONS; i++ )
         {
             Bool busy;
 
@@ -549,10 +755,17 @@ namespace Diablo
                 return true;
 
             // fail if no longer busy but no listing read
-            if(!_trainer.ReadListBusyStatus(busy) || !busy)
+            if(!_trainer.ReadSearchBusyStatus(busy) || !busy)
                 return false;
         }
 
         return false;
+    }
+
+    //------------------------------------------------------------------------
+    void AuctionInterface::_Reset()
+    {
+        _tab_primary = INVALID_ID;
+        _tab_secondary = INVALID_ID;
     }
 }

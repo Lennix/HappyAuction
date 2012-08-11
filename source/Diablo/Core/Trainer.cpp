@@ -17,7 +17,6 @@ namespace Diablo
     };
 
     static const Char*  _HINT_LISTITEM_ITEM =       "D3_ITEM";
-    static const Char*  _HINT_LISTITEM_GOLD =       "D3_GOLD";
     static const Char*  _HINT_UIOBJECT_PATH[Trainer::ID_COUNT] =
     {
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchRarityFilter",
@@ -38,6 +37,8 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.SearchButton",
 
         "Root.TopLayer.BattleNetLightBox_main.LayoutRoot.LightBox",
+        "Root.NormalLayer.BattleNetLogin_main.LayoutRoot.LoginContainer.SubmitButton",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.PageHeader",
     };
 
     static const Process::Link _chain_listroot[] =
@@ -101,7 +102,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::Train()
+    Bool Trainer::Train( Bool partial )
     {
         Tools::MemZero(_address, ACOUNT(_address));
         _trained = false;
@@ -120,7 +121,7 @@ namespace Diablo
             for( i = 0; i < ID_COUNT && _address[i] != 0; i++ );
 
             // ready when no null addresses
-            _trained = (i == ID_COUNT);
+            _trained = partial ? i > 0 : (i == ID_COUNT);
         }
 
         return _trained;
@@ -246,8 +247,7 @@ namespace Diablo
             return false;
 
         // hint checks
-        if( *(UHuge*)item_object.d3item != *(UHuge*)_HINT_LISTITEM_ITEM ||
-            *(UHuge*)item_object.d3gold != *(UHuge*)_HINT_LISTITEM_GOLD)
+        if( *(UHuge*)item_object.d3item != *(UHuge*)_HINT_LISTITEM_ITEM )
             return false;
 
         // cbid, mbid
@@ -301,7 +301,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::ReadListBusyStatus( Bool& status )
+    Bool Trainer::ReadSearchBusyStatus( Bool& status )
     {
         _UiObject ui_object;
 
@@ -329,6 +329,40 @@ namespace Diablo
             return false;
 
         // check popup status
+        active = (ui_object.visible != 0);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool Trainer::ReadLoginStatus( Bool& active )
+    {
+        _UiObject ui_object;
+
+        // must be trained
+        if(!_trained)
+            return false;
+
+        // read ui object
+        if(!_ReadUiObject(MAIN_LOGINBUTTON, ui_object))
+            return false;
+
+        // determine using submit button visibility
+        active = (ui_object.visible == 0);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool Trainer::ReadAuctionMainStatus( Bool& active )
+    {
+        _UiObject ui_object;
+
+        // read ui object
+        if(!_ReadUiObject(MAIN_AUCTION, ui_object))
+            return false;
+
+        // check auction main status
         active = (ui_object.visible != 0);
 
         return true;

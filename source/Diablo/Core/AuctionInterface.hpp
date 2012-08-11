@@ -16,10 +16,17 @@ namespace Diablo
         Game&       _game;
         Trainer&    _trainer;
         ULong       _search_delay;
+        Id          _tab_primary;
+        Id          _tab_secondary;
+        Bool        _active;
 
     public:
         /**/
         AuctionInterface( Game& game );
+
+        /**/
+        Bool    Start();
+        void    Stop();
 
         /**/
         Bool    WriteBuyout( Long buyout, Bool randomize=false );
@@ -49,8 +56,13 @@ namespace Diablo
         Bool    ReadListItem( Index index, Item& item );
 
         /**/
+        Bool    SellStashItem( Index column, Index row, ULong starting, ULong buyout );
+        Bool    HoverStashItem( Index x, Index y, Bool select );
+        Bool    ReadStashItem( Index x, Index y, Item& item );
+
+        /**/
+        Bool    Tab( Id primary, Id secondary=INVALID_ID );
         void    HoverGround();
-        Bool    WaitFrames( ULong count );
 
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );
@@ -60,5 +72,7 @@ namespace Diablo
         Id      _OptionIndexToId( Index option_index, Id group_id, const ComboBox& box ) const;
         Index   _OptionIdToIndex( Id option_id, Id group_id, const ComboBox& box, IgnoreCollection& ignores ) const;
         Bool    _WaitSearch();
+
+        void    _Reset();
     };
 }
