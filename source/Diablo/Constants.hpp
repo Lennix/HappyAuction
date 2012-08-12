@@ -1,6 +1,7 @@
 #pragma once
 #include <Diablo/Type/ComboBox.hpp>
 #include <Diablo/Types.hpp>
+#include <Diablo/Enums.hpp>
 
 namespace Diablo
 {
@@ -52,7 +53,6 @@ namespace Diablo
     extern const ComboBox       AH_COMBO_RARITY;
     extern const ComboBox       AH_COMBO_PSTAT;
     extern const Coordinate     AH_COMBO_COORDS[];
-    extern const Coordinate     AH_COMBO_OFFSET;
     extern const Coordinate     AH_BUTTON_SEARCH;
     extern const Coordinate     AH_BUTTON_BID;
     extern const Coordinate     AH_BUTTON_BUYOUT;
@@ -63,15 +63,23 @@ namespace Diablo
     extern const Coordinate     AH_LIST_NEXT_BUTTON;
     extern const Coordinate     AH_LIST_SORT_DPSARMOR;
     extern const Coordinate     AH_LIST_SORT_BUYOUT;
-    static const ULong          AH_LIST_WAIT_ITERATIONS = 200;
+    static const ULong          AH_LIST_WAIT_ITERATIONS = 600;
     static const ULong          AH_LIST_ROW_LIMIT = 11;
-    static const ULong          AH_RELOGIN_CLEARERROR_DELAY = 4000;
-    static const ULong          AH_RELOGIN_LOGIN_DELAY = 10000;
-    static const ULong          AH_RELOGIN_AUCTIONHOUSE_DELAY = 1000;
-    extern const Coordinate     AH_RELOGIN_CLEARERROR;
+    static const ULong          AH_RELOGIN_LOGOUT_DELAY = 1000;
+    static const ULong          AH_RELOGIN_LOGIN_DELAY = 1000;
+    static const ULong          AH_RELOGIN_POSTLOGIN_DELAY = 1100;
+    static const ULong          AH_RELOGIN_AUCTIONHOUSE_DELAY = 200;
     extern const Coordinate     AH_RELOGIN_ACCOUNT;
     extern const Coordinate     AH_RELOGIN_PASSWORD;
     extern const Coordinate     AH_RELOGIN_LOGIN;
     extern const Coordinate     AH_RELOGIN_AUCTIONHOUSE;
-    extern const Coordinate     AH_RELOGIN_EQUIPMENT;
+    static const ULong          AH_STASH_COLUMNS = 7;
+    static const ULong          AH_STASH_ROWS = 10;
+    static const ULong          AH_STASH_BAGS = 3;
+
+    extern const Coordinate     COORDS[UI_COUNT];
+    extern const ULong          COMBO_HEIGHT[COMBO_COUNT];
+    static const ULong          COMBO_BOX_REZMAP_MIN = 600;
+    static const ULong          COMBO_BOX_REZMAP_MAX = 1200;
+    extern const Double         COMBO_SELECTOR_REZMAP[];
 }

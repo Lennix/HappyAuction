@@ -4,7 +4,7 @@
 namespace Core
 {
     //------------------------------------------------------------------------
-    static const Char* _CLASS_NAME =    "Core";
+    static const Char* _CLASS_NAME =    "HappyCore";
     static const Char* _MESSAGE_TITLE = "Derp";
 
 
@@ -25,6 +25,8 @@ namespace Core
     // local
     //------------------------------------------------------------------------
     static HWND                     _hwnd = NULL;
+    static ULong                    _hotkey_modifier = 0;
+    static ULong                    _hotkey_key = 0;
     static System::HotKeyHandler    _hotkey_handler = NULL;
     static void*                    _hotkey_custom = NULL;
     static const Char*              _title = "";
@@ -171,9 +173,10 @@ namespace Core
 
     // class
     //------------------------------------------------------------------------
-    Bool System::Initialize( const Char* title )
+    Bool System::Run( const Char* title )
     {
-        WNDCLASSEX wclass;
+        WNDCLASSEX  wclass;
+        MSG         msg;
 
         // set title
         if(title)
@@ -216,13 +219,9 @@ namespace Core
         if(_hwnd == NULL)
             return false;
 
-        return true;
-    }
-
-    //------------------------------------------------------------------------
-    Bool System::Run()
-    {
-        MSG msg;
+        // set hotkey
+        if(_hotkey_handler && !RegisterHotKey(_hwnd, 1, _hotkey_modifier, _hotkey_key))
+            return false;
 
         // run loop
         while(GetMessage(&msg, NULL, 0, 0 ) > 0)
@@ -230,6 +229,16 @@ namespace Core
             TranslateMessage(&msg); 
             DispatchMessage(&msg); 
         }
+
+        // unset hotkey
+        if(_hotkey_handler)
+            UnregisterHotKey(_hwnd, 1);
+
+        // destroy window
+        DestroyWindow(_hwnd);
+
+        // unregister class
+        UnregisterClass(_CLASS_NAME, hinstance);
 
         return true;
     }
@@ -260,19 +269,17 @@ namespace Core
         va_end(args);
         message[sizeof(message) - 1] = 0;
 
-        MessageBox(NULL, message, _MESSAGE_TITLE, MB_OK);
+        MessageBox(NULL, message, _MESSAGE_TITLE, MB_OK|MB_SETFOREGROUND);
     }
 
     //------------------------------------------------------------------------
     Bool System::SetHotKey( ULong modifier, ULong key, System::HotKeyHandler handler, void* custom )
     {
-        assert(_hwnd);
         assert(_hotkey_handler == NULL);
         assert(_hotkey_custom == NULL);
 
-        if(!RegisterHotKey(_hwnd, 1, modifier, key))
-            return false;
-
+        _hotkey_modifier = modifier;
+        _hotkey_key = key;
         _hotkey_handler = handler;
         _hotkey_custom = custom;
 

@@ -3,14 +3,6 @@
 #include <HappyAuction/Core/Script.hpp>
 
 /**/
-static void _unit_test()
-{
-    using namespace Core;
-
-    int z = 0; 
-}
-
-/**/
 int WINAPI WinMain(
     HINSTANCE   hInstance,
     HINSTANCE   hPrevInstance, 
@@ -18,7 +10,6 @@ int WINAPI WinMain(
     int         iCmdShow)
 {
     using namespace Core;
-    //_unit_test(); return 0;
 
     try
     {

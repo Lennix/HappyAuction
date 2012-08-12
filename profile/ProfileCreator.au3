@@ -897,7 +897,7 @@ Func convertProfilesToLua()
 	For $i = 0 To UBound($profiles)-1
 		Local $prof = $profiles[$i]
 
-		luaResetFilters()
+		;luaResetFilters()
 
 		; 0 filter, 1 name, 2 class, 3 itemtype, 4 subtype, 5 rarity, 6 price, 7 bid, 8 buyout, 9 priceflag (random), 10 startgold, 11 log flag
 		; filter: 0 stats, 1 values
@@ -917,7 +917,7 @@ Func convertProfilesToLua()
 
 		If IniRead($Ini, "main", "pagedelay", 0) > 0 Then WriteLua("haSettingsNextDelay('" & IniRead($Ini, "main", "pagedelay", 0) & "')")
 
-		If StringLen($prof[2]) > 0 Then WriteLua("haFilterClass('" & $prof[2] & "')")
+		If StringLen($prof[2]) > 0 Then WriteLua("haFilterChar('" & $prof[2] & "')")
 
 		; itemtype is automatically determined, just use subtype
 		If StringLen($prof[4]) > 0 Then
@@ -1035,7 +1035,7 @@ Func convertProfilesToLua()
 			If $prof[8] > 0 Then
 				WriteLua("if buyout <= " & $prof[8] & " then", 1)
 				If $prof[11] == 1 Then WriteLua("haLog('Buying item')")
-				WriteLua("haActionBuyout()")
+				WriteLua("haBuyout()")
 			EndIf
 			; check bid
 			If $prof[7] > 0 Then
@@ -1045,7 +1045,7 @@ Func convertProfilesToLua()
 					WriteLua("if max_bid <= " & $prof[7] & " then", 1)
 				EndIf
 				If $prof[11] == 1 Then WriteLua("haLog('Bidding on item for " & $prof[7] & "')")
-				WriteLua("haActionBid(" & $prof[7] & ")",1)
+				WriteLua("haBid(" & $prof[7] & ")",1)
 			EndIf
 
 			WriteLua("end", -1) ; end for bid/buyout if

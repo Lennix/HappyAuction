@@ -12,9 +12,6 @@
     <ClCompile Include="..\..\source\Diablo\Core\AuctionInterface.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\Diablo\Core\AuctionTrainer.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\Diablo\Core\Game.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -25,9 +22,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\Diablo\Core\AuctionInterface.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Diablo\Core\AuctionTrainer.hpp">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\Diablo\Core\Game.hpp">

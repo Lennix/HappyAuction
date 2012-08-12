@@ -525,7 +525,7 @@ namespace Diablo
     Bool AuctionTrainer::_ReadHoverItemLevel( ULong& ilevel )
     {
         _UiObject       ui_object;
-        if(!_ReadUiObject(TOOLTIP_ITEMLEVEL, ui_object))
+        if(!_ReadUiObject(OBJECT_TOOLTIP_ITEMLEVEL, ui_object))
             return false;
 
         TextString ilevelText;

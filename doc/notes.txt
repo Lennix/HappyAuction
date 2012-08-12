@@ -1,12 +1,16 @@
-- actions are now throttled against framerate thereby increasing performance and reliability. this eliminates need to use haSettingsListDelay to increase stability.
-- deprecated haSettingsListDelay, use haSetGlobalDelay instead. default delay is now 0 ms. see README for details.
-- added haActionRelogin(name, password) allowing relogin on error. see README for details.
-
-
-
-CENTERED X -> RATIO CONVERSION FUNCTION USING 2560/1600 REZ:
-(x - (2560 / 2)) / 1600
-y / 1600
-
-
-
+- deprecated following functions (rename only) with replacements shown. old versions will continue to work for several updates.
+    haActionBid -> haBid
+    haActionBuyout -> haBuyout
+    haActionSearch -> haSearch
+    haActionSortDpsArmor -> haSortDpsArmor
+    haActionSortBuyout -> haSortBuyout
+    haActionReLogin -> haReLogin
+    haStashSell -> haSell
+- HappyAuction may now run completely in the background (not minimized) with the exception of haStashNext and haStashSelect functions
+- made haRelogin() faster
+- made haReRogin() return false if it did nothing (if theres no disconnect error)
+- added haSendToStash(). see README
+- added haStashSelect(column, row, bag). see README
+- added haFilterStatClear(). see README
+- added haFilterChar(). see README
+- removed sleep delay in SnipeBuyout bot. this is just to demonstrate performance to newbies :)

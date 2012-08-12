@@ -11,13 +11,6 @@ namespace Core
     class Window
     {
     public:
-        enum MouseState
-        {
-            MOUSE_CLICK,
-            MOUSE_DOWN,
-            MOUSE_UP,
-        };
-
         struct Color
         {
             Byte b, g ,r, a;
@@ -61,60 +54,65 @@ namespace Core
         }
 
         /**/
-        void InputEnable( Bool enable )
+        void Focus()
         {
-            EnableWindow(_hwnd, enable);
+            //SetForegroundWindow(_hwnd);
         }
 
         /**/
-        void SendMouseButton( ULong x, ULong y, MouseState state=MOUSE_CLICK )
+        void SendMouseButton( ULong x, ULong y )
         {
+            SendMouseMove(x, y, false);
+
             LPARAM lparam = (x | (y << 16));
-            switch(state)
+            PostMessage(_hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lparam);
+            PostMessage(_hwnd, WM_LBUTTONUP, 0, lparam);
+
+            /*
+            INPUT input[2] = {0};
+
+            input[0].type = INPUT_MOUSE;
+            input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+            input[1].type = INPUT_MOUSE;
+            input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            SendInput(2, input, sizeof(INPUT));
+            */
+        }
+
+        /**/
+        void SendMouseMove( ULong x, ULong y, Bool direct )
+        {
+            if(direct)
             {
-            case MOUSE_CLICK:
-                //SendMouseMove(x, y);
-                PostMessage(_hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lparam);
-                PostMessage(_hwnd, WM_LBUTTONUP, 0, lparam);
-                break;
+                POINT screen_point = { x, y };
 
-            case MOUSE_DOWN:
-                PostMessage(_hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lparam);
-                break;
+                // get screen coordinates
+                ClientToScreen(_hwnd, &screen_point);
 
-            case MOUSE_UP:
-                PostMessage(_hwnd, WM_LBUTTONUP, 0, lparam);
-                break;
+                // set cursor position
+                SetCursorPos(screen_point.x, screen_point.y);
             }
-        }
+            else
+            {
+                LPARAM lparam;
 
-        /**/
-        void SendMouseMove( ULong x, ULong y )
-        {
-            LPARAM lparam;
+                lparam = (x | (y << 16));
+                PostMessage(_hwnd, WM_MOUSEMOVE, 0, lparam);
 
-            lparam = (HTCLIENT | (WM_MOUSEMOVE << 16));
-            PostMessage(_hwnd, WM_SETCURSOR, (WPARAM)_hwnd, lparam);
+                lparam = (HTCLIENT | (WM_MOUSEMOVE << 16));
+                PostMessage(_hwnd, WM_SETCURSOR, (WPARAM)_hwnd, lparam);
 
-            lparam = (x | (y << 16));
-            PostMessage(_hwnd, WM_MOUSEMOVE, 0, lparam);
-        }
-
-        /**/
-        void SendMouseWheel( Short amount, ULong x, ULong y )
-        {
-            LPARAM lparam = (x | (y << 16));
-            PostMessage(_hwnd, WM_MOUSEWHEEL, (amount * WHEEL_DELTA) << 16, lparam);
+            }
         }
 
         /**/
         void SendChar( Char c )
         {
-            PostMessage(_hwnd, WM_CHAR, c, 0);
+            _SendKey(c, false);
         }
 
         /**/
-        void SendInput( const Char* text, Bool specials )
+        void SendInputKeys( const Char* text, Bool specials )
         {
             Bool special = false;
 
@@ -131,16 +129,16 @@ namespace Core
                     case 'C': // down
                     case 'c': // up
                         _key_ctrl = (c == 'C');
-                        _SendVKey(VK_CONTROL, _key_ctrl);
+                        _SendKey(VK_CONTROL, true, !_key_ctrl);
                         break;
 
                     case 'D':
-                        _SendVKey(VK_DELETE, true);
-                        _SendVKey(VK_DELETE, false);
+                        _SendKey(VK_DELETE, true);
+                        _SendKey(VK_DELETE, true, true);
                         break;
 
                     default:
-                        _SendKey(c);
+                        SendChar(c);
                     }
                 }
                 else
@@ -148,7 +146,7 @@ namespace Core
                     if(specials && c == '^')
                         special = true;
                     else
-                        _SendKey(c);
+                        SendChar(c);
                 }
             }
         }
@@ -166,6 +164,28 @@ namespace Core
             }
             else
                 return false;
+        }
+
+        /**/
+        Bool SetDimensions( ULong x, ULong y, ULong width, ULong height )
+        {
+            static RECT rect;
+
+            // get current window dimensions
+            if(!GetWindowRect(_hwnd, &rect))
+                return false;
+
+            // convert from client to window dimensions
+            _width = width + (rect.right - rect.left) - _width;
+            _height = height + (rect.bottom - rect.top) - _height;
+
+            // move/resize
+            if(MoveWindow(_hwnd, x, y, _width, _height, TRUE) != TRUE)
+                return false;
+            PostMessage(_hwnd, WM_EXITSIZEMOVE, 0, 0);
+
+            // update dimensions
+            return RefreshDimensions();
         }
 
         /**/
@@ -213,24 +233,36 @@ namespace Core
 
     private:
         /**/
-        void _SendKey( ULong key )
+        void _SendKey( ULong key, Bool extended, Bool up=false )
         {
-            if(_key_ctrl)
+            if(extended)
             {
-                PostMessage(_hwnd, WM_KEYDOWN, key, 0x801E0001);
-                PostMessage(_hwnd, WM_KEYUP, key, 0xC01E0001);
+                if(up)
+                    PostMessage(_hwnd, WM_KEYUP, key, 0xC01D0001);
+                else
+                    PostMessage(_hwnd, WM_KEYDOWN, key, 0x001D0001);
             }
             else
-                PostMessage(_hwnd, WM_CHAR, key, 0x001E0001);
-        }
+            {
+                if(_key_ctrl)
+                {
+                    PostMessage(_hwnd, WM_KEYDOWN, key, 0x801E0001);
+                    PostMessage(_hwnd, WM_KEYUP, key, 0xC01E0001);
+                }
+                else
+                    PostMessage(_hwnd, WM_CHAR, key, 0x001E0001);
+            }
 
-        /**/
-        void _SendVKey( ULong vkey, Bool down )
-        {
-            if(down)
-                PostMessage(_hwnd, WM_KEYDOWN, vkey, 0x001D0001);
-            else
-                PostMessage(_hwnd, WM_KEYUP, vkey, 0xC01D0001);
+            /*
+            //TODO: interferes with windows hook
+            INPUT input = {0};
+
+            input.type = INPUT_KEYBOARD;
+            input.ki.dwFlags = (extended * KEYEVENTF_EXTENDEDKEY) | (up * KEYEVENTF_KEYUP);
+            input.ki.wVk = extended ? key : VkKeyScan(key);
+
+            SendInput(1, &input, sizeof(INPUT));
+            */
         }
     };
 }

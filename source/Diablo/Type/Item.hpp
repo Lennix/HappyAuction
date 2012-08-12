@@ -16,6 +16,17 @@ namespace Diablo
         {
             ItemStatId      id;
             ValueCollection values;
+
+            Stat():
+                id(ITEM_STAT_NONE)
+            {
+            }
+
+            static const Stat& GetDefault()
+            {
+                static const Stat s;
+                return s;
+            }
         };
 
         typedef FixedArray<Item::Stat, ITEM_STAT_LIMIT>     StatCollection;
@@ -23,9 +34,6 @@ namespace Diablo
         typedef FixedArray<Item::Stat, ITEM_SOCKET_LIMIT>   SocketCollection;
 
     public:
-        StatCollection      stats;
-        SocketCollection    sockets;
-
         ULong               dpsarmor;
         ULong               max_bid;
         ULong               buyout;
@@ -37,6 +45,9 @@ namespace Diablo
         TextString          timeleft;
         TextString          name;
 
+        StatCollection      stats;
+        SocketCollection    sockets;
+
     public:
         /**/
         Item():
@@ -47,6 +58,17 @@ namespace Diablo
             current_bid(0),
             flags(0)
         {
+        }
+
+        /**/
+        void Empty()
+        {
+            dpsarmor = 0;
+            current_bid = 0;
+            max_bid = 0;
+            buyout = 0;
+            stats.Empty();
+            sockets.Empty();
         }
 
         /**/
