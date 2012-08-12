@@ -100,11 +100,36 @@ namespace HappyAuction
 
             switch(id)
             {
-            // haFilterType(id) -> status
-            case SCRIPT_HAFILTERTYPE:
+            //---- AUCTION/SEARCH --------------------------------------------
+            // haBid(bid) -> status
+            case SCRIPT_HABID:
+            case SCRIPT_HAACTIONBID://DEPRECATED
+                status = (_list_index > 0) ? _ahi.ActionBid(_list_index - 1, _GetStackULong(1)) : false;
+                _PushStack(status);
+                return 1;
+
+            // haBuyout() -> status
+            case SCRIPT_HABUYOUT:
+            case SCRIPT_HAACTIONBUYOUT://DEPRECATED
+                status = (_list_index > 0) ? _ahi.ActionBuyout(_list_index - 1) : false;
+                _PushStack(status);
+                return 1;
+
+            // haFilterBuyout(amount, randomize) -> status
+            // haFilterBuyout() -> buyout
+            case SCRIPT_HAFILTERBUYOUT:
+                snumber = _GetStackLong(1);
+                if(snumber)
+                    _PushStack(_ahi.WriteBuyout(snumber, _GetStackBool(2)));
+                else
+                    _PushStack(_ahi.ReadBuyout(snumber) ? snumber : 0);
+                return 1;
+
+            // haFilterChar(id) -> status
+            case SCRIPT_HAFILTERCHAR:
                 pstring1 = _GetStackString(1);
-                status = pstring1 && _ahi.WriteFilterType(
-                    Tools::Conform(static_cast<FilterSecondaryId>(AH_COMBO_SECONDARY.Find(pstring1)), FILTER_SEC_1H_ALL, FILTER_SEC_FOLLOWER_TEMPLAR));
+                status = pstring1 && _ahi.WriteFilterChar(
+                    Tools::Conform(static_cast<FilterCharId>(AH_COMBO_CHARACTER.Find(pstring1)), FILTER_CHAR_BARBARIAN, FILTER_CHAR_WIZARD));
                 _PushStack(status);
                 return 1;
 
@@ -137,14 +162,20 @@ namespace HappyAuction
                 _PushStack(status);
                 return 1;
 
-            // haFilterBuyout(amount, randomize) -> status
-            // haFilterBuyout() -> buyout
-            case SCRIPT_HAFILTERBUYOUT:
-                snumber = _GetStackLong(1);
-                if(snumber)
-                    _PushStack(_ahi.WriteBuyout(snumber, _GetStackBool(2)));
-                else
-                    _PushStack(_ahi.ReadBuyout(snumber) ? snumber : 0);
+            // haFilterStatClear() -> status
+            case SCRIPT_HAFILTERSTATCLEAR:
+                status = true;
+                for( index = 0; index < AH_INPUT_PSTAT_LIMIT; index++ )
+                    status &= _ahi.WriteFilterStat(index, ITEM_STAT_NONE, 0);
+                _PushStack(status);
+                return 1;
+
+            // haFilterType(id) -> status
+            case SCRIPT_HAFILTERTYPE:
+                pstring1 = _GetStackString(1);
+                status = pstring1 && _ahi.WriteFilterType(
+                    Tools::Conform(static_cast<FilterSecondaryId>(AH_COMBO_SECONDARY.Find(pstring1)), FILTER_SEC_1H_ALL, FILTER_SEC_FOLLOWER_TEMPLAR));
+                _PushStack(status);
                 return 1;
 
             // haFilterUnique(name) -> status
@@ -157,39 +188,74 @@ namespace HappyAuction
                     _PushStack(_ahi.ReadUnique(string) ? string : "");
                 return 1;
 
-            // haActionBid(bid) -> status
-            case SCRIPT_HAACTIONBID:
-                status = (_list_index > 0) ? _ahi.ActionBid(_list_index - 1, _GetStackULong(1)) : false;
-                _PushStack(status);
-                return 1;
+            // haListNext() -> status
+            case SCRIPT_HALISTNEXT:
+                return _haListNext();
 
-            // haActionBuyout() -> status
-            case SCRIPT_HAACTIONBUYOUT:
-                status = (_list_index > 0) ? _ahi.ActionBuyout(_list_index - 1) : false;
-                _PushStack(status);
-                return 1;
+            // haListSelect(index) -> status
+            case SCRIPT_HALISTSELECT:
+                return _haListSelect();
 
-            // haActionSearch(wait) -> status
-            case SCRIPT_HAACTIONSEARCH:
+            // haSearch() -> status
+            case SCRIPT_HASEARCH:
+            case SCRIPT_HAACTIONSEARCH://DEPRECATED
                 _list_index = 0;
                 status = _ahi.ActionSearch();
                 _PushStack(status);
                 return 1;
 
-            // haActionSortDpsArmor() -> status
-            case SCRIPT_HAACTIONSORTDPSARMOR:
-                status = _ahi.ActionListSortDpsArmor();
-                _PushStack(status);
-                return 1;
-
-            // haActionSortBuyout() -> status
-            case SCRIPT_HAACTIONSORTBUYOUT:
+            // haSortBuyout() -> status
+            case SCRIPT_HASORTBUYOUT:
+            case SCRIPT_HAACTIONSORTBUYOUT://DEPRECATED
                 status = _ahi.ActionListSortBuyout();
                 _PushStack(status);
                 return 1;
 
-            // haActionReLogin(name, password) -> status
-            case SCRIPT_HAACTIONRELOGIN:
+            // haSortDpsArmor() -> status
+            case SCRIPT_HASORTDPSARMOR:
+            case SCRIPT_HAACTIONSORTDPSARMOR://DEPRECATED
+                status = _ahi.ActionListSortDpsArmor();
+                _PushStack(status);
+                return 1;
+
+
+            //---- AUCTION/SELL ----------------------------------------------
+            // haSell(starting, buyout) -> status
+            case SCRIPT_HASELL:
+            case SCRIPT_HASTASHSELL://DEPRECATED
+                return _haSell();
+
+            // haStashNext() -> status
+            case SCRIPT_HASTASHNEXT:
+                return _haStashNext();
+
+            // haStashSelect(column, row, bag) -> status
+            case SCRIPT_HASTASHSELECT:
+                return _haStashSelect();
+
+
+            //---- AUCTION/COMPLETED------------------------------------------
+            // haSendToStash() -> status
+            case SCRIPT_HASENDTOSTASH:
+                status = _ahi.ActionSendToStash();
+                _PushStack(status);
+                return 1;
+
+
+            //---- ITEM ------------------------------------------------------
+            // haItem() -> item[dpsarmor, mbid, buyout, cbid, time, stats, sockets]
+            case SCRIPT_HAITEM:
+                return _haItem();
+
+            // haItemStat() -> stat[name, value1, value2, value3, value4]
+            case SCRIPT_HAITEMSTAT:
+                return _haItemStat();
+
+
+            //---- ETC -------------------------------------------------------
+            // haReLogin(name, password) -> status
+            case SCRIPT_HARELOGIN:
+            case SCRIPT_HAACTIONRELOGIN://DEPRECATED
                 pstring1 = _GetStackString(1);
                 pstring2 = _GetStackString(2);
                 if(pstring1 && pstring1)
@@ -199,29 +265,26 @@ namespace HappyAuction
                 _PushStack(status);
                 return 1;
 
-            // haListSelect(index) -> status
-            case SCRIPT_HALISTSELECT:
-                return _haListSelect();
 
-            // haListNext() -> status
-            case SCRIPT_HALISTNEXT:
-                return _haListNext();
+            //---- SETTINGS --------------------------------------------------
+            // haSetGlobalDelay(delay)
+            case SCRIPT_HASETGLOBALDELAY:
+                GAME_ACTION_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_ACTION_DELAY_MAX);
+                return 0;
 
-            // haStashSell(starting, buyout) -> status
-            case SCRIPT_HASTASHSELL:
-                return _haStashSell();
 
-            // haStashNext() -> status
-            case SCRIPT_HASTASHNEXT:
-                return _haStashNext();
+            //---- UTILITIES -------------------------------------------------
+            // haAlert(message)
+            case SCRIPT_HAALERT:
+                pstring1 = _GetStackString(1);
+                if(pstring1)
+                    System::Message("%s", pstring1);
+                return 0;
 
-            // haItem() -> item[dpsarmor, mbid, buyout, cbid, time, stats, sockets]
-            case SCRIPT_HAITEM:
-                return _haItem();
-
-            // haItemStat() -> stat[name, value1, value2, value3, value4]
-            case SCRIPT_HAITEMSTAT:
-                return _haItemStat();
+            // haBeep()
+            case SCRIPT_HABEEP:
+                MessageBeep(MB_ICONEXCLAMATION);
+                return 0;
 
             // haLog(message)
             case SCRIPT_HALOG:
@@ -230,29 +293,14 @@ namespace HappyAuction
                     Tools::Log(LOG_USER, "%s\n", pstring1);
                 return 0;
 
-            // haBeep()
-            case SCRIPT_HABEEP:
-                MessageBeep(MB_ICONEXCLAMATION);
-                return 0;
-
             // haSleep(delay)
             // haSleep(low, high)
             case SCRIPT_HASLEEP:
                 _game.Sleep(_GetStackULong(1), _GetStackULong(2));
                 return 0;
 
-            // haAlert(message)
-            case SCRIPT_HAALERT:
-                pstring1 = _GetStackString(1);
-                if(pstring1)
-                    System::Message("%s", pstring1);
-                return 0;
 
-            // haSetGlobalDelay(delay)
-            case SCRIPT_HASETGLOBALDELAY:
-                GAME_ACTION_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_ACTION_DELAY_MAX);
-                return 0;
-
+            //----------------------------------------------------------------
             case SCRIPT_HATEST:
                 return _haTest();
 
@@ -354,7 +402,7 @@ namespace HappyAuction
         }
 
         /**/
-        ULong _haStashSell()
+        ULong _haSell()
         {
             ULong   starting = _GetStackULong(1);
             ULong   buyout = _GetStackULong(2);
@@ -380,7 +428,7 @@ namespace HappyAuction
 
             // ensure first bag if beginning iteration
             if( _stash_column == 0 && _stash_row == 0 && _stash_bag == 0 )
-                _ahi.Tab(UI_TAB_SELL, UI_STASH_BAG_1);
+                _ahi.Tab(UI_TAB_SELL, UI_TAB_STASHBAG1);
 
             while(_active)
             {
@@ -401,7 +449,7 @@ namespace HappyAuction
                             break;
                         }
 
-                        _ahi.Tab(UI_TAB_SELL, UI_STASH_BAG_1 + _stash_bag);
+                        _ahi.Tab(UI_TAB_SELL, UI_TAB_STASHBAG1 + _stash_bag);
                     }
                 }
 
@@ -410,6 +458,37 @@ namespace HappyAuction
                 {
                     status = true;
                     break;
+                }
+            }
+
+            _PushStack(status);
+
+            return 1;
+        }
+
+        /**/
+        ULong _haStashSelect()
+        {
+            Index   column = _GetStackULong(1) - 1;
+            Index   row = _GetStackULong(2) - 1;
+            Index   bag = _GetStackULong(3) - 1;
+            Bool    status = false;
+
+            // check range
+            if(column < AH_STASH_COLUMNS && row < AH_STASH_ROWS && bag < AH_STASH_BAGS)
+            {
+                // select tab
+                if(_ahi.Tab(UI_TAB_SELL, UI_TAB_STASHBAG1 + bag))
+                {
+                    // select and read stash item
+                    if(_ahi.ReadStashItem(column, row, _item))
+                    {
+                        // update stash position
+                        _stash_column = column;
+                        _stash_row = row;
+                        _stash_bag = bag;
+                        status = true;
+                    }
                 }
             }
 
@@ -500,13 +579,6 @@ namespace HappyAuction
             return 1;
         }
 
-        /**/
-        ULong _haTest()
-        {
-            return 1;
-        }
-
-
         // DEPRECATED
         //--------------------------------------------------------------------
         /**/
@@ -582,6 +654,54 @@ namespace HappyAuction
                 _PushStack(0);
 
             return count;
+        }
+
+
+
+
+
+
+        ULong _DropHeight()
+        {
+            const Coordinate&       coordinate =    COORDS[UI_COMBO_SECONDARY];
+            const Coordinate&       size =          COORDS[UI_COMBO_SIZE];
+            Window&                 window =        _game.GetWindow();
+            ULong                   y =             _game.Y(coordinate.y, false);
+            ULong                   height =        window.GetHeight() - y;
+            static Window::Color    pixels[2000];
+            ULong                   h;
+
+            // open dropdown
+            _game.MouseClick(coordinate.x + size.x / 2, coordinate.y - (size.y * .8));
+            Sleep(50);
+
+            // image scan to selection
+            window.CaptureScreen(pixels, _game.X(coordinate.x + size.x / 2, false), y, 1, height);
+
+            // determine selection y
+            for( h = 0; h < height && (pixels[h].r <= (pixels[h].g + pixels[h].b)); h++ );
+            if(h == height)
+                return 0;
+
+            // click selection
+            _game.MouseClickAbsolute(2, 2);
+            Sleep(50);
+
+            return h;
+        }
+
+        /**/
+        ULong _haTest()
+        {
+            for( Index i=1601; _active && i<=2000; i++)
+            {
+                _game.GetWindow().SetDimensions( 0, 0, (i * 2560) / 1600, i );
+                Sleep(1500);
+
+                ULong h = _DropHeight();
+                Tools::Log(LOG_USER, "%u\t%u\t%f\n", i, h, (double)h/14.0);
+            }
+            return 0;
         }
     };
 }

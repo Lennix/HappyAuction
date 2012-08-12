@@ -76,22 +76,22 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    void Game::MouseClick( ULong x, ULong y )
+    void Game::MouseClickAbsolute( ULong x, ULong y )
     {
         _window.SendMouseButton(x, y);
         SleepFrames(2);
         Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
     }
 
-    void Game::MouseClick( Double x, Double y, Bool centered )
+    void Game::MouseClick( Double x, Double y, Bool centered, Bool random )
     {
-        MouseClick(centered ? X(x) : Y(x), Y(y));
+        MouseClickAbsolute(centered ? X(x, random) : Y(x, random), Y(y, random));
     }
 
     //------------------------------------------------------------------------
-    void Game::MouseMove( Double x, Double y )
+    void Game::MouseMove( Double x, Double y, Bool direct )
     {
-        _window.SendMouseMove(X(x), Y(y));
+        _window.SendMouseMove(X(x), Y(y), direct);
         SleepFrames(2);
         Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
     }

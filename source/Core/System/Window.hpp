@@ -56,13 +56,13 @@ namespace Core
         /**/
         void Focus()
         {
-            SetForegroundWindow(_hwnd);
+            //SetForegroundWindow(_hwnd);
         }
 
         /**/
         void SendMouseButton( ULong x, ULong y )
         {
-            SendMouseMove(x, y);
+            SendMouseMove(x, y, false);
 
             LPARAM lparam = (x | (y << 16));
             PostMessage(_hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lparam);
@@ -80,15 +80,29 @@ namespace Core
         }
 
         /**/
-        void SendMouseMove( ULong x, ULong y )
+        void SendMouseMove( ULong x, ULong y, Bool direct )
         {
-            POINT screen_point = { x, y };
+            if(direct)
+            {
+                POINT screen_point = { x, y };
 
-            // get screen coordinates
-            ClientToScreen(_hwnd, &screen_point);
+                // get screen coordinates
+                ClientToScreen(_hwnd, &screen_point);
 
-            // set cursor position
-            SetCursorPos(screen_point.x, screen_point.y);
+                // set cursor position
+                SetCursorPos(screen_point.x, screen_point.y);
+            }
+            else
+            {
+                LPARAM lparam;
+
+                lparam = (x | (y << 16));
+                PostMessage(_hwnd, WM_MOUSEMOVE, 0, lparam);
+
+                lparam = (HTCLIENT | (WM_MOUSEMOVE << 16));
+                PostMessage(_hwnd, WM_SETCURSOR, (WPARAM)_hwnd, lparam);
+
+            }
         }
 
         /**/
@@ -150,6 +164,28 @@ namespace Core
             }
             else
                 return false;
+        }
+
+        /**/
+        Bool SetDimensions( ULong x, ULong y, ULong width, ULong height )
+        {
+            static RECT rect;
+
+            // get current window dimensions
+            if(!GetWindowRect(_hwnd, &rect))
+                return false;
+
+            // convert from client to window dimensions
+            _width = width + (rect.right - rect.left) - _width;
+            _height = height + (rect.bottom - rect.top) - _height;
+
+            // move/resize
+            if(MoveWindow(_hwnd, x, y, _width, _height, TRUE) != TRUE)
+                return false;
+            PostMessage(_hwnd, WM_EXITSIZEMOVE, 0, 0);
+
+            // update dimensions
+            return RefreshDimensions();
         }
 
         /**/

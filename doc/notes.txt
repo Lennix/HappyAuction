@@ -1,9 +1,16 @@
-- added haStashNext() and haStashSell() allowing you to scan your stash and sell stuff (see README).
-- added haItem(), haItemStat() (see README) and deprecated haListItem(), haListItemStat(), haListItemSocket().
-- updated input method. now requires d3 window to be in foreground
-- greatly improved haActionReLogin(). see README and example in Bots/GemMiner.
-- improve responsiveness when stopping a script
-- fixed a stat filter bug sometimes causing wrong filter to be selected
-- improved performance even more. now will reach input limit twice as fast! :D
-- updated all sample bots to use haItem() instead.
-- sample bots are now be enabled by uncommenting the corresponding require() in Main.lua.
+- deprecated following functions (rename only) with replacements shown. old versions will continue to work for several updates.
+    haActionBid -> haBid
+    haActionBuyout -> haBuyout
+    haActionSearch -> haSearch
+    haActionSortDpsArmor -> haSortDpsArmor
+    haActionSortBuyout -> haSortBuyout
+    haActionReLogin -> haReLogin
+    haStashSell -> haSell
+- HappyAuction may now run completely in the background (not minimized) with the exception of haStashNext and haStashSelect functions
+- made haRelogin() faster
+- made haReRogin() return false if it did nothing (if theres no disconnect error)
+- added haSendToStash(). see README
+- added haStashSelect(column, row, bag). see README
+- added haFilterStatClear(). see README
+- added haFilterChar(). see README
+- removed sleep delay in SnipeBuyout bot. this is just to demonstrate performance to newbies :)

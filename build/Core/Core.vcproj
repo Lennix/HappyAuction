@@ -185,10 +185,6 @@
 				RelativePath="..\..\source\Core\Support\Lua.hpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\source\Core\Support\Settings.hpp"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath="..\..\source\Core\Array.hpp"
@@ -204,10 +200,6 @@
 		</File>
 		<File
 			RelativePath="..\..\source\Core\Enums.hpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\source\Core\LocalList.hpp"
 			>
 		</File>
 		<File

@@ -1,10 +1,10 @@
-HappyAuction v0.9.5
+HappyAuction v0.9.6
 
 DESCRIPTION
 ------------------------------------------------------------------------------
 HappyAuction is a C++ open source LUA scriptable Diablo 3 auction house bot.
-It offers full control over the AH search/equipment and sell sections. Some
-popular bot scripts are included. Happy botting! :D
+It offers full control over the AH. Some popular bot scripts are included.
+Happy botting! :D
 
 
 INSTRUCTIONS
@@ -29,11 +29,13 @@ INCLUDED BOTS
 
 NOTES
 ------------------------------------------------------------------------------
+- HappyAuction can run in the background (not minimized) while you do other
+  stuff.
 - There will be a brief 2-3 second delay before running a script the first
   time. This is necessary to run a memory scan of Diablo 3 to detect
   everything HappyAuction needs to operate.
-- Do not use Video/Letterbox option
-- Performance depends on your FPS
+- Performance depends on your FPS.
+- Do not use Video/Letterbox option.
 - HappyAuction has not been tested with RMAH but should work.
 
 
@@ -52,7 +54,7 @@ SECURITY
       combobox values and clear item tooltip state.
 - The following is recommended as additional security:
     - Include additional delays with haSleep() and haSetGlobalDelay()
-- I am aware of other security measures and will be adding them in the future.
+    - If you do not use delays don't run scripts too long
 - There is no guarantee HappyAuction is 100% safe from detection. Use at your
   own risk.
 
@@ -64,19 +66,42 @@ SCRIPTING
   some basic operators.
 - The main entry script is Lua/Main.lua.
 - Always check function return status! Yes they can fail sometimes like when
-  normal operation is interupted by some battle.net error.
+  normal operation is interupted by some battle.net error. In which case use
+  haReLogin to relogin.
 - Use haSetGlobalDelay() to slow everything down (fastest by default!)
+- If functions are ever deprecated they will remain available for several
+  updates before being removed permanently.
+
 
 FUNCTIONS
 The following are the available functions in addition to standard LUA stuff
 arranged by category:
 
-AUCTION FILTERS:
-- haFilterType(id) -> status
-    Sets item filter. This will also take care of character and primary item
-    types automatically.
+
+AUCTION/SEARCH:
+- haBid() -> status
+- haBid(bid) -> status
+    Bids on current item and sets an optional bid price.
+    - bid:      your max bid price.
+    - status:   true if successful
+
+- haBuyout() -> status
+    Buys out the current item. Use with caution!
+    - status:   true if successful
+
+- haFilterBuyout(amount) -> status
+- haFilterBuyout(amount, randomize) -> status
+- haFilterBuyout() -> amount
+    Sets or gets the buyout amount filter.
+    - amount:       buyout amount. -1 to clear.
+    - randomize:    if true adds a small random value to
+                    amount to avoid cached search results and detection.
+    - status:       true if successful
+
+- haFilterChar(id) -> status
+    Sets character filter.
     - id:       substring identifier of secondary item type.
-                example: 'voodoo' will match 'Voodoo Mask'
+                example: 'doc' will match 'Witch Doctor'
     - status:   true if successful
 
 - haFilterLevel(min,  max) -> status
@@ -98,26 +123,22 @@ AUCTION FILTERS:
     - value:    minimum value for this filter. range: 0-999
     - status:   true if successful
 
-- haFilterBuyout(amount) -> status
-- haFilterBuyout(amount, randomize) -> status
-- haFilterBuyout() -> amount
-    Sets or gets the buyout amount filter.
-    - amount:       buyout amount. -1 to clear.
-    - randomize:    if true adds a small random value to
-                    amount to avoid cached search results and detection.
-    - status:       true if successful
+- haFilterStatClear() -> status
+    The equivalent of calling haFilterStat(index, 'None', 0) for each preferred
+    stat.
+    - status:   true if successful
+
+- haFilterType(id) -> status
+    Sets item filter. This will also take care of character and primary item
+    types automatically. example:
+    - id:       substring identifier of secondary item type.
+                example: 'voodoo' will match 'Voodoo Mask'
+    - status:   true if successful
 
 - haFilterUnique(name) -> status
 - haFilterUnique() -> name
     Sets or gets legendary or set item filter.
     - name:     string idenfiying a legendary or set item.
-    - status:   true if successful
-
-
-SEARCH RESULTS LIST:
-- haListSelect(index) -> status
-    Selects the current item given a row index from search results.
-    - index:    index of item to select. range: 1-11
     - status:   true if successful
 
 - haListNext() -> status
@@ -126,12 +147,36 @@ SEARCH RESULTS LIST:
     example:
         -- will buyout every item found
         while haListNext() do
-            haActionBuyout()
+            haBuyout()
         end
     - status:   true if successful
 
+- haListSelect(index) -> status
+    Selects the current item given a row index from search results.
+    - index:    index of item to select. range: 1-11
+    - status:   true if successful
 
-STASH
+- haSearch() -> status
+    Hits the search button.
+    - status:   true if successful
+
+- haSortBuyout() -> status
+    Toggles buyout column sorting order
+    - status:   true if successful
+
+- haSortDpsArmor() -> status
+    Toggles DPS or Armor column sorting order
+    - status:   true if successful
+
+
+AUCTION/SELL:
+- haSell(starting, buyout) -> status
+    Sells currently selected stash item for the given starting and optional
+    buyout price. Typical reason for failure due to auction limit reached.
+    - starting: starting price
+    - buyout:   optional buyout price
+    - status:   true if successful.
+
 - haStashNext() -> status
     Iterates through each slot of each bag in sell/stash. Assumes user owns
     all bags but will work regardless.
@@ -139,19 +184,25 @@ STASH
         -- will sell every stash item with over 20 intelligence for 1000/2000g
         while haStashNext() do
             if haItemStat('Intelligence').value1 > 20 then
-                haStashSell(1000, 2000)
+                haSell(1000, 2000)
             end
         end
+    NOTE: D3 window must be in the foreground to use this function.
     - status:   true if successful
 
-- haStashSell(starting, buyout) -> status
-    Sells currently selected stash item for the given starting and optional
-    buyout price. Typical reason for failure due to auction limit reached.
-    - starting: starting price
-    - buyout:   optional buyout price
-    - status:   true if successful.
+- haStashSelect(column, row, bag) -> status
+    Selects the current stash item given a column, row, and bag index. This is
+    a manual alternative to haStashNext() which also affects current stash
+    position. For example haStashSelect(1,1,2) will cause haStashNext() to
+    begin at bag 2.
+    NOTE: D3 window must be in the foreground to use this function.
+    - column:   column index of item to select. range: 1-7
+    - row:      row index of item to select. range: 1-10
+    - bag:      bag index of item to select. range: 1-3
+    - status:   true if successful
 
-ITEM INFORMATION
+
+ITEM:
 - haItem() -> item
     Returns information about the last selected item. Values will be 0 if no
     item is selected or if failure occurred.
@@ -172,7 +223,7 @@ ITEM INFORMATION
 - haItemStat(stat) -> stat
     Convenience function for looking up an item stat quickly. Always returns
     a stat object. Will contain 0 values if not found. This allows example:
-        if haListItemStat('dexterity').value1 > 200 then
+        if haItemStat('dexterity').value1 > 200 then
             -- i has item over 200 dex
         end
     to always succeed even if the item has no dexterity stat.
@@ -180,50 +231,47 @@ ITEM INFORMATION
     - stat.value1-4: stat values. for most stats only value1 will be used.
 
 
-ACTIONS:
-- haActionBid() -> status
-- haActionBid(bid) -> status
-    Bids on current item and sets an optional bid price.
-    - bid:      your max bid price.
-    - status:   true if successful
-
-- haActionBuyout() -> status
-    Buys out the current item. Use with caution!
-    - status:   true if successful
-
-- haActionSearch() -> status
-    Hits the search button.
-    - status:   true if successful
-
-- haActionSortDpsArmor() -> status
-    Toggles DPS or Armor column sorting order
-    - status:   true if successful
-
-- haActionSortBuyout() -> status
-    Toggles buyout column sorting order
-    - status:   true if successful
-
-- haActionReLogin(name, password) -> status
+ETC:
+- haReLogin(name, password) -> status
     If any disconnect errors exist returns to main login and attempts to log
     back in and back to the auction house to continue scripting as usual. If
     login fails will retry with 3 second delay.
-    
     Call this each iteration in your main loop. If other operations are
     suddenly failing its a sign you've been disconnected at which point
-    haActionReLogin will take over. See working example in GemMiner.
-
+    haReLogin will kick in. See working example in Bots/GemMiner.lua.
     - name:     account name
     - password: account password
-    - status:   true if successful login or not disconnected
+    - status:   true if successful relogin
+
+- haSendToStash() -> status
+    Sends completed items to stash. Fails if nothing to send. example:
+        while haSendToStash() do end
+    will send every completed item to stash.
+    NOTE: this function will NOT fail if your stash is full.
+    - status:   true if successful.
+
+
+SETTINGS:
+- haSetGlobalDelay(delay)
+    Adds a global delay to every future action taken. This includes delays
+    not available to haSleep such as the individual actions taken by
+    haBuyout. The actual delay will be a random amount between delay
+    and 2*delay. Useful for slowing your script down to avoid input limit
+    errors and being detected. Default value is 0.
+    - delay:    delay in milliseconds. range: 0-60000
 
 
 UTILITIES:
-- haLog(message)
-    Writes a message to the User.log file
+- haAlert(message)
+    Opens popup message with specified message.
     - message:  message string
 
 - haBeep()
     Beep!
+
+- haLog(message)
+    Writes a message to the User.log file
+    - message:  message string
 
 - haSleep(delay)
 - haSleep(low, high)
@@ -231,20 +279,6 @@ UTILITIES:
     - delay:    delay in milliseconds
     - low:      random delay minimum.
     - high:     random delay maximum.
-
-- haAlert(message)
-    Opens popup message with specified message.
-    - message:  message string
-
-
-SETTINGS:
-- haSetGlobalDelay(delay)
-    Adds a global delay to every future action taken. This includes delays
-    not available to haSleep such as the individual actions taken by
-    haActionBuyout. The actual delay will be a random amount between delay
-    and 2*delay. Useful for slowing your script down to avoid input limit
-    errors and being detected. Default value is 0.
-    - delay:    delay in milliseconds. range: 0-60000
 
 
 SOURCE LICENSE
@@ -262,3 +296,16 @@ docs/       Nothing useful here yet :)
 source/     The source code! HappyAuction is a combination of 1 executable
             and 3 library packages. Ignore HappyMemory: It's temporary code to
             help me with stuff where Cheat Engine falls short.
+
+SOURCE NOTES
+------------------------------------------------------------------------------
+- The primary code is split among the following files/classes:
+    - HappyAuction/Core/Script:
+        LUA to C++ adapter layer
+    - Diablo3/Core/Game:
+        Common game methods independent of specific area of D3
+    - Diablo3/Core/AuctionInterface: 
+        Auction house specific methods
+    - Diablo3/Core/Trainer:
+        All D3 process interaction and memory discovery. This is the file to
+        update after a patch.

@@ -3,14 +3,6 @@
 #include <HappyAuction/Core/Script.hpp>
 
 /**/
-static void _unit_test()
-{
-    using namespace Core;
-
-    int z = 0; 
-}
-
-/**/
 int WINAPI WinMain(
     HINSTANCE   hInstance,
     HINSTANCE   hPrevInstance, 

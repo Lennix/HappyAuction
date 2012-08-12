@@ -17,7 +17,7 @@ namespace Diablo
     };
 
     static const Char*  _HINT_LISTITEM_ITEM =       "D3_ITEM";
-    static const Char*  _HINT_UIOBJECT_PATH[Trainer::ID_COUNT] =
+    static const Char*  _HINT_UIOBJECT_PATH[Trainer::OBJECT_COUNT] =
     {
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchRarityFilter",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchCharacterFilter",
@@ -35,9 +35,9 @@ namespace Diablo
 
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchItemList.PagingButtonsContainer.PageRightButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.SearchButton",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.CompletedMenu.CompletedMenuContainer.CompletedItemContainer.CompletedItemSendToButton",
 
         "Root.TopLayer.BattleNetLightBox_main.LayoutRoot.LightBox",
-        "Root.NormalLayer.BattleNetLogin_main.LayoutRoot.LoginContainer.SubmitButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.PageHeader",
     };
 
@@ -47,8 +47,8 @@ namespace Diablo
         0x00000000
     };
     static const Process::Chain _CHAIN_LISTROOT(_chain_listroot, ACOUNT(_chain_listroot));
-    static const ULong          _BASEADDRESS_FRAMECOUNT = 0x00FD5EE4;
-
+    static const ULong          _BASEADDRESS_FRAMECOUNT =   0x00FD5EE4;
+    static const ULong          _BASEADDRESS_LOGGEDIN =     0x00FB40E0;
 
     //------------------------------------------------------------------------
     struct _UiObjectChild
@@ -118,10 +118,10 @@ namespace Diablo
             Index i;
 
             // verify all addresses
-            for( i = 0; i < ID_COUNT && _address[i] != 0; i++ );
+            for( i = 0; i < OBJECT_COUNT && _address[i] != 0; i++ );
 
             // ready when no null addresses
-            _trained = partial ? i > 0 : (i == ID_COUNT);
+            _trained = partial ? i > 0 : (i == OBJECT_COUNT);
         }
 
         return _trained;
@@ -137,7 +137,7 @@ namespace Diablo
             return false;
 
         // verify all objects
-        for( Index i = 0; i < ID_COUNT; i++ )
+        for( Index i = 0; i < OBJECT_COUNT; i++ )
         {
             if(!_ReadUiObject(i, object))
             {
@@ -150,7 +150,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::WriteComboBox( Id id, Index index )
+    Bool Trainer::WriteComboIndex( Id id, Index index )
     {
         _UiObject object;
 
@@ -169,7 +169,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::ReadComboBox( Id id, Index& index, ULong& count )
+    Bool Trainer::ReadComboIndex( Id id, Index& index, ULong& count )
     {
         _UiObject object;
 
@@ -291,7 +291,7 @@ namespace Diablo
             return false;
 
         // read ui object
-        if(!_ReadUiObject(LIST_PAGENEXT, ui_object))
+        if(!_ReadUiObject(OBJECT_BUTTON_PAGENEXT, ui_object))
             return false;
 
         // determine status
@@ -310,11 +310,46 @@ namespace Diablo
             return false;
 
         // read ui object
-        if(!_ReadUiObject(LIST_SEARCHBUTTON, ui_object))
+        if(!_ReadUiObject(OBJECT_BUTTON_SEARCH, ui_object))
             return false;
 
         // determine button busy status
         status = (ui_object.visible && ui_object.n4 == 0x22);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool Trainer::ReadSendToStashStatus( ButtonStatus& status )
+    {
+        _UiObject ui_object;
+
+        // must be trained
+        if(!_trained)
+            return false;
+
+        // read ui object
+        if(!_ReadUiObject(OBJECT_BUTTON_SENDTOSTASH, ui_object))
+            return false;
+
+        // determine button busy status
+        if(ui_object.visible)
+        {
+            switch(ui_object.n4)
+            {
+            case 37:
+                status = BUTTON_ENABLED;
+                break;
+            case 36:
+                status = BUTTON_HIGHLIGHTED;
+                break;
+            case 34:
+            default:
+                status = BUTTON_DISABLED;
+            }
+        }
+        else
+            status = BUTTON_HIDDEN;
 
         return true;
     }
@@ -325,7 +360,7 @@ namespace Diablo
         _UiObject ui_object;
 
         // read ui object
-        if(!_ReadUiObject(MAIN_POPUP, ui_object))
+        if(!_ReadUiObject(OBJECT_MAIN_POPUP, ui_object))
             return false;
 
         // check popup status
@@ -337,18 +372,14 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool Trainer::ReadLoginStatus( Bool& active )
     {
-        _UiObject ui_object;
-
-        // must be trained
-        if(!_trained)
+        ULong status;
+        
+        // get login status
+        if(!_process.ReadMemory( _base_address + _BASEADDRESS_LOGGEDIN, &status, sizeof(ULong) ))
             return false;
 
-        // read ui object
-        if(!_ReadUiObject(MAIN_LOGINBUTTON, ui_object))
-            return false;
-
-        // determine using submit button visibility
-        active = (ui_object.visible == 0);
+        // set status
+        active = (status > 0);
 
         return true;
     }
@@ -359,7 +390,7 @@ namespace Diablo
         _UiObject ui_object;
 
         // read ui object
-        if(!_ReadUiObject(MAIN_AUCTION, ui_object))
+        if(!_ReadUiObject(OBJECT_MAIN_AUCTION, ui_object))
             return false;
 
         // check auction main status
@@ -384,7 +415,7 @@ namespace Diablo
         _UiHoverHeader  ui_header;
 
         // read ui object
-        if(!_ReadUiObject(TOOLTIP_DPSARMOR, ui_object))
+        if(!_ReadUiObject(OBJECT_TOOLTIP_DPSARMOR, ui_object))
             return false;
 
         // read hover header
@@ -410,7 +441,7 @@ namespace Diablo
         const Char*     ptext;
 
         // read ui object
-        if(!_ReadUiObject(TOOLTIP_STATS, ui_object))
+        if(!_ReadUiObject(OBJECT_TOOLTIP_STATS, ui_object))
             return false;
 
         // read stats
@@ -432,14 +463,14 @@ namespace Diablo
         _UiHoverSocket  ui_socket;
         Item::Stat      item_stat;
 
-        assert(sockets.GetLimit() >= (TOOLTIP_SOCKET2 - TOOLTIP_SOCKET0));
+        assert(sockets.GetLimit() >= (OBJECT_TOOLTIP_SOCKET2 - OBJECT_TOOLTIP_SOCKET0));
         sockets.Empty();
 
         // iterate
         for( Index i = 0; i < sockets.GetLimit(); i++ )
         {
             // read ui object
-            if(!_ReadUiObject(TOOLTIP_SOCKET0 + i, ui_object))
+            if(!_ReadUiObject(OBJECT_TOOLTIP_SOCKET0 + i, ui_object))
                 return false;
 
             // read socket
@@ -466,7 +497,7 @@ namespace Diablo
         _UiObject ui_object;
 
         // read ui object
-        if(!_ReadUiObject(TOOLTIP_DPSARMOR, ui_object))
+        if(!_ReadUiObject(OBJECT_TOOLTIP_DPSARMOR, ui_object))
             return false;
 
         // write null char
@@ -479,7 +510,7 @@ namespace Diablo
         _UiObject ui_object;
 
         // read ui object
-        if(!_ReadUiObject(TOOLTIP_STATS, ui_object))
+        if(!_ReadUiObject(OBJECT_TOOLTIP_STATS, ui_object))
             return false;
 
         // write null char
@@ -492,10 +523,10 @@ namespace Diablo
         _UiObject ui_object;
 
         // iterate
-        for( Index i = 0; i <= (TOOLTIP_SOCKET2 - TOOLTIP_SOCKET0); i++ )
+        for( Index i = 0; i <= (OBJECT_TOOLTIP_SOCKET2 - OBJECT_TOOLTIP_SOCKET0); i++ )
         {
             // read ui object
-            if(!_ReadUiObject(TOOLTIP_SOCKET0 + i, ui_object))
+            if(!_ReadUiObject(OBJECT_TOOLTIP_SOCKET0 + i, ui_object))
                 return false;
 
             // write null char
@@ -509,7 +540,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool Trainer::_ReadUiObject( Id id, _UiObject& object )
     {
-        assert(id < ID_COUNT);
+        assert(id < OBJECT_COUNT);
 
         // read
         if(!_process.ReadMemory(_address[id], &object, sizeof(object)))

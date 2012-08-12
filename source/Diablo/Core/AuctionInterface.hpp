@@ -35,6 +35,7 @@ namespace Diablo
         Bool    ReadUnique( TextString& string );
 
         /**/
+        Bool    WriteFilterChar( FilterCharId char_id );
         Bool    WriteFilterType( FilterSecondaryId id );
         Bool    WriteFilterLevelMin( Long level );
         Bool    WriteFilterLevelMax( Long level );
@@ -48,6 +49,7 @@ namespace Diablo
         Bool    ActionListNextPage();
         Bool    ActionBid( Index index, ULong bid=0 );
         Bool    ActionBuyout( Index index );
+        Bool    ActionSendToStash();
         Bool    ActionReLogin( const Char* account, const Char* password );
 
         /**/
@@ -66,11 +68,11 @@ namespace Diablo
 
     private:
         Bool    _WriteComboBox( Id combo_id, Id id );
-        Bool    _WriteComboRefresh( Id option_id );
+        Bool    _WriteComboRefresh( Id combo_id, Index option_index, ULong option_count );
 
-        Bool    _CalculateComboIndex( Index& option_index, Id combo_id, Id option_id );
-        Id      _OptionIndexToId( Index option_index, Id group_id, const ComboBox& box ) const;
-        Index   _OptionIdToIndex( Id option_id, Id group_id, const ComboBox& box, IgnoreCollection& ignores ) const;
+        Bool    _CalculateOptionIndex( Index& option_index, ULong& option_count, Id combo_id, Id option_id );
+        Bool    _OptionIndexToId( Id& option_id, Index option_index, Id group_id, const ComboBox& box ) const;
+        Bool    _OptionIdToIndex( Index& option_index, Id option_id, Id group_id, const ComboBox& box, IgnoreCollection& ignores ) const;
         Bool    _WaitSearch();
 
         void    _Reset();

@@ -12,28 +12,36 @@ namespace Diablo
     public:
         enum
         {
-            COMBO_RARITY,
-            COMBO_CHARACTER,
-            COMBO_PRIMARY,
-            COMBO_SECONDARY,
-            COMBO_PSTAT0,
-            COMBO_PSTAT1,
-            COMBO_PSTAT2,
+            OBJECT_COMBO_RARITY,
+            OBJECT_COMBO_CHARACTER,
+            OBJECT_COMBO_PRIMARY,
+            OBJECT_COMBO_SECONDARY,
+            OBJECT_COMBO_PSTAT0,
+            OBJECT_COMBO_PSTAT1,
+            OBJECT_COMBO_PSTAT2,
 
-            TOOLTIP_STATS,
-            TOOLTIP_DPSARMOR,
-            TOOLTIP_SOCKET0,
-            TOOLTIP_SOCKET1,
-            TOOLTIP_SOCKET2,
+            OBJECT_TOOLTIP_STATS,
+            OBJECT_TOOLTIP_DPSARMOR,
+            OBJECT_TOOLTIP_SOCKET0,
+            OBJECT_TOOLTIP_SOCKET1,
+            OBJECT_TOOLTIP_SOCKET2,
 
-            LIST_PAGENEXT,
-            LIST_SEARCHBUTTON,
+            OBJECT_BUTTON_PAGENEXT,
+            OBJECT_BUTTON_SEARCH,
+            OBJECT_BUTTON_SENDTOSTASH,
 
-            MAIN_POPUP,
-            MAIN_LOGINBUTTON,
-            MAIN_AUCTION,
+            OBJECT_MAIN_POPUP,
+            OBJECT_MAIN_AUCTION,
 
-            ID_COUNT,
+            OBJECT_COUNT,
+        };
+
+        enum ButtonStatus
+        {
+            BUTTON_HIDDEN,
+            BUTTON_DISABLED,
+            BUTTON_ENABLED,
+            BUTTON_HIGHLIGHTED,
         };
 
     private:
@@ -66,7 +74,7 @@ namespace Diablo
     private:
         Process&        _process;
         MemoryScanner   _memory;
-        ULong           _address[ID_COUNT];
+        ULong           _address[OBJECT_COUNT];
         ULong           _base_address;
         Bool            _trained;
 
@@ -79,8 +87,8 @@ namespace Diablo
         Bool CheckTrained();
 
         /**/
-        Bool WriteComboBox( Id id, Index index );
-        Bool ReadComboBox( Id id, Index& index, ULong& count );
+        Bool WriteComboIndex( Id id, Index index );
+        Bool ReadComboIndex( Id id, Index& index, ULong& count );
 
         /**/
         Bool ReadHoverItem( Item& item );
@@ -91,6 +99,7 @@ namespace Diablo
         Bool ReadListCount( ULong& count );
         Bool ReadListNextStatus( Bool& status );
         Bool ReadSearchBusyStatus( Bool& status );
+        Bool ReadSendToStashStatus( ButtonStatus& status );
 
         /**/
         Bool ReadPopupStatus( Bool& active );

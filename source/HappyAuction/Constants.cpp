@@ -24,39 +24,58 @@ namespace HappyAuction
     const Char* SCRIPT_PATH =           "Lua/Main.lua";
     const Char* SCRIPT_STRINGS[SCRIPT_COUNT] =
     {
-        "haFilterType",
+        // auction/search
+        "haBid",
+        "haBuyout",
+        "haFilterBuyout",
+        "haFilterChar",
         "haFilterLevel",
         "haFilterRarity",
         "haFilterStat",
-        "haFilterBuyout",
+        "haFilterStatClear",
+        "haFilterType",
         "haFilterUnique",
-
-        "haActionBid",
-        "haActionBuyout",
-        "haActionSearch",
-        "haActionSortDpsArmor",
-        "haActionSortBuyout",
-        "haActionReLogin",
-
-        "haListSelect",
         "haListNext",
-        "haListItem",//DEPRECATED
-        "haListItemStat",//DEPRECATED
-        "haListItemSocket",//DEPRECATED
+        "haListSelect",
+        "haSearch",
+        "haSortBuyout",
+        "haSortDpsArmor",
 
-        "haStashSell",
+        // auction/sell
+        "haSell",
         "haStashNext",
+        "haStashSelect",
 
+        // auction/completed
+        "haSendToStash",
+
+        // item
         "haItem",
         "haItemStat",
 
-        "haLog",
-        "haBeep",
-        "haSleep",
-        "haAlert",
+        // etc
+        "haReLogin",
 
-        "haSettingsListDelay",//DEPRECATED
+        // settings
         "haSetGlobalDelay",
+
+        // utilities
+        "haAlert",
+        "haBeep",
+        "haLog",
+        "haSleep",
+
+        "haActionBid",//DEPRECATED
+        "haActionBuyout",//DEPRECATED
+        "haActionSearch",//DEPRECATED
+        "haActionSortDpsArmor",//DEPRECATED
+        "haActionSortBuyout",//DEPRECATED
+        "haListItem",//DEPRECATED
+        "haListItemStat",//DEPRECATED
+        "haListItemSocket",//DEPRECATED
+        "haStashSell",//DEPRECATED
+        "haActionReLogin",//DEPRECATED
+        "haSettingsListDelay",//DEPRECATED
 
         "haTest",
     };

@@ -118,6 +118,11 @@ namespace Core
         {
             return a > b ? b : a;
         }
+        template<typename TYPE>
+        static TYPE Max( TYPE a, TYPE b )
+        {
+            return a > b ? a : b;
+        }
 
         /**/
         template<typename TYPE>

@@ -35,10 +35,9 @@ namespace Diablo
         void InputEnable( Bool enable );
 
         /**/
-        void MouseClick( ULong x, ULong y );
-        void MouseClick( Double x, Double y, Bool centered=true );
-        void MouseMove( Double x, Double y );
-        void MouseDrag( Double to_x, Double to_y, Double from_x, Double from_y, Bool random=true );
+        void MouseClickAbsolute( ULong x, ULong y );
+        void MouseClick( Double x, Double y, Bool centered=true, Bool random=true );
+        void MouseMove( Double x, Double y, Bool direct=false );
 
         /**/
         void SendInputKeys( const Char* text, Bool specials );
