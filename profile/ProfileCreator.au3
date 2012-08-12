@@ -4,6 +4,7 @@
 ;flag von server wenn LUA neu erstellt werden muss (nach update / vorher user fragen falls der manuelle änderungen gemacht hat)
 ;flag für bid ob current bid abgefragt werden soll (nur bieten wenn noch keiner geboten?)
 ;reihenfolge für profile festlegen (ggf. randomisieren)
+;flag für item typ (exakter typ) - wenn gesetzt wird überprüft ob das gefundene item dem item typ entspricht
 #endregion
 #region INCLUDES
 #NoTrayIcon
@@ -983,10 +984,10 @@ Func convertProfilesToLua()
 		WriteLua("while haListNext() do", 1)
 
 		; get item information
-		WriteLua("local dpsarmor, max_bid, buyout, nstats, nsockets, current_bid, id, flags, ilvl, timeleft, name = haListItem()")
+		WriteLua("local dpsarmor, max_bid, buyout, nstats, nsockets, current_bid, id, flags, ilvl, timeleft, name, type = haListItem()")
 
 		; log it?
-		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' max bid: ' .. max_bid .. ' buyout: ' .. buyout .. ' current bid: ' .. current_bid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name)")
+		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' max bid: ' .. max_bid .. ' buyout: ' .. buyout .. ' current bid: ' .. current_bid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name .. ' type: ' .. type)")
 
 		WriteLua("local found = 0")
 		$found = 0
@@ -1025,6 +1026,9 @@ Func convertProfilesToLua()
 			WriteLua("if haParseTime(timeleft) >= haParseTime('" & $prof[18] & "') then found = found + 1 end")
 			$found += 1
 		EndIf
+
+		WriteLua("if string.find(type, '" & $prof[4] & "') > 0 then found = found + 1 end")
+		$found += 1
 
 		; buy/bid if we have buy/bid values
 		If $prof[7] > 0 Or $Prof[8] > 0 Then

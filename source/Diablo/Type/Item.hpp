@@ -44,6 +44,7 @@ namespace Diablo
 
         TextString          timeleft;
         TextString          name;
+        TextString          type;
 
         StatCollection      stats;
         SocketCollection    sockets;

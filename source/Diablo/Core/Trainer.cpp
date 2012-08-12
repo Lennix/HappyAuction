@@ -216,7 +216,12 @@ namespace Diablo
         if(!_ReadHoverItemSockets(item.sockets))
             return false;
 
+        // itemlevel
         if(!_ReadHoverItemLevel(item.ilevel))
+            return false;
+
+        // item type
+        if(!_ReadHoverItemType(item.type))
             return false;
 
         // must have something!
@@ -286,7 +291,7 @@ namespace Diablo
 
         if(_ReadUiObjectFromAddress(subList[3], ui_object))
             if(_process.ReadMemory(ui_object.addr_child2+0xc, &item.name, sizeof(item.name)))
-                if(!_ParseItemNameText(item.name))
+                if(!_ParseText(item.name))
                     return false;
 
         return true;
@@ -619,6 +624,23 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool Trainer::_ReadHoverItemType( TextString& text )
+    {
+        _UiObject       ui_object;
+        if(!_ReadUiObject(OBJECT_TOOLTIP_ITEMTYPE, ui_object))
+            return false;
+
+        // +0xc to clear {c:xxxxxxxx}
+        if(!_process.ReadMemory(ui_object.addr_child2+0xc, &text, sizeof(text)))
+            return false;
+
+        if(!_ParseText(text))
+            return false;
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     Bool Trainer::_ClearHoverItemDpsArmor()
     {
         _UiObject ui_object;
@@ -803,7 +825,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::_ParseItemNameText( TextString &text )
+    Bool Trainer::_ParseText( TextString &text )
     {
         if (sscanf(text, "%[a-zA-Z0-9+'.()\% -]s{/c}",text) == 0)
             return false;

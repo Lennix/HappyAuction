@@ -308,7 +308,7 @@ namespace HappyAuction
 
 
             //----------------------- DEPRECATED ---------------------------------
-            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, currBid, id, flags, itemlevel, timeleft, name
+            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, currBid, id, flags, itemlevel, timeleft, name, type
             case SCRIPT_HALISTITEM:
                 _PushStack(_item.dpsarmor);
                 _PushStack(_item.max_bid);
@@ -321,7 +321,8 @@ namespace HappyAuction
                 _PushStack(_item.ilevel);
                 _PushStack(_item.timeleft);
                 _PushStack(_item.name);
-                return 11;
+                _PushStack(_item.type);
+                return 12;
 
             // haListItemStat(index) -> stat, value1, value2, value3, value4
             // haListItemStat(stat)  -> value1, value2, value3, value4
@@ -604,7 +605,7 @@ namespace HappyAuction
             _SetTable("timeleft", _item.timeleft);
             _SetTable("name", _item.name);
             _SetTable("flags", _item.flags);
-            //_SetTable("type", _item.type);
+            _SetTable("type", _item.type);
 
             // objects
             _PushTable("stats");
