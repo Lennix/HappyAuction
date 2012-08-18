@@ -31,5 +31,8 @@ namespace Core
         static void Message( const Char* format, ... );
         static Bool SetHotKey( ULong modifier, ULong key, HotKeyHandler handler, void* custom );
         static Bool GetClipBoard( Char* buffer, ULong limit );
+
+        /**/
+        static UHuge GetTimeMs();
     };
 }

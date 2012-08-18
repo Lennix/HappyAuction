@@ -32,9 +32,6 @@ namespace Diablo
                 // get process
                 if(_process.FromWindow(_window))
                 {
-                    // focus window
-                    _window.Focus();
-
                     // check if already trained
                     if( _trainer.CheckTrained() ||
                     // else run trainer
@@ -80,7 +77,7 @@ namespace Diablo
     {
         _window.SendMouseButton(x, y);
         SleepFrames(2);
-        Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
+        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
     }
 
     void Game::MouseClick( Double x, Double y, Bool centered, Bool random )
@@ -93,7 +90,7 @@ namespace Diablo
     {
         _window.SendMouseMove(X(x), Y(y), direct);
         SleepFrames(2);
-        Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
+        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
     }
 
     //------------------------------------------------------------------------
@@ -101,7 +98,7 @@ namespace Diablo
     {
         _window.SendInputKeys(text, specials);
         SleepFrames(2);
-        Sleep(GAME_ACTION_DELAY, GAME_ACTION_DELAY * 2);
+        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
     }
 
     //------------------------------------------------------------------------
@@ -151,18 +148,25 @@ namespace Diablo
     //------------------------------------------------------------------------
     void Game::Sleep( ULong min, ULong max )
     {
+        ULong delay;
+
         if(max <= min)
-            Thread::Sleep(min);
+            delay = min;
         else
         {
             ULong   range = max - min;
             ULong   value = rand() % range;
             Float   ratio = (Float)value / (Float)range;
             Float   factor = ratio * ratio;
-            ULong   delay = min + (ULong)(value * factor);
-
-            Thread::Sleep(delay);
+            
+            delay = min + (ULong)(value * factor);
         }
+
+        // slice sleeps allowing termination
+        for( ; _active && delay > GAME_SLEEP_SLICE ; delay -= GAME_SLEEP_SLICE )
+            Thread::Sleep(GAME_SLEEP_SLICE);
+        if(_active)
+            Thread::Sleep(delay);
     }
 
     //------------------------------------------------------------------------

@@ -299,4 +299,19 @@ namespace Core
 
         return text != NULL;
     }
+
+    //------------------------------------------------------------------------
+    UHuge System::GetTimeMs()
+    {
+        UHuge time;
+
+        // get time
+        GetSystemTimeAsFileTime((FILETIME*)&time);
+
+        // adjust to 1970
+        time -= 116444736000000000LL;
+
+        // convert to milliseconds
+        return time / 10000;
+    }
 }

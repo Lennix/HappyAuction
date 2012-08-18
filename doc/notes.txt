@@ -1,16 +1,12 @@
-- deprecated following functions (rename only) with replacements shown. old versions will continue to work for several updates.
-    haActionBid -> haBid
-    haActionBuyout -> haBuyout
-    haActionSearch -> haSearch
-    haActionSortDpsArmor -> haSortDpsArmor
-    haActionSortBuyout -> haSortBuyout
-    haActionReLogin -> haReLogin
-    haStashSell -> haSell
-- HappyAuction may now run completely in the background (not minimized) with the exception of haStashNext and haStashSelect functions
-- made haRelogin() faster
-- made haReRogin() return false if it did nothing (if theres no disconnect error)
-- added haSendToStash(). see README
-- added haStashSelect(column, row, bag). see README
-- added haFilterStatClear(). see README
-- added haFilterChar(). see README
-- removed sleep delay in SnipeBuyout bot. this is just to demonstrate performance to newbies :)
+- added haItem().name representing item name.
+- added haItem().id representing a unique auction id for the given item.
+- new sample bot: BestMojo. finds the highest damage mojo. demonstrates use of haItem().id and haItemStat().
+- fixed haStash* bug where empty slots would return a previously selected item
+- haItemStat() will no longer match item tooltip stat text. this would cause false positives such as matching 'critical hit chance' with 'Increases Critical Hit Chance of Strafe'.
+- CTRL-F12 will now terminate script in the middle of a long haSleep()
+
+
+- add native call support
+- automatically clear popups such as "high transaction volume" errors
+- supports decimal values such as 7.5 instead of rounding down to 7
+- make haReLogin passive

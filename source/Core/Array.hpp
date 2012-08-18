@@ -118,6 +118,12 @@ namespace Core
             return _memory[_count++];
         }
 
+        inline const TYPE& Pop()
+        {
+            assert(_count > 0);
+            return _memory[--_count];
+        }
+
         /**/
         inline void Empty()
         {

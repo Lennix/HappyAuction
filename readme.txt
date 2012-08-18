@@ -1,4 +1,4 @@
-HappyAuction v0.9.6
+HappyAuction v0.9.9
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -23,14 +23,16 @@ INCLUDED BOTS
 - SnipeBuyout:  Traditional buyout bot that will buyout loop first item.
 - SnipeDps:     Will buyout loop first item if when desired DPS.
 - LogResults:   Sets filters and scans all results logging all items to a file
+- LogStash:     Logs all items in your stash. Includes item sell example.
+- BestMojo:     Finds the highest damage mojo.
 - GemMiner:	    More complex bot that searches across multiple filters finding
                 and buying cheap items with expensive gems.
 
 
 NOTES
 ------------------------------------------------------------------------------
-- HappyAuction can run in the background (not minimized) while you do other
-  stuff.
+- HappyAuction can run with D3 in the background (not minimized) while you do
+  other stuff. The only exception is if you use haStashSelect or haStashNext.
 - There will be a brief 2-3 second delay before running a script the first
   time. This is necessary to run a memory scan of Diablo 3 to detect
   everything HappyAuction needs to operate.
@@ -41,7 +43,7 @@ NOTES
 
 SECURITY
 ------------------------------------------------------------------------------
-- The following measures have been added to reduce detection:
+- HappyAuction uses the following "human like" methods to reduce detection:
     - Random delays between actions (simulated mouse clicks/keyboard keys)
     - Random buyout adjustments
     - Positioning of mouse clicks is randomized by a few pixels
@@ -52,14 +54,15 @@ SECURITY
     - Write Process Memory: Yes it's safe because only text/data memory is
       altered, not instruction memory. It's used only to set the filter
       combobox values and clear item tooltip state.
-- The following is recommended as additional security:
+- The following is recommended to reduce chance of ban:
     - Include additional delays with haSleep() and haSetGlobalDelay()
     - If you do not use delays don't run scripts too long
-- There is no guarantee HappyAuction is 100% safe from detection. Use at your
-  own risk.
+- Note that no matter which AH bot you use you WILL get banned IF you spam
+  the AH 24/7. No bot, including HappyAuction, is 100% safe even if they're
+  completely invisible to Diablo 3 client side. Use at your own risk.
 
 
-SCRIPTING
+SCRIPTING NOTES
 ------------------------------------------------------------------------------
 - If you are new to LUA visit: http://www.lua.org/manual/5.2/ . There really
   isnt much to learn to operate this bot besides loops if statements and
@@ -73,11 +76,8 @@ SCRIPTING
   updates before being removed permanently.
 
 
-FUNCTIONS
-The following are the available functions in addition to standard LUA stuff
-arranged by category:
-
-
+SCRIPTING REFERENCE
+------------------------------------------------------------------------------
 AUCTION/SEARCH:
 - haBid() -> status
 - haBid(bid) -> status
@@ -92,10 +92,13 @@ AUCTION/SEARCH:
 - haFilterBuyout(amount) -> status
 - haFilterBuyout(amount, randomize) -> status
 - haFilterBuyout() -> amount
-    Sets or gets the buyout amount filter.
+    Sets or gets the buyout amount filter. Randomize will pad your buyout with
+    an additional 5% unique random value over your buyout to avoid cached
+    searches. It's necessary to use this option when calling haSearch more
+    than once per minute (unless Blizzard changes this) or you'll get old
+    search results.
     - amount:       buyout amount. -1 to clear.
-    - randomize:    if true adds a small random value to
-                    amount to avoid cached search results and detection.
+    - randomize:    if true adds small unique random value to amount.
     - status:       true if successful
 
 - haFilterChar(id) -> status
@@ -205,7 +208,10 @@ AUCTION/SELL:
 ITEM:
 - haItem() -> item
     Returns information about the last selected item. Values will be 0 if no
-    item is selected or if failure occurred.
+    item is selected. Some values may be 0 if not in the right context such
+    as buyout on an item in your stash (using haStash functions).
+    - item.name:    item name
+    - item.id:      a unique id for this auction
     - item.dps:     the DPS or armor value found in tooltip.
     - item.mbid:    the max bid price as shown in bid button/input box.
     - item.cbid:    the current bid price as shown in item list. this will be
@@ -219,6 +225,8 @@ ITEM:
         - gem:      gem name. example: 'Topaz'
         - rank:     gem rank. example: 14 for Radiant Star
         - value1-4: stat values. for most stats only value1 will be used.
+    - item.rtime:   auction remaining time in milliseconds.
+    - item.xtime:   auction expire time in UTC seconds.
 
 - haItemStat(stat) -> stat
     Convenience function for looking up an item stat quickly. Always returns
@@ -238,7 +246,7 @@ ETC:
     login fails will retry with 3 second delay.
     Call this each iteration in your main loop. If other operations are
     suddenly failing its a sign you've been disconnected at which point
-    haReLogin will kick in. See working example in Bots/GemMiner.lua.
+    haReLogin will kick in. See working example in Bots/GemMiner.lua. Example:
     - name:     account name
     - password: account password
     - status:   true if successful relogin
@@ -279,6 +287,10 @@ UTILITIES:
     - delay:    delay in milliseconds
     - low:      random delay minimum.
     - high:     random delay maximum.
+
+- haUpTime() -> time
+    Get current system uptime.
+    - time:     time in milliseconds
 
 
 SOURCE LICENSE

@@ -1,6 +1,7 @@
 #include <Core/Tools.hpp>
 #include <HappyAuction/Core/Application.hpp>
 #include <HappyAuction/Core/Script.hpp>
+#include <time.h>
 
 /**/
 int WINAPI WinMain(

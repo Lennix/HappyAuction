@@ -309,7 +309,7 @@ namespace Diablo
 
     // public
     //------------------------------------------------------------------------
-    ULong               GAME_ACTION_DELAY = 0; // ms
+    ULong               GAME_GLOBAL_DELAY = 0; // ms
 
     const Char*         GAME_WINDOW_TITLE = "Diablo III";
     const Char*         GAME_WINDOW_CLASS = "D3 Main Window Class";

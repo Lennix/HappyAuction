@@ -29,10 +29,10 @@ namespace Diablo
         void    Stop();
 
         /**/
-        Bool    WriteBuyout( Long buyout, Bool randomize=false );
-        Bool    ReadBuyout( Long& value );
-        Bool    WriteUnique( const Char* string );
-        Bool    ReadUnique( TextString& string );
+        Bool    WriteFilterBuyout( Long buyout, Bool randomize=false );
+        Bool    ReadFilterBuyout( Long& value );
+        Bool    WriteFilterUnique( const Char* string );
+        Bool    ReadFilterUnique( TextString& string );
 
         /**/
         Bool    WriteFilterChar( FilterCharId char_id );

@@ -64,6 +64,7 @@ namespace HappyAuction
         "haBeep",
         "haLog",
         "haSleep",
+        "haUpTime",
 
         "haActionBid",//DEPRECATED
         "haActionBuyout",//DEPRECATED
