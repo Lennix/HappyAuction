@@ -123,9 +123,9 @@ namespace HappyAuction
             case SCRIPT_HAFILTERBUYOUT:
                 snumber = _GetStackLong(1);
                 if(snumber)
-                    _PushStack(_ahi.WriteBuyout(snumber, _GetStackBool(2)));
+                    _PushStack(_ahi.WriteFilterBuyout(snumber, _GetStackBool(2)));
                 else
-                    _PushStack(_ahi.ReadBuyout(snumber) ? snumber : 0);
+                    _PushStack(_ahi.ReadFilterBuyout(snumber) ? snumber : 0);
                 return 1;
 
             // haFilterChar(id) -> status
@@ -186,9 +186,9 @@ namespace HappyAuction
             case SCRIPT_HAFILTERUNIQUE:
                 pstring1 = _GetStackString(1);
                 if(pstring1)
-                    _PushStack(_ahi.WriteUnique(pstring1));
+                    _PushStack(_ahi.WriteFilterUnique(pstring1));
                 else
-                    _PushStack(_ahi.ReadUnique(string) ? string : "");
+                    _PushStack(_ahi.ReadFilterUnique(string) ? string : "");
                 return 1;
 
             // haListNext() -> status
@@ -271,7 +271,7 @@ namespace HappyAuction
             //---- SETTINGS --------------------------------------------------
             // haSetGlobalDelay(delay)
             case SCRIPT_HASETGLOBALDELAY:
-                GAME_ACTION_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_ACTION_DELAY_MAX);
+                GAME_GLOBAL_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_GLOBAL_DELAY_MAX);
                 return 0;
 
 
@@ -301,6 +301,11 @@ namespace HappyAuction
                 _game.Sleep(_GetStackULong(1), _GetStackULong(2));
                 return 0;
 
+            // haUpTime() -> time
+            case SCRIPT_HAUPTIME:
+                _PushStack(static_cast<ULong>(::GetTickCount()));
+                return 1;
+
 
             //----------------------------------------------------------------
             case SCRIPT_HATEST:
@@ -316,13 +321,7 @@ namespace HappyAuction
                 _PushStack(_item.stats.GetCount());
                 _PushStack(_item.sockets.GetCount());
                 _PushStack(_item.current_bid);
-                _PushStack(_item.id);
-                _PushStack(_item.flags);
-                _PushStack(_item.ilevel);
-                _PushStack(_item.timeleft);
-                _PushStack(_item.name);
-                _PushStack(_item.type);
-                return 12;
+                return 6;
 
             // haListItemStat(index) -> stat, value1, value2, value3, value4
             // haListItemStat(stat)  -> value1, value2, value3, value4
@@ -336,7 +335,7 @@ namespace HappyAuction
 
             // haSettingsListDelay(delay)
             case SCRIPT_HASETTINGSLISTDELAY:
-                GAME_ACTION_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_ACTION_DELAY_MAX);
+                GAME_GLOBAL_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_GLOBAL_DELAY_MAX);
                 return 0;
 
             // -------------------------------
@@ -600,10 +599,14 @@ namespace HappyAuction
             _SetTable("max_bid", _item.max_bid);
             _SetTable("current_bid", _item.current_bid);
             _SetTable("buyout", _item.buyout);
+            _SetTable("rtime", _item.rtime);
+            _SetTable("xtime", _item.xtime);
+            _SetTable("name", _item.name);
             _SetTable("id", _item.id);
+
+            // Happy Auction Advanced
             _SetTable("ilvl", _item.ilevel);
             _SetTable("timeleft", _item.timeleft);
-            _SetTable("name", _item.name);
             _SetTable("flags", _item.flags);
             _SetTable("type", _item.type);
 
@@ -710,51 +713,11 @@ namespace HappyAuction
             return count;
         }
 
-
-
-
-
-
-        ULong _DropHeight()
-        {
-            const Coordinate&       coordinate =    COORDS[UI_COMBO_SECONDARY];
-            const Coordinate&       size =          COORDS[UI_COMBO_SIZE];
-            Window&                 window =        _game.GetWindow();
-            ULong                   y =             _game.Y(coordinate.y, false);
-            ULong                   height =        window.GetHeight() - y;
-            static Window::Color    pixels[2000];
-            ULong                   h;
-
-            // open dropdown
-            _game.MouseClick(coordinate.x + size.x / 2, coordinate.y - (size.y * .8));
-            Sleep(50);
-
-            // image scan to selection
-            window.CaptureScreen(pixels, _game.X(coordinate.x + size.x / 2, false), y, 1, height);
-
-            // determine selection y
-            for( h = 0; h < height && (pixels[h].r <= (pixels[h].g + pixels[h].b)); h++ );
-            if(h == height)
-                return 0;
-
-            // click selection
-            _game.MouseClickAbsolute(2, 2);
-            Sleep(50);
-
-            return h;
-        }
-
-        /**/
+        // testing
+        //--------------------------------------------------------------------
         ULong _haTest()
         {
-            for( Index i=1601; _active && i<=2000; i++)
-            {
-                _game.GetWindow().SetDimensions( 0, 0, (i * 2560) / 1600, i );
-                Sleep(1500);
-
-                ULong h = _DropHeight();
-                Tools::Log(LOG_USER, "%u\t%u\t%f\n", i, h, (double)h/14.0);
-            }
+            _game.SendInputKeys("^E", true);
             return 0;
         }
     };

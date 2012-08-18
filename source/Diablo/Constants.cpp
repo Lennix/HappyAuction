@@ -309,7 +309,7 @@ namespace Diablo
 
     // public
     //------------------------------------------------------------------------
-    ULong               GAME_ACTION_DELAY = 0; // ms
+    ULong               GAME_GLOBAL_DELAY = 0; // ms
 
     extern ULong        GAME_NEXTPAGE_DELAY = 50; // ms
 

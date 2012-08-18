@@ -15,8 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{ACFB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bots", "Bots", "{731DD03F-5FAC-4ED2-87DE-7C2CACC0EFA4}"
 	ProjectSection(SolutionItems) = preProject
+		..\bin\Lua\Bots\BestMojo.lua = ..\bin\Lua\Bots\BestMojo.lua
 		..\bin\Lua\Bots\GemMiner.lua = ..\bin\Lua\Bots\GemMiner.lua
 		..\bin\Lua\Bots\LogResults.lua = ..\bin\Lua\Bots\LogResults.lua
+		..\bin\Lua\Bots\LogStash.lua = ..\bin\Lua\Bots\LogStash.lua
 		..\bin\Lua\Bots\SnipeBuyout.lua = ..\bin\Lua\Bots\SnipeBuyout.lua
 		..\bin\Lua\Bots\SnipeDps.lua = ..\bin\Lua\Bots\SnipeDps.lua
 		..\bin\Lua\Bots\Test1.lua = ..\bin\Lua\Bots\Test1.lua

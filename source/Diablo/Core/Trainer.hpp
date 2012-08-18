@@ -25,10 +25,13 @@ namespace Diablo
             OBJECT_TOOLTIP_SOCKET0,
             OBJECT_TOOLTIP_SOCKET1,
             OBJECT_TOOLTIP_SOCKET2,
+            OBJECT_TOOLTIP_NAME,
 
-            OBJECT_BUTTON_PAGENEXT,
+            OBJECT_LBUTTON_PAGENEXT,
+
             OBJECT_BUTTON_SEARCH,
             OBJECT_BUTTON_SENDTOSTASH,
+            OBJECT_BUTTON_BUYOUT,
 
             OBJECT_MAIN_POPUP,
             OBJECT_MAIN_AUCTION,
@@ -104,8 +107,9 @@ namespace Diablo
         Bool ReadListItem( Index index, Item& item );
         Bool ReadListCount( ULong& count );
         Bool ReadListNextStatus( Bool& status );
-        Bool ReadSearchBusyStatus( Bool& status );
-        Bool ReadSendToStashStatus( ButtonStatus& status );
+        
+        /**/
+        Bool ReadButtonStatus( ButtonStatus& status, Id button_id );
 
         /**/
         Bool ReadPopupStatus( Bool& active );
@@ -121,17 +125,19 @@ namespace Diablo
 
     private:
         /**/
+        Bool _ReadHoverItemName( TextString name );
         Bool _ReadHoverItemDpsArmor( ULong& value );
         Bool _ReadHoverItemStats( Item::StatCollection& stats );
         Bool _ReadHoverItemSockets( Item::SocketCollection& sockets );
 
         /**/
+        Bool _ClearHoverItemName();
         Bool _ClearHoverItemDpsArmor();
         Bool _ClearHoverItemStats();
         Bool _ClearHoverItemSockets();
 
         /**/
-        Bool _ReadUiObject( Id id, _UiObject& object );
+        Bool _ReadUiObject( _UiObject& object, Id id );
         Bool _ReadListRoot( _AhList& object );
 
         /**/

@@ -6,8 +6,9 @@
 namespace Diablo
 {
     //------------------------------------------------------------------------
-    extern ULong                GAME_ACTION_DELAY;
-    static const ULong          GAME_ACTION_DELAY_MAX = 60000;    // ms
+    extern ULong                GAME_GLOBAL_DELAY;
+    static const ULong          GAME_GLOBAL_DELAY_MAX = 60000; // ms
+    static const ULong          GAME_SLEEP_SLICE = 500; // ms
 
     //------------------------------------------------------------------------
     extern ULong                GAME_NEXTPAGE_DELAY;
@@ -47,6 +48,7 @@ namespace Diablo
     extern const Coordinate     AH_INPUT_UNIQUE;
     extern const Coordinate     AH_INPUT_BID;
     extern const Coordinate     AH_INPUT_BUYOUT;
+    static const ULong          AH_INPUT_BUYOUT_RANDOM_LIMIT = 4000;
     extern const ComboBox       AH_COMBO_CHARACTER;
     extern const ComboBox       AH_COMBO_PRIMARY;
     extern const ComboBox       AH_COMBO_SECONDARY;
@@ -65,8 +67,7 @@ namespace Diablo
     extern const Coordinate     AH_LIST_SORT_BUYOUT;
     static const ULong          AH_LIST_WAIT_ITERATIONS = 600;
     static const ULong          AH_LIST_ROW_LIMIT = 11;
-    static const ULong          AH_RELOGIN_LOGOUT_DELAY = 1000;
-    static const ULong          AH_RELOGIN_LOGIN_DELAY = 1000;
+    static const ULong          AH_RELOGIN_LOGOUT_DELAY = 500;
     static const ULong          AH_RELOGIN_POSTLOGIN_DELAY = 1100;
     static const ULong          AH_RELOGIN_AUCTIONHOUSE_DELAY = 200;
     extern const Coordinate     AH_RELOGIN_ACCOUNT;

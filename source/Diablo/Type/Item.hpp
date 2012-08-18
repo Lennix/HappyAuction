@@ -34,16 +34,20 @@ namespace Diablo
         typedef FixedArray<Item::Stat, ITEM_SOCKET_LIMIT>   SocketCollection;
 
     public:
+        TextString          name;
+        ULong               id;
         ULong               dpsarmor;
         ULong               max_bid;
-        ULong               buyout;
-        ULong               id;
         ULong               current_bid;
+        ULong               buyout;
+
+        ULong               rtime;
+        ULong               xtime;
+
+        // Happy Auction Advanced
         ULong               flags;
         ULong               ilevel;
-
         TextString          timeleft;
-        TextString          name;
         TextString          type;
 
         StatCollection      stats;
@@ -52,22 +56,31 @@ namespace Diablo
     public:
         /**/
         Item():
+            id(0),
             dpsarmor(0),
             max_bid(0),
             buyout(0),
-            id(0),
             current_bid(0),
-            flags(0)
+            flags(0),
+            rtime(0),
+            xtime(0)
         {
+            name[0] = 0;
         }
 
         /**/
         void Empty()
         {
+            name[0] = 0;
+            id = 0;
             dpsarmor = 0;
             current_bid = 0;
             max_bid = 0;
             buyout = 0;
+
+            rtime = 0;
+            xtime = 0;
+
             stats.Empty();
             sockets.Empty();
         }

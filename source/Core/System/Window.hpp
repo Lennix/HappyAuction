@@ -56,7 +56,7 @@ namespace Core
         /**/
         void Focus()
         {
-            //SetForegroundWindow(_hwnd);
+            SetForegroundWindow(_hwnd);
         }
 
         /**/
@@ -137,6 +137,11 @@ namespace Core
                         _SendKey(VK_DELETE, true, true);
                         break;
 
+                    case 'E':
+                        _SendKey(VK_ESCAPE, true);
+                        _SendKey(VK_ESCAPE, true, true);
+                        break;
+
                     default:
                         SendChar(c);
                     }
@@ -198,6 +203,7 @@ namespace Core
         /**/
         void CaptureScreen( Color* buffer, ULong x, ULong y, ULong width, ULong height )
         {
+            //TODO: something caused crash here!
             BITMAPINFOHEADER    bi = {0};
             POINT               screen_point = { x, y };
 
@@ -254,7 +260,6 @@ namespace Core
             }
 
             /*
-            //TODO: interferes with windows hook
             INPUT input = {0};
 
             input.type = INPUT_KEYBOARD;

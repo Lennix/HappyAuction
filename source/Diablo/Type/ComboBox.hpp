@@ -19,9 +19,9 @@ namespace Diablo
             assert(name);
 
             // search name and format
-            return Tools::StrSearch(pattern, name) ||
+            return Tools::StrSearch(pattern, name) != NULL;/* ||
                 (format[0] != NULL && Tools::StrSearch(pattern, format[0])) ||
-                (format[1] != NULL && Tools::StrSearch(pattern, format[1]));
+                (format[1] != NULL && Tools::StrSearc(pattern, format[1]));*/
         }
     };
 

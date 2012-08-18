@@ -1,6 +1,7 @@
 #pragma once
-#include <Core/Types.hpp>
+#include <Core/Array.hpp>
 #include <Core/Constants.hpp>
+#include <Core/Types.hpp>
 #include <stdio.h>
 
 namespace Core
@@ -9,6 +10,15 @@ namespace Core
     class Tools
     {
     public:
+        /**/
+        template<typename TYPE>
+        static void Swap( TYPE& a, TYPE& b )
+        {
+            TYPE temp = a;
+            a = b;
+            b = temp;
+        }
+
         /**/
         template<typename TYPE>
         static inline Index FirstBitIndex( TYPE value )
@@ -76,6 +86,15 @@ namespace Core
         }
 
         /**/
+        static void StrReadTo( Char* out, const Char*& in, Char terminator )
+        {
+            Index i;
+            for( i = 0; i < (sizeof(TextString)-1) && *in && *in != terminator; i++, in++)
+                out[i] = *in;
+            out[i] = 0;
+        }
+
+        /**/
         static Bool StrFormatRead( ULong& count, const Char* string, const Char* format, ... )
         {
             va_list args;
@@ -92,6 +111,10 @@ namespace Core
                     {
                     case 'u':
                         *((ULong*)va_arg(args, ULong*)) = StrToULong(string);
+                        count++;
+                        break;
+                    case 's':
+                        StrReadTo((Char*)va_arg(args, Char*), string, *format);
                         count++;
                         break;
                     }
@@ -188,6 +211,34 @@ namespace Core
                     fflush(file);
                 }
             }
+        }
+
+        /**/
+        template<unsigned LIMIT>
+        static ULong UniqueRandom( ULong max = LIMIT )
+        {
+            static FixedArray<ULong, LIMIT> table;
+            ULong value;
+
+            do
+            {
+                // if empty refill random table
+                if(table.GetCount() == 0)
+                    for( Index i = 0; i < LIMIT; i++ )
+                        table.Push(i);
+
+                // select random value
+                Index index = rand() % table.GetCount();
+                value = table[index];
+
+                // pop swap value
+                ULong popped = table.Pop();
+                if(index < table.GetCount())
+                    table[index] = popped;
+            }
+            while(value >= max);
+
+            return value;
         }
     };
 }

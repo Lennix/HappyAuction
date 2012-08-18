@@ -59,7 +59,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteBuyout( Long buyout, Bool randomize )
+    Bool AuctionInterface::WriteFilterBuyout( Long buyout, Bool randomize )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
@@ -68,14 +68,15 @@ namespace Diablo
         else
         {
             if(randomize)
-                buyout += rand() % (60 + buyout / 100);
+                buyout += Tools::UniqueRandom<AH_INPUT_BUYOUT_RANDOM_LIMIT>(buyout / 20);
+
             _game.SendInputText(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, "%u", buyout);
         }
         return true;
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::ReadBuyout( Long& value )
+    Bool AuctionInterface::ReadFilterBuyout( Long& value )
     {
         TextString buyout_text;
 
@@ -91,7 +92,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteUnique( const Char* string )
+    Bool AuctionInterface::WriteFilterUnique( const Char* string )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
@@ -102,7 +103,7 @@ namespace Diablo
     }
     
     //------------------------------------------------------------------------
-    Bool AuctionInterface::ReadUnique( TextString& string )
+    Bool AuctionInterface::ReadFilterUnique( TextString& string )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
@@ -329,12 +330,17 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionBuyout( Index index )
     {
-        Bool status;
+        Trainer::ButtonStatus   button_status;
+        Bool                    status;
 
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // select item index
         HoverListItem(index, true);
+
+        // check button status
+        if(!_trainer.ReadButtonStatus(button_status, Trainer::OBJECT_BUTTON_BUYOUT) || button_status < Trainer::BUTTON_ENABLED)
+            return false;
 
         // hit buyout button
         _game.MouseClick(AH_BUTTON_BUYOUT.x, AH_BUTTON_BUYOUT.y);
@@ -360,14 +366,14 @@ namespace Diablo
         Tab(UI_TAB_COMPLETED);
 
         // check status
-        if(!_trainer.ReadSendToStashStatus(status) || status < Trainer::BUTTON_ENABLED)
+        if(!_trainer.ReadButtonStatus(status, Trainer::OBJECT_BUTTON_SENDTOSTASH) || status < Trainer::BUTTON_ENABLED)
             return false;
 
         // hit send to stash button
         _game.MouseClick(COORDS[UI_BUTTON_SENDTOSTASH].x, COORDS[UI_BUTTON_SENDTOSTASH].y);
 
         // wait status
-        while(_active && _trainer.ReadSendToStashStatus(status) && status == Trainer::BUTTON_DISABLED)
+        while(_active && _trainer.ReadButtonStatus(status, Trainer::OBJECT_BUTTON_SENDTOSTASH) && status == Trainer::BUTTON_DISABLED)
             _game.SleepFrames(1);
 
         return true;
@@ -400,6 +406,14 @@ namespace Diablo
             if(!_active)
                 return false;
 
+            // read login status
+            if(!_trainer.ReadLoginStatus(status))
+                return false;
+
+            // break if logged in
+            if(status)
+                break;
+
             // set account
             _game.SendInputText(AH_RELOGIN_ACCOUNT.x, AH_RELOGIN_ACCOUNT.y, account);
 
@@ -412,14 +426,6 @@ namespace Diablo
             // close any popups
             _game.MouseClick(COORDS[UI_POPUP_ERROR].x, COORDS[UI_POPUP_ERROR].y);
 
-            // read login status
-            if(!_trainer.ReadLoginStatus(status))
-                return false;
-
-            // break if logged in
-            if(status)
-                break;
-
             // wait a little
             _game.Sleep(10);
         }
@@ -430,6 +436,9 @@ namespace Diablo
             // active check
             if(!_active)
                 return false;
+
+            // close character profile in case previous popup closer call opened it
+            _game.SendInputKeys("^E", true);
 
             // post login delay
             _game.Sleep(AH_RELOGIN_POSTLOGIN_DELAY);
@@ -614,6 +623,9 @@ namespace Diablo
 
         // empty item
         item.Empty();
+
+        // end existing hover
+        HoverGround();
 
         // clear hover item
         if(_trainer.ClearHoverItem())
@@ -830,13 +842,12 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::_WaitSearch()
     {
+        Trainer::ButtonStatus status = Trainer::BUTTON_DISABLED;
         ULong count = 0;
 
         // poll listing status
         for( Index i = 0; _active && i < AH_LIST_WAIT_ITERATIONS; i++ )
         {
-            Bool busy;
-
             // poll delay
             _game.SleepFrames(1);
 
@@ -851,8 +862,12 @@ namespace Diablo
                 return true;
             }
 
-            // fail if no longer busy but no listing read
-            if(!_trainer.ReadSearchBusyStatus(busy) || !busy)
+            // fail if search button enabled but no results
+            if(status >= Trainer::BUTTON_ENABLED)
+                return false;
+
+            // get button status
+            if(!_trainer.ReadButtonStatus(status, Trainer::OBJECT_BUTTON_SEARCH))
                 return false;
         }
 
