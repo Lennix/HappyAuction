@@ -151,7 +151,7 @@ namespace Diablo
 
         // Happy Auction Advanced:
         Bool _ReadHoverItemLevel( ULong& ilevel );
-        Bool _ReadHoverItemType ( TextString &text );
+        Bool _ReadHoverItemType ( TextString text );
         Bool _ReadUiObjectFromAddress( ULong address, _UiObject& object );
         Bool _ReadItemListRoot( ULong address, ULong (&itemList)[11] );
         Bool _ParseText( TextString &text );

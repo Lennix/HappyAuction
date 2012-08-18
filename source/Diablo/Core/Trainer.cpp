@@ -9,6 +9,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     static const Char*  _PROCESS_MODULE =           "Diablo III.exe";
 
+    static const Char   _FORMAT_ITEM_LOWERCASE[] =  "{c:%s}%s{/c}";
     static const Char   _FORMAT_ITEM_NAME[] =       "{C:%s}%s{/C}";
     static const Char   _FORMAT_SOCKET_EMPTY[] =    "{c_bonus}Empty Socket{/c}";
     static const Char*  _FORMAT_SOCKET_GEM =        "{icon:bullet} %[a-zA-Z0-9+.\% ]s\n";
@@ -234,9 +235,10 @@ namespace Diablo
         if(!_ReadHoverItemType(item.type))
             return false;
 
+        // this is the 0.9.9 readout, but its CAPS and thus sucks
         // name
-        if(!_ReadHoverItemName(item.name))
-            return false;
+        //if(!_ReadHoverItemName(item.name))
+        //    return false;
 
         // must have something!
         return (*item.name || item.dpsarmor || item.stats.GetCount() || item.sockets.GetCount());
@@ -303,17 +305,24 @@ namespace Diablo
             if(!_process.ReadMemory(ui_object.addr_child2, &item.timeleft, sizeof(item.timeleft)))
                 return false;
 
-        /* With 0.9.9 no longer necessary
+        // With 0.9.9 no longer necessary, but better than 0.9.9 feature
         // get 0th colum
         if(!_ReadItemListRoot(itemList[0], subList))
             return false;
 
         if(_ReadUiObjectFromAddress(subList[3], ui_object))
-            if(_process.ReadMemory(ui_object.addr_child2+0xc, &item.name, sizeof(item.name)))
-                if(!_ParseText(item.name))
+        {
+            if(_process.ReadMemory(ui_object.addr_child2, &item.name, sizeof(item.name)))
+            {
+                ULong count = 0;
+                TextString color;
+                // parse name
+                if( *item.name == 0 ||
+                    !Tools::StrFormatRead(count, item.name, _FORMAT_ITEM_LOWERCASE, color, item.name) ||
+                    count != 2 )
                     return false;
-        */
-
+            }
+        }
         return true;
     }
 
@@ -662,17 +671,23 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::_ReadHoverItemType( TextString& text )
+    Bool Trainer::_ReadHoverItemType( TextString string )
     {
         _UiObject       ui_object;
+        _UiHoverName    ui_name;
+        TextString      color;
+        ULong           count;
+
         if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_ITEMTYPE))
             return false;
 
-        // +0xc to clear {c:xxxxxxxx}
-        if(!_process.ReadMemory(ui_object.addr_child2+0xc, &text, sizeof(text)))
+        if(!_process.ReadMemory(ui_object.addr_child2, &ui_name, sizeof(ui_name)))
             return false;
 
-        if(!_ParseText(text))
+        // parse name
+        if( *ui_name.text == 0 ||
+            !Tools::StrFormatRead(count, ui_name.text, _FORMAT_ITEM_LOWERCASE, color, string) ||
+            count != 2 )
             return false;
 
         return true;

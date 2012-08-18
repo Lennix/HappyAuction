@@ -313,7 +313,7 @@ namespace HappyAuction
 
 
             //----------------------- DEPRECATED ---------------------------------
-            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, currBid, id, flags, itemlevel, timeleft, name, type
+            // haListItem() -> dpsarmor, bid, buyout, nstats, nsockets, currBid
             case SCRIPT_HALISTITEM:
                 _PushStack(_item.dpsarmor);
                 _PushStack(_item.max_bid);

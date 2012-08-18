@@ -507,7 +507,7 @@ namespace Diablo
                 // read item stat
                 if(_trainer.ReadHoverItem(item))
                 {
-                    // read time left
+                    // read time left / name
                     if(_trainer.ReadListTimeLeft(index, item))
                         status = true;
                 }
