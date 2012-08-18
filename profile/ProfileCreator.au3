@@ -984,69 +984,78 @@ Func convertProfilesToLua()
 		WriteLua("while haListNext() do", 1)
 
 		; get item information
-		WriteLua("local dpsarmor, max_bid, buyout, nstats, nsockets, current_bid, id, flags, ilvl, timeleft, name, type = haListItem()")
+		WriteLua("local item = haItem()")
 
 		; log it?
-		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. id .. ' DPS/Armor: ' .. dpsarmor .. ' max bid: ' .. max_bid .. ' buyout: ' .. buyout .. ' current bid: ' .. current_bid .. ' flags: ' .. flags .. ' ilvl: ' .. ilvl .. ' timeleft: ' .. timeleft .. ' name: ' .. name .. ' type: ' .. type)")
+		If $prof[11] == 1 Then WriteLua("haLog('ID: ' .. item.id .. ' DPS/Armor: ' .. item.dps .. ' max bid: ' .. item.max_bid .. ' buyout: ' .. item.buyout .. ' current bid: ' .. item.current_bid .. ' flags: ' .. item.flags .. ' ilvl: ' .. item.ilvl .. ' timeleft: ' .. item.timeleft .. ' name: ' .. item.name .. ' type: ' .. item.type)")
 
 		WriteLua("local found = 0")
 		$found = 0
 
 		; only loop through stats when we want to check stats or log it
-		If $stats[0] > 0 Or $prof[11] == 1 Then
+		If $stats[0] > 0 Then
 			; check the stats
-			WriteLua("for i = 1, nstats do", 1)
-
-			WriteLua("local stat, value1 = haListItemStat(i)")
-			If $prof[11] == 1 Then WriteLua("haLog('STAT:' .. stat .. ' VALUE:' .. value1)")
+			WriteLua("local value = 0")
 
 			For $j = 1 To $stats[0]
 				If StringInStr($statfilter, $stats[$j]) == 0 Then
+					WriteLua("value = haItemStat('" & $stats[$j] & "')")
 					$found += 1
-					WriteLua('if stat == "' & $stats[$j] & '" and value1 >= ' & $values[$j] & " then found = found + 1 end")
+					WriteLua('if value.value1 >= ' & $values[$j] & " then found = found + 1 end")
 				EndIf
 			Next
+		EndIf
 
-			WriteLua("end", -1) ; end for stat-loop
+		; log stats / sockets
+		If $prof[11] == 1 Then
+			WriteLua("for i, stat in pairs(item.stats) do", 1)
+			WriteLua("haLog('STAT:   ' .. stat.name .. '=' .. stat.value1)")
+			WriteLua("end", -1)
+
+			WriteLua("for i, socket in pairs(item.sockets) do", 1)
+			WriteLua("haLog('SOCKET: ' .. socket.gem .. '=' .. socket.rank)")
+			WriteLua("end", -1)
 		EndIf
 
 		; check dps/armor
 		If $prof[12] > 0 Then
-			WriteLua("if dpsarmor > " & $prof[12] & " then found = found + 1 end")
+			WriteLua("if item.dps > " & $prof[12] & " then found = found + 1 end")
 			$found += 1
 		EndIf
 
 		; check itemlevel
 		If $prof[13] > 0 Then
-			WriteLua("if ilvl > " & $prof[13] & " then found = found + 1 end")
+			WriteLua("if item.ilvl > " & $prof[13] & " then found = found + 1 end")
 			$found += 1
 		EndIf
 
+		; check time left (through string)
 		If StringLen($prof[18]) > 0 Then
-			WriteLua("if haParseTime(timeleft) >= haParseTime('" & $prof[18] & "') then found = found + 1 end")
+			WriteLua("if haParseTime(item.timeleft) >= haParseTime('" & $prof[18] & "') then found = found + 1 end")
 			$found += 1
 		EndIf
 
-		WriteLua("if string.find(type, '" & $prof[4] & "') > 0 then found = found + 1 end")
+		; check itemType
+		WriteLua("if string.find(item.type, '" & $prof[4] & "') > 0 then found = found + 1 end")
 		$found += 1
 
 		; buy/bid if we have buy/bid values
 		If $prof[7] > 0 Or $Prof[8] > 0 Then
 			; did we find all filter and did the values fit?
-			WriteLua("if found == " & $found & " and flags == 102 then", 1)
+			WriteLua("if found == " & $found & " and item.flags == 102 then", 1)
 
 			; check buyout
 			If $prof[8] > 0 Then
-				WriteLua("if buyout <= " & $prof[8] & " then", 1)
+				WriteLua("if item.buyout <= " & $prof[8] & " then", 1)
 				If $prof[11] == 1 Then WriteLua("haLog('Buying item')")
 				WriteLua("haBuyout()")
 			EndIf
 			; check bid
 			If $prof[7] > 0 Then
 				If $prof[8] > 0 Then
-					WriteLua("elseif max_bid <= " & $prof[7] & " then", -1)
+					WriteLua("elseif item.max_bid <= " & $prof[7] & " then", -1)
 				Else
-					WriteLua("if max_bid <= " & $prof[7] & " then", 1)
+					WriteLua("if item.max_bid <= " & $prof[7] & " then", 1)
 				EndIf
 				If $prof[11] == 1 Then WriteLua("haLog('Bidding on item for " & $prof[7] & "')")
 				WriteLua("haBid(" & $prof[7] & ")",1)
@@ -1055,15 +1064,9 @@ Func convertProfilesToLua()
 			WriteLua("end", -1) ; end for bid/buyout if
 			WriteLua("end", -1) ; end for found
 		ElseIf $prof[11] == 1 Then
-			WriteLua("if found == " & $found & " and flags == 102 then haLog('Found match!') end")
+			WriteLua("if found == " & $found & " and item.flags == 102 then haLog('Found match!') end")
 		EndIf
 
-		If $prof[11] == 1 Then
-			WriteLua("for i = 1, nsockets do", 1)
-			WriteLua("local stat, gtype, rank, value1 = haListItemSocket(i)")
-			WriteLua("haLog('SOCKET:' .. stat .. ' VALUE:' .. value1 .. ' GEM:' .. gtype .. ' RANK:' .. rank)")
-			WriteLua("end", -1)
-		EndIf
 		WriteLua("end", -1) ; end for while
 		WriteLua("end", -1) ; end for search
 		If $prof[10] > 0 Then WriteLua("end", -1) ; end for gold if
