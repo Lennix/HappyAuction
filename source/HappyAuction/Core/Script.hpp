@@ -596,8 +596,8 @@ namespace HappyAuction
             // fields
             _SetTable("dps", _item.dpsarmor);
             _SetTable("armor", _item.dpsarmor);
-            _SetTable("max_bid", _item.max_bid);
-            _SetTable("current_bid", _item.current_bid);
+            _SetTable("mbid", _item.max_bid);
+            _SetTable("cbid", _item.current_bid);
             _SetTable("buyout", _item.buyout);
             _SetTable("rtime", _item.rtime);
             _SetTable("xtime", _item.xtime);
@@ -605,6 +605,8 @@ namespace HappyAuction
             _SetTable("id", _item.id);
 
             // Happy Auction Advanced
+            _SetTable("max_bid", _item.max_bid);
+            _SetTable("current_bid", _item.current_bid);
             _SetTable("ilvl", _item.ilevel);
             _SetTable("timeleft", _item.timeleft);
             _SetTable("flags", _item.flags);
