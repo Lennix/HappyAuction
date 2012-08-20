@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/Array.hpp>
+#include <Core/Type/Array.hpp>
 #include <Core/Constants.hpp>
 #include <Core/Types.hpp>
 #include <stdio.h>

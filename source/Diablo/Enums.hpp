@@ -12,6 +12,8 @@ namespace Diablo
         FILTER_CHAR_WITCHDOCTOR,
         FILTER_CHAR_WIZARD,
         FILTER_CHAR_COUNT,
+
+        FILTER_CHAR_DEFAULT,
     };
 
     /**/
@@ -85,6 +87,7 @@ namespace Diablo
         EQRARITY_MAGIC,
         EQRARITY_RARE,
         EQRARITY_LEGENDARY,
+        EQRARITY_SET,
     };
 
     /**/

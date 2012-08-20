@@ -11,6 +11,7 @@ namespace Diablo
 
     static const Char   _FORMAT_ITEM_LOWERCASE[] =  "{c:%s}%s{/c}";
     static const Char   _FORMAT_ITEM_NAME[] =       "{C:%s}%s{/C}";
+    static const Char   _FORMAT_ITEM_RARITYTYPE[] = "{c:%s}%s %s{/c}";
     static const Char   _FORMAT_SOCKET_EMPTY[] =    "{c_bonus}Empty Socket{/c}";
     static const Char*  _FORMAT_SOCKET_GEM =        "{icon:bullet} %[a-zA-Z0-9+.\% ]s\n";
     static const Char*  _FORMAT_STAT[] = {
@@ -28,6 +29,15 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 0 list.AdvancedFilterComboBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 1 list.AdvancedFilterComboBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 2 list.AdvancedFilterComboBox",
+        //text string: ac8 @ "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 0 list.AdvancedFilterComboBox.text",
+
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.LevelMinInputTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.LevelMaxInputTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 0 list.AdvancedFilterTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 1 list.AdvancedFilterTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 2 list.AdvancedFilterTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.UniqueItemTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.BuyoutTextBox",
 
         "Root.TopLayer.item 2.stack.frame body.stack.stats",
         "Root.TopLayer.item 2.stack.frame body.stack.main.large_itembutton",
@@ -72,7 +82,8 @@ namespace Diablo
 
     struct _UiHoverHeader
     {
-        Byte    _1      [0x78];
+        Byte    _1      [0x50];
+        Char    raretype[0x28];     // 050
         Char    dpsarmor[0x20];     // 078
     };
 
@@ -89,6 +100,11 @@ namespace Diablo
     struct _UiHoverSocket
     {
         Char    text    [0x060];    // 000
+    };
+
+    struct _UiInputText
+    {
+        Char    text    [0x040];    // 000
     };
 
     struct _AhListItem              // 118
@@ -171,6 +187,53 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool Trainer::WriteInputText( Id id, const Char* text )
+    {
+        _UiObject       ui_object;
+        _UiInputText    ui_input;
+
+        // must be trained
+        if(!_trained)
+            return false;
+
+        // read object
+        if(!_ReadUiObject(ui_object, id))
+            return false;
+
+        // copy text
+        Tools::StrNCpy(ui_input.text, text, sizeof(ui_input.text));
+
+        // write input
+        _process.WriteMemory(ui_object.addr_child2, &ui_input, strlen(ui_input.text)+1);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool Trainer::ReadInputText( Id id, TextString text )
+    {
+        _UiObject       ui_object;
+        _UiInputText    ui_input;
+
+        // must be trained
+        if(!_trained)
+            return false;
+
+        // read object
+        if(!_ReadUiObject(ui_object, id))
+            return false;
+
+        // read input
+        if(!_process.ReadMemory(ui_object.addr_child2, &ui_input, sizeof(ui_input)))
+            return false;
+
+        // copy text
+        Tools::StrNCpy(text, ui_input.text, sizeof(TextString));
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     Bool Trainer::WriteComboIndex( Id id, Index index )
     {
         _UiObject object;
@@ -189,8 +252,7 @@ namespace Diablo
         return true;
     }
 
-    //------------------------------------------------------------------------
-    Bool Trainer::ReadComboIndex( Id id, Index& index, ULong& count )
+    Bool Trainer::ReadComboIndex( Id id, Index* index, ULong* count )
     {
         _UiObject object;
 
@@ -202,8 +264,10 @@ namespace Diablo
         if(!_ReadUiObject(object, id))
             return false;
 
-        index = object.n5[0];
-        count = object.n5[3];
+        if(index)
+            *index = object.n5[0];
+        if(count)
+            *count = object.n5[3];
 
         return true;
     }
@@ -215,9 +279,8 @@ namespace Diablo
         if(!_trained)
             return false;
 
-        // dps (only applies to weapons/armor)
-        if(!_ReadHoverItemDpsArmor(item.dpsarmor))
-            item.dpsarmor = 0;
+        // name rarity type dps/armor
+        _ReadHoverItemHeaders(item);
 
         // stats (can be empty)
         if(!_ReadHoverItemStats(item.stats))
@@ -231,9 +294,10 @@ namespace Diablo
         if(!_ReadHoverItemLevel(item.ilevel))
             return false;
 
+        // deprecated with 0.9.10
         // item type
-        if(!_ReadHoverItemType(item.type))
-            return false;
+        //if(!_ReadHoverItemType(item.type))
+        //   return false;
 
         // this is the 0.9.9 readout, but its CAPS and thus sucks
         // name
@@ -251,12 +315,8 @@ namespace Diablo
         if(!_trained)
             return false;
 
-        // name
-        if(!_ClearHoverItemName())
-            return false;
-
-        // dps
-        if(!_ClearHoverItemDpsArmor())
+        // headers
+        if(!_ClearHoverItemHeaders())
             return false;
 
         // stats
@@ -543,11 +603,14 @@ namespace Diablo
 
     // private
     //------------------------------------------------------------------------
-    Bool Trainer::_ReadHoverItemName( TextString string )
+    Bool Trainer::_ReadHoverItemHeaders( Item& item )
     {
         _UiObject       ui_object;
+        _UiHoverHeader  ui_header;
         _UiHoverName    ui_name;
         TextString      color;
+        TextString      rarity;
+        TextString      type;
         ULong           count;
 
         // read ui object
@@ -560,18 +623,9 @@ namespace Diablo
 
         // parse name
         if( *ui_name.text == 0 ||
-            !Tools::StrFormatRead(count, ui_name.text, _FORMAT_ITEM_NAME, color, string) ||
+            !Tools::StrFormatRead(count, ui_name.text, _FORMAT_ITEM_NAME, color, item.name) ||
             count != 2 )
             return false;
-
-        return true;
-    }
-
-    //------------------------------------------------------------------------
-    Bool Trainer::_ReadHoverItemDpsArmor( ULong& value )
-    {
-        _UiObject       ui_object;
-        _UiHoverHeader  ui_header;
 
         // read ui object
         if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_DPSARMOR))
@@ -582,11 +636,19 @@ namespace Diablo
             return false;
 
         // parse dps/armor
-        value = atoi(ui_header.dpsarmor);
+        ULong dpsarmor = atoi(ui_header.dpsarmor);
+        if(dpsarmor >= ITEM_STAT_VALUE_MIN && dpsarmor <= ITEM_STAT_VALUE_MAX)
+            item.dpsarmor = dpsarmor;
 
-        // verify
-        if(value < ITEM_STAT_VALUE_MIN || value > ITEM_STAT_VALUE_MAX)
-            return false;
+        // parse rarity/type
+        if( *ui_header.raretype != 0 &&
+            Tools::StrFormatRead(count, ui_header.raretype, _FORMAT_ITEM_RARITYTYPE, color, rarity, type) &&
+            count == 3 )
+        {
+            item.rarity = ENUM_RARITIES.GetId(rarity);
+            if(item.rarity != INVALID_ID)
+                item.type = AH_COMBO_SECONDARY.Find(type);
+        }
 
         return true;
     }
@@ -693,20 +755,7 @@ namespace Diablo
         return true;
     }
 
-    Bool Trainer::_ClearHoverItemName()
-    {
-        _UiObject ui_object;
-
-        // read ui object
-        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_NAME))
-            return false;
-
-        // write null char
-        return _process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverName, text), 0);
-    }
-
-    //------------------------------------------------------------------------
-    Bool Trainer::_ClearHoverItemDpsArmor()
+    Bool Trainer::_ClearHoverItemHeaders()
     {
         _UiObject ui_object;
 
@@ -714,8 +763,18 @@ namespace Diablo
         if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_DPSARMOR))
             return false;
 
+        // write null chars
+        if(!_process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverHeader, dpsarmor), 0))
+            return false;
+        if(!_process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverHeader, raretype), 0))
+            return false;
+
+        // read ui object
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_NAME))
+            return false;
+
         // write null char
-        return _process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverHeader, dpsarmor), 0);
+        return _process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverName, text), 0);
     }
 
     //------------------------------------------------------------------------

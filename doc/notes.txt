@@ -1,12 +1,13 @@
-- added haItem().name representing item name.
-- added haItem().id representing a unique auction id for the given item.
-- new sample bot: BestMojo. finds the highest damage mojo. demonstrates use of haItem().id and haItemStat().
-- fixed haStash* bug where empty slots would return a previously selected item
-- haItemStat() will no longer match item tooltip stat text. this would cause false positives such as matching 'critical hit chance' with 'Increases Critical Hit Chance of Strafe'.
-- CTRL-F12 will now terminate script in the middle of a long haSleep()
+- added haSetLogin() to replace haReLogin(). see README
+- deprecated haReLogin(). will redirect to haSetLogin() until completely removed in the future.
+- improved haBuyout/haBid performance by a few frames.
+- add haItem().rarity representing item rarity. see README
+- add haItem().type representing item type. see README
 
 
+
+- seperate strings into a file allowing easy locale updates.
+- show error and kill script when haFilterStat fails. this is to prevent unwanted purchases.
 - add native call support
 - automatically clear popups such as "high transaction volume" errors
 - supports decimal values such as 7.5 instead of rounding down to 7
-- make haReLogin passive

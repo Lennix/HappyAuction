@@ -4,21 +4,24 @@
 namespace HappyAuction
 {
     //------------------------------------------------------------------------
-    const Char* APPLICATION_NAME =      "HappyAuction";
+    const Char* APPLICATION_NAME =          "HappyAuction";
 
     //------------------------------------------------------------------------
-    const Char* EXCEPTION_FATAL =       "Fatal Fail\n\n"
-                                        "Possible Causes:\n"
-                                        "- HappyAuction already running\n"
-                                        "- Something else hogging CTRL-F12 hotkey\n";
-    const Char* EXCEPTION_INITIALIZE =  "Open Fail\n\n"
-                                        "Possible Causes:\n"
-                                        "- Diablo 3 not running\n"
-                                        "- Diablo 3 minimized\n"
-                                        "- Not at auction house\n"
-                                        "- Not latest HappyAuction\n";
-    const Char* EXCEPTION_SCRIPT =      "LUA Error:\n%s";
-    
+    const Char* EXCEPTION_FATAL =           "Fatal Fail\n\n"
+                                            "Possible Causes:\n"
+                                            "- HappyAuction already running\n"
+                                            "- Something else hogging CTRL-F12 hotkey\n";
+    const Char* EXCEPTION_INITIALIZE =      "Open Fail\n\n"
+                                            "Possible Causes:\n"
+                                            "- Diablo 3 not running\n"
+                                            "- Diablo 3 minimized\n"
+                                            "- Not at auction house\n"
+                                            "- Not latest HappyAuction\n";
+    const Char* EXCEPTION_SCRIPT =          "LUA Error:\n%s";
+    const Char* EXCEPTION_SCRIPT_FILTER =   "haFilter Operation Failed:\n\n";
+    const Char* EXCEPTION_OBSOLETED =       "Obsoleted Function:\n%s\n\n"
+                                            "See README for latest version";
+
 
     //------------------------------------------------------------------------
     const Char* SCRIPT_PATH =           "Lua/Main.lua";
@@ -53,11 +56,9 @@ namespace HappyAuction
         "haItem",
         "haItemStat",
 
-        // etc
-        "haReLogin",
-
         // settings
         "haSetGlobalDelay",
+        "haSetLogin",
 
         // utilities
         "haAlert",
@@ -66,17 +67,19 @@ namespace HappyAuction
         "haSleep",
         "haUpTime",
 
-        "haActionBid",//DEPRECATED
-        "haActionBuyout",//DEPRECATED
-        "haActionSearch",//DEPRECATED
-        "haActionSortDpsArmor",//DEPRECATED
-        "haActionSortBuyout",//DEPRECATED
-        "haListItem",//DEPRECATED
-        "haListItemStat",//DEPRECATED
-        "haListItemSocket",//DEPRECATED
-        "haStashSell",//DEPRECATED
-        "haActionReLogin",//DEPRECATED
-        "haSettingsListDelay",//DEPRECATED
+        // deprecated
+        "haReLogin",
+        "haActionBid",
+        "haActionBuyout",
+        "haActionSearch",
+        "haActionSortDpsArmor",
+        "haActionSortBuyout",
+        "haListItem",
+        "haListItemStat",
+        "haListItemSocket",
+        "haStashSell",
+        "haActionReLogin",
+        "haSettingsListDelay",
 
         "haTest",
 

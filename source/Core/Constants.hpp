@@ -1,6 +1,6 @@
 #pragma once
 #include <Core/Types.hpp>
-#include <Core/Enums.hpp>
+#include <Core/Type/Enum.hpp>
 
 namespace Core
 {

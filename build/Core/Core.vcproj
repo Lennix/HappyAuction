@@ -186,10 +186,18 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\source\Core\Array.hpp"
+		<Filter
+			Name="Type"
 			>
-		</File>
+			<File
+				RelativePath="..\..\source\Core\Type\Array.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\Core\Type\Enum.hpp"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\source\Core\Constants.cpp"
 			>

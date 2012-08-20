@@ -332,7 +332,20 @@ namespace Diablo
         "Topaz",
     };
 
+    static const EnumItem _enum_rarities[] =
+    {
+        EnumItem(EQRARITY_ALL,          "All"),
+        EnumItem(EQRARITY_INFERIOR,     "Inferior"),
+        EnumItem(EQRARITY_NORMAL,       "Normal"),
+        EnumItem(EQRARITY_SUPERIOR,     "Superior"),
+        EnumItem(EQRARITY_MAGIC,        "Magic"),
+        EnumItem(EQRARITY_RARE,         "Rare"),
+        EnumItem(EQRARITY_LEGENDARY,    "Legendary"),
+        EnumItem(EQRARITY_SET,          "Set"),
+    };
+    const Enum ENUM_RARITIES(_enum_rarities, ACOUNT(_enum_rarities));
 
+    //------------------------------------------------------------------------
     const Coordinate AH_INPUT_LEVEL_MIN =   { -0.5025, 0.471875, };
     const Coordinate AH_INPUT_LEVEL_MAX =   { -0.434375, 0.471875 };
     const Coordinate AH_INPUT_PSTAT_VALUE[AH_INPUT_PSTAT_LIMIT] =

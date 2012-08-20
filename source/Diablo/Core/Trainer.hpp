@@ -20,6 +20,14 @@ namespace Diablo
             OBJECT_COMBO_PSTAT1,
             OBJECT_COMBO_PSTAT2,
 
+            OBJECT_INPUT_LEVELMIN,
+            OBJECT_INPUT_LEVELMAX,
+            OBJECT_INPUT_PSTAT0,
+            OBJECT_INPUT_PSTAT1,
+            OBJECT_INPUT_PSTAT2,
+            OBJECT_INPUT_UNIQUE,
+            OBJECT_INPUT_BUYOUT,
+
             OBJECT_TOOLTIP_STATS,
             OBJECT_TOOLTIP_DPSARMOR,
             OBJECT_TOOLTIP_SOCKET0,
@@ -28,7 +36,6 @@ namespace Diablo
             OBJECT_TOOLTIP_NAME,
 
             OBJECT_LBUTTON_PAGENEXT,
-
             OBJECT_BUTTON_SEARCH,
             OBJECT_BUTTON_SENDTOSTASH,
             OBJECT_BUTTON_BUYOUT,
@@ -97,7 +104,11 @@ namespace Diablo
 
         /**/
         Bool WriteComboIndex( Id id, Index index );
-        Bool ReadComboIndex( Id id, Index& index, ULong& count );
+        Bool ReadComboIndex( Id id, Index* index=NULL, ULong* count=NULL );
+
+        /**/
+        Bool WriteInputText( Id id, const Char* text );
+        Bool ReadInputText( Id id, TextString text );
 
         /**/
         Bool ReadHoverItem( Item& item );
@@ -125,14 +136,12 @@ namespace Diablo
 
     private:
         /**/
-        Bool _ReadHoverItemName( TextString name );
-        Bool _ReadHoverItemDpsArmor( ULong& value );
+        Bool _ReadHoverItemHeaders( Item& item );
         Bool _ReadHoverItemStats( Item::StatCollection& stats );
         Bool _ReadHoverItemSockets( Item::SocketCollection& sockets );
 
         /**/
-        Bool _ClearHoverItemName();
-        Bool _ClearHoverItemDpsArmor();
+        Bool _ClearHoverItemHeaders();
         Bool _ClearHoverItemStats();
         Bool _ClearHoverItemSockets();
 

@@ -204,6 +204,10 @@
 				RelativePath="..\..\source\HappyAuction\Core\ScriptRunner.hpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\source\HappyAuction\Core\State.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource"

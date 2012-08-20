@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/Array.hpp>
+#include <Core/Type/Array.hpp>
 #include <Core/System/Window.hpp>
 #include <Psapi.h>
 
