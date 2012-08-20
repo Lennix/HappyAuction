@@ -1,4 +1,5 @@
 #pragma once
+#include <Core/Type/Enum.hpp>
 #include <Diablo/Type/ComboBox.hpp>
 #include <Diablo/Types.hpp>
 #include <Diablo/Enums.hpp>
@@ -30,6 +31,9 @@ namespace Diablo
     extern const Char*          ITEM_GEM_TYPE_STRINGS[];
 
     //------------------------------------------------------------------------
+    extern const Enum           ENUM_RARITIES;
+
+    //------------------------------------------------------------------------
     static const ULong          AH_INPUT_PSTAT_LIMIT = 3;
     extern const Coordinate     AH_INPUT_LEVEL_MIN;
     extern const Coordinate     AH_INPUT_LEVEL_MAX;
@@ -54,7 +58,7 @@ namespace Diablo
     extern const Coordinate     AH_LIST_NEXT_BUTTON;
     extern const Coordinate     AH_LIST_SORT_DPSARMOR;
     extern const Coordinate     AH_LIST_SORT_BUYOUT;
-    static const ULong          AH_LIST_WAIT_ITERATIONS = 600;
+    static const ULong          AH_LIST_WAIT_ITERATIONS = 6000;
     static const ULong          AH_LIST_ROW_LIMIT = 11;
     static const ULong          AH_RELOGIN_LOGOUT_DELAY = 500;
     static const ULong          AH_RELOGIN_POSTLOGIN_DELAY = 1100;

@@ -82,14 +82,17 @@ namespace HappyAuction
         }
 
         /**/
-        void Stop()
+        void Stop( Bool wait=true )
         {
             if(_active && _lua != NULL)
             {
                 lua_SetActive(_lua, 0);
 
-                while(_active)
-                    Sleep(50);
+                if(wait)
+                {
+                    while(_active)
+                        Sleep(50);
+                }
             }
         }
 

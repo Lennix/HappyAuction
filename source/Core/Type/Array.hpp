@@ -230,6 +230,13 @@ namespace Core
             _memory = _fixed_memory;
             Array::CopyCollection(copy);
         }
+
+        /**/
+        static const FixedArray& GetEmpty()
+        {
+            static FixedArray _empty;
+            return _empty;
+        }
     };
 
     /**/

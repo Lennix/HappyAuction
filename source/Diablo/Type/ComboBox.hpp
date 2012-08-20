@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/Array.hpp>
+#include <Core/Type/Array.hpp>
 #include <Core/Tools.hpp>
 #include <Diablo/Root.hpp>
 
@@ -57,6 +57,9 @@ namespace Diablo
         /**/
         Id Find( const Char* pattern ) const
         {
+            if(pattern == NULL)
+                return INVALID_ID;
+
             ULong best_score = ~0;
             ULong best_id = INVALID_ID;
             ULong pattern_length = strlen(pattern);

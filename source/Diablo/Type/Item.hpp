@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/Array.hpp>
+#include <Core/Type/Array.hpp>
 #include <Diablo/Enums.hpp>
 #include <Diablo/Constants.hpp>
 
@@ -42,22 +42,17 @@ namespace Diablo
         ULong               buyout;
         ULong               rtime;
         ULong               xtime;
+        Id                  rarity;
+        Id                  type;
 
         StatCollection      stats;
         SocketCollection    sockets;
 
     public:
         /**/
-        Item():
-            id(0),
-            dpsarmor(0),
-            current_bid(0),
-            max_bid(0),
-            buyout(0),
-            rtime(0),
-            xtime(0)
+        Item()
         {
-            name[0] = 0;
+            Empty();
         }
 
         /**/
@@ -71,8 +66,16 @@ namespace Diablo
             buyout = 0;
             rtime = 0;
             xtime = 0;
+            rarity = INVALID_ID;
+            type = INVALID_ID;
             stats.Empty();
             sockets.Empty();
+        }
+
+        /**/
+        Bool IsValid()
+        {
+            return type != INVALID_ID;
         }
 
         /**/

@@ -36,11 +36,20 @@ namespace Diablo
 
         /**/
         Bool    WriteFilterChar( FilterCharId char_id );
-        Bool    WriteFilterType( FilterSecondaryId id );
+        Bool    ReadFilterChar( FilterCharId& char_id );
+        Bool    WriteFilterPrimary( FilterPrimaryId primary_id );
+        Bool    ReadFilterPrimary( FilterPrimaryId& primary_id );
+        Bool    WriteFilterSecondary( FilterSecondaryId secondary_id );
+        Bool    ReadFilterSecondary( FilterSecondaryId& secondary_id );
+        Bool    WriteFilterRarity( FilterRarityId rarity_id );
+        Bool    ReadFilterRarity( FilterRarityId& rarity_id );
+        Bool    WriteFilterStat( Index index, ItemStatId id, Long value );
+        Bool    ReadFilterStat( Index index, ItemStatId& id, Long& value );
+
         Bool    WriteFilterLevelMin( Long level );
+        Bool    ReadFilterLevelMin( Long& level );
         Bool    WriteFilterLevelMax( Long level );
-        Bool    WriteFilterRarity( FilterRarityId id );
-        Bool    WriteFilterStat( Index index, ItemStatId id, ULong value );
+        Bool    ReadFilterLevelMax( Long& level );
 
         /**/
         Bool    ActionSearch();
@@ -71,10 +80,11 @@ namespace Diablo
         Bool    _WriteComboRefresh( Id combo_id, Index option_index, ULong option_count );
 
         Bool    _CalculateOptionIndex( Index& option_index, ULong& option_count, Id combo_id, Id option_id );
-        Bool    _OptionIndexToId( Id& option_id, Index option_index, Id group_id, const ComboBox& box ) const;
-        Bool    _OptionIdToIndex( Index& option_index, Id option_id, Id group_id, const ComboBox& box, IgnoreCollection& ignores ) const;
+        Bool    _OptionIndexToId( Id& option_id, Index option_index, Id group_id, const ComboBox& box, const IgnoreCollection& ignores=IgnoreCollection::GetEmpty() ) const;
+        Bool    _OptionIdToIndex( Index& option_index, Id option_id, Id group_id, const ComboBox& box, const IgnoreCollection& ignores=IgnoreCollection::GetEmpty() ) const;
         Bool    _WaitSearch();
 
+        Bool    _ReadInputNumber( Id id, Long& number );
         void    _Reset();
     };
 }

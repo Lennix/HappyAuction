@@ -130,8 +130,16 @@ namespace Diablo
             SendInputKeys("^CA^c^D", true);
     }
 
+    void Game::SendInputNumber( Double x, Double y, Long number )
+    {
+        if(number >= 0)
+            SendInputText(x, y, "%u", number);
+        else
+            SendInputText(x, y, "");
+    }
+
     //------------------------------------------------------------------------
-    Bool Game::GetInputText( Double x, Double y, Char* text, ULong limit )
+    Bool Game::ReadInputText( Double x, Double y, Char* text, ULong limit )
     {
         // select input
         MouseClick(x, y);
@@ -143,6 +151,19 @@ namespace Diablo
         Bool status = System::GetClipBoard(text, limit);
 
         return status;
+    }
+
+    Bool Game::ReadInputNumber( Double x, Double y, Long& number )
+    {
+        TextString out;
+
+        *out = 0;
+        if(!ReadInputText(x, y, out, sizeof(out)) || *out == 0)
+            number = -1;
+        else
+            number = atoi(out);
+
+        return true;
     }
 
     //------------------------------------------------------------------------

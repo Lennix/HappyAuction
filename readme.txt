@@ -1,4 +1,4 @@
-HappyAuction v0.9.9
+HappyAuction v0.9.10
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ INCLUDED BOTS
 - LogResults:   Sets filters and scans all results logging all items to a file
 - LogStash:     Logs all items in your stash. Includes item sell example.
 - BestMojo:     Finds the highest damage mojo.
-- GemMiner:	    More complex bot that searches across multiple filters finding
+- GemMiner:     More complex bot that searches across multiple filters finding
                 and buying cheap items with expensive gems.
 
 
@@ -70,7 +70,7 @@ SCRIPTING NOTES
 - The main entry script is Lua/Main.lua.
 - Always check function return status! Yes they can fail sometimes like when
   normal operation is interupted by some battle.net error. In which case use
-  haReLogin to relogin.
+  haSetLogin to enable automatic relogin.
 - Use haSetGlobalDelay() to slow everything down (fastest by default!)
 - If functions are ever deprecated they will remain available for several
   updates before being removed permanently.
@@ -205,6 +205,15 @@ AUCTION/SELL:
     - status:   true if successful
 
 
+AUCTION/COMPLETED:
+- haSendToStash() -> status
+    Sends completed items to stash. Fails if nothing to send. example:
+        while haSendToStash() do end
+    will send every completed item to stash.
+    NOTE: this function will NOT fail if your stash is full.
+    - status:   true if successful.
+
+
 ITEM:
 - haItem() -> item
     Returns information about the last selected item. Values will be 0 if no
@@ -213,6 +222,8 @@ ITEM:
     - item.name:    item name
     - item.id:      a unique id for this auction
     - item.dps:     the DPS or armor value found in tooltip.
+    - item.rarity:  item rarity. this also distinguishes set from legendary.
+    - item.type:    item type. example: 'Helm'
     - item.mbid:    the max bid price as shown in bid button/input box.
     - item.cbid:    the current bid price as shown in item list. this will be
                     less than mbid if there are bidders, otherwise equal.
@@ -239,26 +250,6 @@ ITEM:
     - stat.value1-4: stat values. for most stats only value1 will be used.
 
 
-ETC:
-- haReLogin(name, password) -> status
-    If any disconnect errors exist returns to main login and attempts to log
-    back in and back to the auction house to continue scripting as usual. If
-    login fails will retry with 3 second delay.
-    Call this each iteration in your main loop. If other operations are
-    suddenly failing its a sign you've been disconnected at which point
-    haReLogin will kick in. See working example in Bots/GemMiner.lua. Example:
-    - name:     account name
-    - password: account password
-    - status:   true if successful relogin
-
-- haSendToStash() -> status
-    Sends completed items to stash. Fails if nothing to send. example:
-        while haSendToStash() do end
-    will send every completed item to stash.
-    NOTE: this function will NOT fail if your stash is full.
-    - status:   true if successful.
-
-
 SETTINGS:
 - haSetGlobalDelay(delay)
     Adds a global delay to every future action taken. This includes delays
@@ -267,6 +258,13 @@ SETTINGS:
     and 2*delay. Useful for slowing your script down to avoid input limit
     errors and being detected. Default value is 0.
     - delay:    delay in milliseconds. range: 0-60000
+
+- haSetLogin(name, password)
+    Enables automatic relogin. If a disconnect error occurs will attempt to
+    relogin, restore state, and continue script. Note that only scripted state
+    is restored. see example in Main.lua.
+    - name:     account name
+    - password: account password
 
 
 UTILITIES:
