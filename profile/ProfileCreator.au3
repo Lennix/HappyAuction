@@ -68,7 +68,7 @@ Const $version = "1"
 
 ;files
 Const $Ini = "Profiles.ini"
-Const $Txt = "Profiles.txt"
+Const $Txt = "..\build\HappyAuction\Lua\Main.lua"
 Const $Bat = "Update.bat"
 
 ;color

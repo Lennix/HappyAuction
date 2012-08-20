@@ -360,41 +360,19 @@ namespace HappyAuction
 
             // haSettingsNextDelay(delay)
             case SCRIPT_HASETTINGSNEXTDELAY:
-                GAME_NEXTPAGE_DELAY = Tools::Conform(_GetStackULong(1), GAME_NEXTPAGE_DELAY_MIN, GAME_NEXTPAGE_DELAY_MAX);
-                return 0;
+                return _haSetNextDelay();
 
             // haSettingsQueriesPerHour(delay)
             case SCRIPT_HASETTINGSQUERIESPERHOUR:
-                unumber = _GetStackLong(1);
-                if(unumber)
-                {
-                    GAME_MAX_QUERIES_PER_HOUR = Tools::Conform(unumber, GAME_MAX_QUERIES_PER_HOUR_MIN, GAME_MAX_QUERIES_PER_HOUR_MAX);
-                    return 0;
-                }
-                else
-                {
-                    _PushStack((ULong)GAME_CURRENT_QUERIES_PER_HOUR);
-                    return 1;
-                }
+                return _haSetQueriesPerHour();
 
             // haParseTime(timeString)
             case SCRIPT_HAPARSETIME:
-                pstring1 = _GetStackString(1);
-                if(pstring1)
-                {
-                    _PushStack(_ahi.ParseTime(pstring1));
-                    return 1;
-                }
-                return 0;
+                return _haParseTime();
 
             // haGetGold()
             case SCRIPT_HAGETGOLD:
-                ULong gold;
-                if (_ahi.GetGold(gold))
-                    _PushStack(gold);
-                else
-                    return 0;
-                return 1;
+                return _haGetGold();
 
             default:
                 return 0;
@@ -974,6 +952,50 @@ namespace HappyAuction
             System::Message(EXCEPTION_OBSOLETED, SCRIPT_STRINGS[id]);
             Lua::Stop(false);
             return 0;
+        }
+
+
+        // Happy auction advanced
+        ULong _haSetNextDelay()
+        {
+            GAME_NEXTPAGE_DELAY = Tools::Conform(_GetStackULong(1), GAME_NEXTPAGE_DELAY_MIN, GAME_NEXTPAGE_DELAY_MAX);
+            return 0;
+        }
+
+        ULong _haSetQueriesPerHour()
+        {
+            ULong unumber = _GetStackLong(1);
+            if(unumber)
+            {
+                GAME_MAX_QUERIES_PER_HOUR = Tools::Conform(unumber, GAME_MAX_QUERIES_PER_HOUR_MIN, GAME_MAX_QUERIES_PER_HOUR_MAX);
+                return 0;
+            }
+            else
+            {
+                _PushStack((ULong)GAME_CURRENT_QUERIES_PER_HOUR);
+                return 1;
+            }
+        }
+
+        ULong _haParseTime()
+        {
+            const Char* pstring1 = _GetStackString(1);
+            if(pstring1)
+            {
+                _PushStack(_ahi.ParseTime(pstring1));
+                return 1;
+            }
+            return 0;
+        }
+
+        ULong _haGetGold()
+        {
+            ULong gold;
+            if (_ahi.GetGold(gold))
+                _PushStack(gold);
+            else
+                return 0;
+            return 1;
         }
     };
 }
