@@ -1,6 +1,5 @@
 #pragma once
 #include <HappyAuction/Core/ScriptRunner.hpp>
-#include <HappyAuction/Core/WatchdogRunner.hpp>
 #include <Core/System/Thread.hpp>
 #include <Core/System/System.hpp>
 #include <WinHttpClient/Common/Include/WinHttpClient.h>
@@ -13,7 +12,6 @@ namespace HappyAuction
     {
     private:
         ScriptRunner _runner;
-        WatchdogRunner _wdRunner;
         Bool running;
 
     public:
