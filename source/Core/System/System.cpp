@@ -258,18 +258,26 @@ namespace Core
     }
 
     //------------------------------------------------------------------------
-    void System::Message( const Char* format, ... )
+    Bool System::Message( Bool cancel, const Char* format, ... )
     {
         TextString  message;
         va_list     args;
         assert(format != NULL);
 
+        // create message
         va_start(args, format);
         vsnprintf(message, sizeof(message), format, args);
         va_end(args);
         message[sizeof(message) - 1] = 0;
 
-        MessageBox(NULL, message, _MESSAGE_TITLE, MB_OK|MB_SETFOREGROUND);
+        // show message box
+        Bits flags = MB_OK|MB_SETFOREGROUND;
+        if(cancel)
+            flags |= MB_YESNO;
+        Int status = MessageBox(NULL, message, _MESSAGE_TITLE, flags);
+
+        // success if user hit yes or did not fail
+        return status != 0 && status != IDNO;
     }
 
     //------------------------------------------------------------------------

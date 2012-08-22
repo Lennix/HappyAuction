@@ -130,10 +130,13 @@ namespace Diablo
             SendInputKeys("^CA^c^D", true);
     }
 
-    void Game::SendInputNumber( Double x, Double y, Long number )
+    void Game::SendInputNumber( Double x, Double y, Number number )
     {
+        TextString nstring;
+
+        // number
         if(number >= 0)
-            SendInputText(x, y, "%u", number);
+            SendInputText(x, y, Tools::NumberToStr(nstring, number));
         else
             SendInputText(x, y, "");
     }
@@ -153,7 +156,7 @@ namespace Diablo
         return status;
     }
 
-    Bool Game::ReadInputNumber( Double x, Double y, Long& number )
+    Bool Game::ReadInputNumber( Double x, Double y, Number& number )
     {
         TextString out;
 
@@ -161,7 +164,7 @@ namespace Diablo
         if(!ReadInputText(x, y, out, sizeof(out)) || *out == 0)
             number = -1;
         else
-            number = atoi(out);
+            number = Tools::StrToNumber(out);
 
         return true;
     }

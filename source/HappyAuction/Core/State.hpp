@@ -18,9 +18,9 @@ namespace HappyAuction
     struct StateFiltersStat
     {
         Id      id;
-        Long    value;
+        Number  value;
 
-        StateFiltersStat(): id(INVALID_ID), value(-1) {}
+        StateFiltersStat(): id(INVALID_ID), value(NUMBER(-1,0)) {}
     };
 
     /**/
@@ -29,13 +29,13 @@ namespace HappyAuction
         Id                  character;
         Id                  type;
         Id                  rarity;
-        Long                level_min;
-        Long                level_max;
-        Long                buyout;
+        Number              level_min;
+        Number              level_max;
+        Number              buyout;
         TextString          unique;
         StateFiltersStat    stat[AH_INPUT_PSTAT_LIMIT];
 
-        StateFilters(): character(INVALID_ID), type(INVALID_ID), rarity(INVALID_ID), level_min(-1), level_max(-1), buyout(-1) { unique[0]=0; }
+        StateFilters(): character(INVALID_ID), type(INVALID_ID), rarity(INVALID_ID), level_min(NUMBER(-1,0)), level_max(NUMBER(-1,0)), buyout(NUMBER(-1,0)) { unique[0]=0; }
     };
 
     /**/
@@ -44,15 +44,15 @@ namespace HappyAuction
         Bool        active;
         Index       row;
         Index       page;
-        ULong       sort_buyout;
-        ULong       sort_dpsarmor;
+        Id          sort_id;
+        ULong       sort_count;
 
         StateSearch():
             active(false),
             row(0),
             page(0),
-            sort_buyout(0),
-            sort_dpsarmor(0)
+            sort_id(INVALID_ID),
+            sort_count(0)
         {}
     };
 

@@ -60,29 +60,46 @@ namespace Core
         }
 
         /**/
-        static ULong StrToULong( const Char*& string )
+        static Char* NumberToStr( TextString string, Number number )
         {
-            ULong integer = 0;
-            ULong decimal = 0;
-            ULong* value = &integer;
+            Long    whole = static_cast<Long>(Tools::Min<Number>(NUMBER_WHOLE(number), 2000000000));
+            ULong   decimal = NUMBER_DECIMAL(number);
 
-            for(; *string; string++ )
+            if(decimal)
+                sprintf(string, "%d.%u", whole, decimal);
+            else
+                sprintf(string, "%d", whole);
+
+            return string;
+        }
+
+        /**/
+        static Number StrToNumber( const Char* string, const Char** end=NULL )
+        {
+            Number  whole = 0;
+            ULong   decimal = 0;
+            Bool    negative = false;
+            Char    c;
+
+            if(*string == '-')
+                negative = true;
+
+            for(;(c=*string) && c >= '0' && c <= '9'; string++)
+                whole = (c - '0') + (whole * 10);
+
+            if(c == '.')
             {
-                Char c = *string;
-                if(c == '.')
-                {
-                    value = &decimal;
-                    continue;
-                }
-                if(c == ',')
-                    continue;
-                else if(c >= '0' && c <= '9')
-                    *value = (c - '0') + (*value * 10);
-                else
-                    break;
+                ULong places = NUMBER_ACCURACY;
+                for(; (c=*++string) && c >= '0' && c <= '9' && places > 1; places /= 10)
+                    decimal = (c - '0') + (decimal * 10);
+                decimal *= places;
+                for(; (c=*string) && c >= '0' && c <= '9'; string++);
             }
 
-            return integer;
+            if(end)
+                *end = string;
+
+            return NUMBER(negative ? -whole : whole, decimal);
         }
 
         /**/
@@ -95,9 +112,11 @@ namespace Core
         }
 
         /**/
-        static Bool StrFormatRead( ULong& count, const Char* string, const Char* format, ... )
+        static ULong StrFormatRead( ULong& count, const Char* string, const Char* format, ... )
         {
-            va_list args;
+            va_list     args;
+            const Char* begin = string;
+
             assert(format != NULL);
             count = 0;
 
@@ -110,7 +129,7 @@ namespace Core
                     switch(*(format++))
                     {
                     case 'u':
-                        *((ULong*)va_arg(args, ULong*)) = StrToULong(string);
+                        *((Number*)va_arg(args, Number*)) = StrToNumber(string, &string);
                         count++;
                         break;
                     case 's':
@@ -120,11 +139,14 @@ namespace Core
                     }
                 }
                 else if(*(string++) != *(format++))
-                    return false;
+                    return 0;
             }
             va_end(args);
 
-            return *format == 0;
+            if(*format != 0)
+                return 0;
+
+            return string - begin;
         }
 
         /**/

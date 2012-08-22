@@ -42,11 +42,11 @@ namespace Diablo
         /**/
         void SendInputKeys( const Char* text, Bool specials );
         void SendInputText( Double x, Double y, const Char* format, ... );
-        void SendInputNumber( Double x, Double y, Long number );
+        void SendInputNumber( Double x, Double y, Number number );
 
         /**/
         Bool ReadInputText( Double x, Double y, Char* text, ULong limit );
-        Bool ReadInputNumber( Double x, Double y, Long& number );
+        Bool ReadInputNumber( Double x, Double y, Number& number );
 
         /**/
         void Sleep( ULong min, ULong max=0 );

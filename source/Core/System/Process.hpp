@@ -67,15 +67,13 @@ namespace Core
         ULong GetBaseAddress( const Char* name ) 
         {
             DWORD       size;
-            HMODULE     modules[32]; 
+            HMODULE     modules[128]; 
             TextString  enum_name;
             EnumProcessModules(_handle, modules, sizeof(modules), &size);
 
-            for( Index i = 0; i < (size / sizeof(modules)); i++ )
-            {
+            for( Index i = 0; i < (size / sizeof(HMODULE)); i++ )
                 if(GetModuleBaseName(_handle, modules[i], enum_name, sizeof(enum_name)) && strcmp(name, enum_name) == 0)
                     return (DWORD)modules[i];
-            }
 
             return 0;
         }

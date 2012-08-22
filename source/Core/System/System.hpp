@@ -28,7 +28,7 @@ namespace Core
         static void SetStatusIcon( Status status, Id icon_id );
 
         /**/
-        static void Message( const Char* format, ... );
+        static Bool Message( Bool cancel, const Char* format, ... );
         static Bool SetHotKey( ULong modifier, ULong key, HotKeyHandler handler, void* custom );
         static Bool GetClipBoard( Char* buffer, ULong limit );
 

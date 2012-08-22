@@ -16,7 +16,7 @@ namespace Diablo
         {
             if(stat.values.GetCount() > 0)
             {
-                ULong   value = stat.values[0];
+                ULong   value = static_cast<ULong>(NUMBER_WHOLE(stat.values[0]));
                 Index   rank_index;
 
                 // get type from stat id
@@ -39,7 +39,7 @@ namespace Diablo
                 // ruby
                 case ITEM_STAT_STRENGTH:
                 case ITEM_STAT_BONUSEXPERIENCE:
-                case ITEM_STAT_BONUSMINIMUMWEAPONDAMAGE:
+                case ITEM_STAT_AVERAGEDAMAGE:
                     type = GEM_TYPE_RUBY;
                     break;
 
@@ -82,7 +82,7 @@ namespace Diablo
                     rank_index = ITEM_GEM_CRITICALHITDAMAGE.IndexOf(ITEM_GEM_CRITICALHITDAMAGE.FlatSearch(value)) + 1;
                     break;
 
-                case ITEM_STAT_BONUSMINIMUMWEAPONDAMAGE:
+                case ITEM_STAT_AVERAGEDAMAGE:
                     rank_index = ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE.IndexOf(ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE.FlatSearch(value)) + 1;
                     break;
 

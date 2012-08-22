@@ -22,6 +22,7 @@ namespace HappyAuction
         SCRIPT_HASEARCH,
         SCRIPT_HASORTBUYOUT,
         SCRIPT_HASORTDPSARMOR,
+        SCRIPT_HASORTTIMELEFT,
 
         // auction/sell
         SCRIPT_HASELL,
@@ -43,6 +44,7 @@ namespace HappyAuction
         SCRIPT_HAALERT,
         SCRIPT_HABEEP,
         SCRIPT_HALOG,
+        SCRIPT_HAPROMPT,
         SCRIPT_HASLEEP,
         SCRIPT_HAUPTIME,
 

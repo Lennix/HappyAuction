@@ -19,12 +19,18 @@ namespace Diablo
             OBJECT_COMBO_PSTAT0,
             OBJECT_COMBO_PSTAT1,
             OBJECT_COMBO_PSTAT2,
+            OBJECT_COMBO_PSTAT3,
+            OBJECT_COMBO_PSTAT4,
+            OBJECT_COMBO_PSTAT5,
 
             OBJECT_INPUT_LEVELMIN,
             OBJECT_INPUT_LEVELMAX,
             OBJECT_INPUT_PSTAT0,
             OBJECT_INPUT_PSTAT1,
             OBJECT_INPUT_PSTAT2,
+            OBJECT_INPUT_PSTAT3,
+            OBJECT_INPUT_PSTAT4,
+            OBJECT_INPUT_PSTAT5,
             OBJECT_INPUT_UNIQUE,
             OBJECT_INPUT_BUYOUT,
 
@@ -91,7 +97,8 @@ namespace Diablo
         Process&        _process;
         MemoryScanner   _memory;
         ULong           _address[OBJECT_COUNT];
-        ULong           _base_address;
+        ULong           _d3_base;
+        ULong           _bnet_base;
         Bool            _trained;
 
     public:

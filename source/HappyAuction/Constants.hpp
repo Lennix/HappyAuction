@@ -16,5 +16,5 @@ namespace HappyAuction
 
     //------------------------------------------------------------------------
     extern const Char*  SCRIPT_PATH;
-    extern const Char*  SCRIPT_STRINGS[];
+    extern const Char*  SCRIPT_FUNCTIONS[];
 }

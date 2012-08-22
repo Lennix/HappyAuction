@@ -1,13 +1,14 @@
-- added haSetLogin() to replace haReLogin(). see README
-- deprecated haReLogin(). will redirect to haSetLogin() until completely removed in the future.
-- improved haBuyout/haBid performance by a few frames.
-- add haItem().rarity representing item rarity. see README
-- add haItem().type representing item type. see README
+- updated for 1.0.4
+    - added haSortTimeLeft()
+- fixed minor relogin bug that would delay the process by unintentionally opening options menu.
+- now supports decimal numbers. so an item with 4.5 crit will be read as 4.5 not 4.
+- added haPrompt(). like haAlert() but with YES/NO buttons and return status. see README.
 
 
-
-- seperate strings into a file allowing easy locale updates.
+- USD/RMAH swap support
+- support new item types
 - show error and kill script when haFilterStat fails. this is to prevent unwanted purchases.
+
+
 - add native call support
-- automatically clear popups such as "high transaction volume" errors
-- supports decimal values such as 7.5 instead of rounding down to 7
+- clear "high transaction volume" popups
