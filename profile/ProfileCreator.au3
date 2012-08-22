@@ -969,12 +969,10 @@ Func convertProfilesToLua()
 		$fcount = 0
 
 		If $stats[0] > 0 Then
-			; set first 3 filter
 			For $j = 1 To $stats[0]
 				If $stats[$j] <> "ERROR" And $stats[$j] <> "stat" Then
 					$fcount += 1
 					WriteLua("haFilterStat(" & $fcount & ", '" & $stats[$j] & "', " & $values[$j] & ")")
-					If $fcount == 3 Then ExitLoop
 				EndIf
 			Next
 		EndIf
