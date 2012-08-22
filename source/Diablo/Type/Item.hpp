@@ -9,7 +9,7 @@ namespace Diablo
     class Item
     {
     public:
-        typedef FixedArray<ULong, ITEM_STAT_VALUE_LIMIT>    ValueCollection;
+        typedef FixedArray<Number, ITEM_STAT_VALUE_LIMIT> ValueCollection;
 
         /**/
         struct Stat
@@ -36,10 +36,10 @@ namespace Diablo
     public:
         TextString          name;
         ULong               id;
-        ULong               dpsarmor;
-        ULong               current_bid;
-        ULong               max_bid;
-        ULong               buyout;
+        Number              dpsarmor;
+        Number              current_bid;
+        Number              max_bid;
+        Number              buyout;
         ULong               rtime;
         ULong               xtime;
         Id                  rarity;

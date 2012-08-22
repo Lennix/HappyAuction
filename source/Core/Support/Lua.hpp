@@ -128,6 +128,15 @@ namespace HappyAuction
             return lua_tounsigned( _lua, index );
         }
 
+        const Number _GetStackNumber( Index index )
+        {
+            const Char* nstring = lua_tostring( _lua, index );
+            if(nstring)
+                return Tools::StrToNumber(nstring);
+            else
+                return 0;
+        }
+
         const Char* _GetStackString( Index index )
         {
             return lua_tostring( _lua, index );
@@ -147,6 +156,16 @@ namespace HappyAuction
         void _PushStack( ULong value )
         {
             lua_pushunsigned( _lua, value );
+        }
+
+        void _PushStack( Number value )
+        {
+            if(NUMBER_DECIMAL(value))
+                lua_pushnumber( _lua, NUMBER_TODOUBLE(value) );
+            else
+                lua_pushinteger( _lua, static_cast<Long>(NUMBER_WHOLE(value)) );
+            //TextString nstring;
+            //lua_pushstring( _lua, Tools::NumberToStr(nstring, value) );
         }
 
         void _PushStack( const Char* string )

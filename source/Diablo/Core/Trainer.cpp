@@ -7,15 +7,18 @@ namespace Diablo
 {
     // local
     //------------------------------------------------------------------------
-    static const Char*  _PROCESS_MODULE =           "Diablo III.exe";
+    static const Char*  _D3_MODULE =                "Diablo III.exe";
+    static const Char*  _BNET_MODULE =              "battle.net.dll";
 
     static const Char   _FORMAT_ITEM_NAME[] =       "{C:%s}%s{/C}";
     static const Char   _FORMAT_ITEM_RARITYTYPE[] = "{c:%s}%s %s{/c}";
     static const Char   _FORMAT_SOCKET_EMPTY[] =    "{c_bonus}Empty Socket{/c}";
-    static const Char*  _FORMAT_SOCKET_GEM =        "{icon:bullet} %[a-zA-Z0-9+.\% ]s\n";
+    static const Char*  _FORMAT_SOCKET_GEM =        "{icon:bullet} %s\n";
     static const Char*  _FORMAT_STAT[] = {
-        "{icon:bullet} {c:ff6969ff}%[a-zA-Z0-9+.()\% -]s{/c}\n",
-        "{c:ff6969ff}{icon:bullet}%[a-zA-Z0-9+.()\% -]s{/c}\n"
+        "{icon:bullet} {c:ff6969ff}%s{c:%s}{/c}\n",
+        "{icon:bullet} {c:ff6969ff}%s{/c}\n",
+        "{c:ff6969ff}{icon:bullet}%s{c:ffff0000}%s{/c}{/c}\n",
+        "{c:ff6969ff}{icon:bullet}%s{/c}\n",
     };
 
     static const Char*  _HINT_LISTITEM_ITEM =       "D3_ITEM";
@@ -28,13 +31,18 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 0 list.AdvancedFilterComboBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 1 list.AdvancedFilterComboBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 2 list.AdvancedFilterComboBox",
-        //text string: ac8 @ "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 0 list.AdvancedFilterComboBox.text",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 3 list.AdvancedFilterComboBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 4 list.AdvancedFilterComboBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 5 list.AdvancedFilterComboBox",
 
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.LevelMinInputTextBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.LevelMaxInputTextBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 0 list.AdvancedFilterTextBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 1 list.AdvancedFilterTextBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 2 list.AdvancedFilterTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 3 list.AdvancedFilterTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 4 list.AdvancedFilterTextBox",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.SearchStatsFilterList.slot 5 list.AdvancedFilterTextBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.UniqueItemTextBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.BuyoutTextBox",
 
@@ -54,14 +62,33 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.PageHeader",
     };
 
-    static const Process::Link _chain_listroot[] =
-    {
-        0x00FC75B0,
-        0x00000000
-    };
-    static const Process::Chain _CHAIN_LISTROOT(_chain_listroot, ACOUNT(_chain_listroot));
-    static const ULong          _BASEADDRESS_FRAMECOUNT =   0x00FD5EE4;
-    static const ULong          _BASEADDRESS_LOGGEDIN =     0x00FB40E0;
+    /*
+        1 d3 search with buyout
+        2 mem search 4byte buyout of item in row 1
+        3 goto next page and compare to buyout in row 1 until unique
+        4 pointer (re)scan address found. static only. levels=4. offset=1024.
+        5 with pointer scan still open restart d3 goto 1
+    */
+    static const Process::Link _chain_searchresults[] = { 0x00F75DF8, 0x00000000 }; // _D3_MODULE
+    static const Process::Chain _CHAIN_SEARCHRESULTS(_chain_searchresults, ACOUNT(_chain_searchresults));
+
+    /*
+        1 set low frame rate
+        2 mem search 4byte between estimated frames passed
+        3 mem research incrementing
+        4 keep only static addresses
+        5 ensure valid in world, menus, and AH
+        6 restart d3 goto 2
+    */
+    static const ULong _BASEADDRESS_FRAMECOUNT =   0x00FC90FC; // _D3_MODULE
+    /*
+        1 login and mem search 4byte = 1
+        2 logout and mem search 4byte = 0
+        3 keep only static address
+        4 ensure value = 1 in world, menus, and AH
+        5 restart d3 goto 1
+    */
+    static const ULong _BASEADDRESS_LOGGEDIN =     0x007132F4; // _BNET_MODULE
 
     //------------------------------------------------------------------------
     struct _UiObjectChild
@@ -123,6 +150,8 @@ namespace Diablo
     Trainer::Trainer( Process& process ):
         _process(process),
         _memory(process),
+        _d3_base(0),
+        _bnet_base(0),
         _trained(false)
     {
     }
@@ -133,9 +162,10 @@ namespace Diablo
         Tools::MemZero(_address, ACOUNT(_address));
         _trained = false;
 
-        // get base address
-        _base_address = _process.GetBaseAddress(_PROCESS_MODULE);
-        if(_base_address == 0)
+        // get base addresses
+        if((_d3_base = _process.GetBaseAddress(_D3_MODULE)) == 0)
+            return false;
+        if((_bnet_base = _process.GetBaseAddress(_BNET_MODULE)) == 0)
             return false;
 
         // scan memory
@@ -326,17 +356,17 @@ namespace Diablo
         // cbid, mbid
         if(item_object.bid1)
         {
-            item.current_bid = item_object.bid1;
-            item.max_bid = item_object.bid2;
+            item.current_bid = NUMBER(item_object.bid1, 0);
+            item.max_bid = NUMBER(item_object.bid2, 0);
         }
         else
-            item.current_bid = item.max_bid = item_object.bid2;
+            item.current_bid = item.max_bid = NUMBER(item_object.bid2, 0);
 
         // id
         item.id = item_object.id;
 
         // buyout
-        item.buyout = item_object.buyout;
+        item.buyout = NUMBER(item_object.buyout, 0);
 
         // time
         UHuge expire = item_object.time / 1000;
@@ -438,7 +468,7 @@ namespace Diablo
         ULong status;
         
         // get login status
-        if(!_process.ReadMemory( _base_address + _BASEADDRESS_LOGGEDIN, &status, sizeof(ULong) ))
+        if(!_process.ReadMemory( _bnet_base + _BASEADDRESS_LOGGEDIN, &status, sizeof(ULong) ))
             return false;
 
         // set status
@@ -466,7 +496,7 @@ namespace Diablo
     Bool Trainer::ReadFrameCount( ULong& count )
     {
         // get frame count
-        return _process.ReadMemory( _base_address + _BASEADDRESS_FRAMECOUNT, &count, sizeof(ULong) );
+        return _process.ReadMemory( _d3_base + _BASEADDRESS_FRAMECOUNT, &count, sizeof(ULong) );
     }
 
 
@@ -505,7 +535,7 @@ namespace Diablo
             return false;
 
         // parse dps/armor
-        ULong dpsarmor = atoi(ui_header.dpsarmor);
+        Number dpsarmor = Tools::StrToNumber(ui_header.dpsarmor);
         if(dpsarmor >= ITEM_STAT_VALUE_MIN && dpsarmor <= ITEM_STAT_VALUE_MAX)
             item.dpsarmor = dpsarmor;
 
@@ -661,7 +691,7 @@ namespace Diablo
     Bool Trainer::_ReadListRoot( _AhList& object )
     {
         // get list root object from static chain
-        ULong address = _process.ReadChainAddress( _base_address, _CHAIN_LISTROOT );
+        ULong address = _process.ReadChainAddress( _d3_base, _CHAIN_SEARCHRESULTS );
         if(address == 0)
             return false;
 
@@ -715,10 +745,12 @@ namespace Diablo
     {
         Index       i;
         TextString  stat_string;
+        TextString  dummy_string;
         Char*       pstat_string = stat_string;
+        ULong       count;
 
-        // stop at null
-        if(*text == 0)
+        // stop at null or newline
+        if(*text == 0 || *text == '\n')
             return NULL;
 
         // if socket
@@ -731,28 +763,37 @@ namespace Diablo
                 return text + sizeof(_FORMAT_SOCKET_EMPTY);
             }
             // else read gem stats
-            else if(sscanf(text, _FORMAT_SOCKET_GEM, pstat_string) != 1)
+            else if( !Tools::StrFormatRead(count, text, _FORMAT_SOCKET_GEM, pstat_string) || count != 1 )
+            {
+                Tools::Log( LOG_ERROR, "ITEM: SOCKET: %s\n", text);
                 return NULL;
+            }
         }
         else
         {
-            // read regular item stat
-            for( i = 0; i < ACOUNT(_FORMAT_STAT) && sscanf(text, _FORMAT_STAT[i], pstat_string) != 1; i++ );
+            ULong length;
+
+            // read regular item stat (has different formats)
+            for( i = 0; i < ACOUNT(_FORMAT_STAT) && ((length = Tools::StrFormatRead(count, text, _FORMAT_STAT[i], pstat_string, dummy_string)) == 0 || count < 1); i++ );
             if(i == ACOUNT(_FORMAT_STAT))
+            {
+                Tools::Log( LOG_ERROR, "ITEM: FORMAT: %s\n", text);
                 return NULL;
+            }
 
             // remove leading whitespace
             for(; *pstat_string && isspace(*pstat_string); pstat_string++);
 
             // increment to next item
-            text += Tools::StrLenPrint(text);
-            if(*text)
-                text++;
+            text += length;
         }
 
         // parse stat text
         if(!Support::ParseItemStatString(stat, pstat_string))
+        {
+            Tools::Log( LOG_ERROR, "ITEM: UNKNOWN: %s\n", pstat_string);
             return NULL;
+        }
 
         return text;
     }

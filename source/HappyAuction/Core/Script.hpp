@@ -45,11 +45,11 @@ namespace HappyAuction
 
                 // start lua script
                 if(!Lua::Start(SCRIPT_PATH))
-                    System::Message(EXCEPTION_SCRIPT, Lua::GetError());
+                    System::Message(false, EXCEPTION_SCRIPT, Lua::GetError());
             }
             catch(const Char* exception)
             {
-                System::Message(exception);
+                System::Message(false, exception);
             }
 
             // close user log
@@ -153,12 +153,9 @@ namespace HappyAuction
             // search
             if(search.active && _ahi.ActionSearch())
             {
-                // sort buyout
-                if(search.sort_buyout)
-                    for( Index i = 0; i < search.sort_buyout && _ahi.ActionListSortBuyout(); i++ );
-                // sort dpsarmor
-                else if(search.sort_dpsarmor)
-                    for( Index i = 0; i < search.sort_dpsarmor && _ahi.ActionListSortDpsArmor(); i++ );
+                // sort
+                if(search.sort_id != INVALID_ID && search.sort_count)
+                    for( Index i = 0; i < search.sort_count && _ahi.ActionListSort(static_cast<UiId>(search.sort_id)); i++ );
 
                 // restore page
                 for( Index i = 0; i < _state.search.page && _ahi.ActionListNextPage(); i++ );
@@ -187,7 +184,7 @@ namespace HappyAuction
         virtual void _OnInitialized()
         {
             for( Index i = 0; i < SCRIPT_COUNT; i++ )
-                _Register(i, SCRIPT_STRINGS[i]);
+                _Register(i, SCRIPT_FUNCTIONS[i]);
         }
 
         /**/
@@ -267,12 +264,16 @@ namespace HappyAuction
             // haSortBuyout() -> status
             case SCRIPT_HASORTBUYOUT:
             case SCRIPT_HAACTIONSORTBUYOUT://DEPRECATED
-                return _haSortBuyout();
+                return _haSort(UI_LBUTTON_SORTDPSARMOR);
 
             // haSortDpsArmor() -> status
             case SCRIPT_HASORTDPSARMOR:
             case SCRIPT_HAACTIONSORTDPSARMOR://DEPRECATED
-                return _haSortDpsArmor();
+                return _haSort(UI_LBUTTON_SORTBUYOUT);
+
+            // haSortTimeLeft() -> status
+            case SCRIPT_HASORTTIMELEFT:
+                return _haSort(UI_LBUTTON_SORTTIMELEFT);
 
 
             //---- AUCTION/SELL ----------------------------------------------
@@ -331,6 +332,10 @@ namespace HappyAuction
             case SCRIPT_HALOG:
                 return _haLog();
 
+            // haPrompt(message)
+            case SCRIPT_HAPROMPT:
+                return _haPrompt();
+
             // haSleep(delay)
             // haSleep(low, high)
             case SCRIPT_HASLEEP:
@@ -360,7 +365,7 @@ namespace HappyAuction
         /**/
         ULong _haBid()
         {
-            Bool status = (_state.search.row > 0) ? _ahi.ActionBid(_state.search.row - 1, _GetStackULong(1)) : false;
+            Bool status = (_state.search.row > 0) ? _ahi.ActionBid(_state.search.row - 1, _GetStackNumber(1)) : false;
             _PushStack(status);
             return 1;
         }
@@ -376,7 +381,7 @@ namespace HappyAuction
         /**/
         ULong _haFilterBuyout()
         {
-            Long buyout = _GetStackLong(1);
+            Number buyout = _GetStackNumber(1);
 
             if(buyout)
             {
@@ -389,7 +394,10 @@ namespace HappyAuction
                 _PushStack(status);
             }
             else
-                _PushStack(_ahi.ReadFilterBuyout(buyout) ? buyout : 0);
+            {
+                _ahi.ReadFilterBuyout(buyout);
+                _PushStack(buyout);
+            }
 
             return 1;
         }
@@ -413,15 +421,15 @@ namespace HappyAuction
         /**/
         ULong _haFilterLevel()
         {
-            Long    min = _GetStackLong(1);
+            Number  min = _GetStackNumber(1);
             Bool    status = false;
 
-            if(min >= -1 && min <= GAME_LEVEL_MAX && _ahi.WriteFilterLevelMin(min))
+            if(min >= NUMBER(-1,0) && min <= GAME_LEVEL_MAX && _ahi.WriteFilterLevelMin(min))
             {
-                Long max = _GetStackLong(2);
+                Number max = _GetStackNumber(2);
                 if(max == 0)
                     max = min;
-                if(max >= -1 && max <= GAME_LEVEL_MAX && _ahi.WriteFilterLevelMax(max))
+                if(max >= NUMBER(-1,0) && max <= GAME_LEVEL_MAX && _ahi.WriteFilterLevelMax(max))
                 {
                     _state.filters.level_min = min;
                     _state.filters.level_max = max;
@@ -454,7 +462,7 @@ namespace HappyAuction
         {
             Index   index = _GetStackULong(1) - 1;
             Id      id =    AH_COMBO_PSTAT.Find(_GetStackString(2));
-            ULong   value = _GetStackULong(3);
+            Number  value = _GetStackNumber(3);
             Bool    status = false;
 
             if( index < AH_INPUT_PSTAT_LIMIT &&
@@ -603,8 +611,8 @@ namespace HappyAuction
             {
                 _state.search.row = 0;
                 _state.search.page = 0;
-                _state.search.sort_buyout = 0;
-                _state.search.sort_dpsarmor = 0;
+                _state.search.sort_id = INVALID_ID;
+                _state.search.sort_count = 0;
                 status = true;
             }
             else
@@ -615,30 +623,18 @@ namespace HappyAuction
         }
 
         /**/
-        ULong _haSortBuyout()
+        ULong _haSort( UiId id )
         {
             Bool status = false;
 
-            if(_ahi.ActionListSortBuyout())
+            if(_ahi.ActionListSort(id))
             {
-                _state.search.sort_dpsarmor = 0;
-                _state.search.sort_buyout++;
-                status = true;
-            }
-
-            _PushStack(status);
-            return 1;
-        }
-
-        /**/
-        ULong _haSortDpsArmor()
-        {
-            Bool status = false;
-
-            if(_ahi.ActionListSortDpsArmor())
-            {
-                _state.search.sort_buyout = 0;
-                _state.search.sort_dpsarmor++;
+                if( id != _state.search.sort_id )
+                {
+                    _state.search.sort_id = id;
+                    _state.search.sort_count = 0;
+                }
+                _state.search.sort_count++;
                 status = true;
             }
 
@@ -651,8 +647,8 @@ namespace HappyAuction
         /**/
         ULong _haSell()
         {
-            ULong   starting = _GetStackULong(1);
-            ULong   buyout = _GetStackULong(2);
+            Number  starting = _GetStackNumber(1);
+            Number  buyout = _GetStackNumber(2);
             Bool    status = false;
 
             // must have starting price
@@ -871,9 +867,11 @@ namespace HappyAuction
         /**/
         ULong _haAlert()
         {
-            const Char* pstring1 = _GetStackString(1);
-            if(pstring1)
-                System::Message("%s", pstring1);
+            const Char* message = _GetStackString(1);
+
+            if(message)
+                System::Message(false, "%s", message);
+
             return 0;
         }
 
@@ -887,10 +885,25 @@ namespace HappyAuction
         /**/
         ULong _haLog()
         {
-            const Char* pstring1 = _GetStackString(1);
-            if(pstring1)
-                Tools::Log(LOG_USER, "%s\n", pstring1);
+            const Char* message = _GetStackString(1);
+
+            if(message)
+                Tools::Log(LOG_USER, "%s\n", message);
+
             return 0;
+        }
+
+        /**/
+        ULong _haPrompt()
+        {
+            const Char* message =  _GetStackString(1);
+            Bool        status = false;
+
+            if(message)
+                status = System::Message(true, "%s", message);
+
+            _PushStack(status);
+            return 1;
         }
 
         /**/
@@ -918,7 +931,7 @@ namespace HappyAuction
         /**/
         ULong _haObsolete(Id id)
         {
-            System::Message(EXCEPTION_OBSOLETED, SCRIPT_STRINGS[id]);
+            System::Message(false, EXCEPTION_OBSOLETED, SCRIPT_FUNCTIONS[id]);
             Lua::Stop(false);
             return 0;
         }

@@ -1,5 +1,4 @@
-//TODO: move all coordinates to COORDS[] table
-//TODO: recalculate all coordinates using base res of 1600/1200
+//PATCH: monitor defense: _1H_ALL|_1H_WAND should be _1H_ALL|_1H_AXE
 #pragma once
 #include <Diablo/Constants.hpp>
 #include <Diablo/Enums.hpp>
@@ -126,39 +125,33 @@ namespace Diablo
         { "None",                               { 0 },                                                                  _ALL },
 
         // damage
-        { "Damage",                             { 0 },                                                                  (_1H) | (_2H) | (_ARMOR) | (_OH) | (_FOLLOWER) },
-        { "All Resistance",                     { "+%u Resistance to All Elements" },                                   (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Arcane Resistance",                  { "+%u Arcane Resistance" },                                            (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Armor",                              { "+%u Armor" },                                                        (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER_ALL|_FOLLOWER_TEMPLAR) },
+        { "Damage",                             { 0 },                                                                  (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) | (_FOLLOWER) },
+        { "Attack Speed",                       { "+%u Attacks per Second" },                                           (_1H_ALL|_1H_SWORD) },
         { "Attack Speed %",                     { "Increases Attack Speed by %u%%",
-                                                  "Attack Speed Increased by %u%%" },                                   (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_GLOVES|_ARMOR_RING)},
+                                                  "Attack Speed Increased by %u%%" },                                   (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_GLOVES|_ARMOR_RING) | (_OH_ALL|_OH_QUIVER)},
+        { "Average Arcane Damage",              { "+%u-%u Arcane Damage" },                                             (_1H) | (_2H) },
+        { "Average Cold Damage",                { "+%u-%u Cold Damage" },                                               (_1H) | (_2H) },
+        { "Average Damage",                     { "+%u Minimum Damage",
+                                                  "+%u-%u Damage" },                                                    (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_RING) },
+        { "Average Fire Damage",                { "+%u-%u Fire Damage" },                                               (_1H) | (_2H) },
+        { "Average Holy Damage",                { "+%u-%u Holy Damage" },                                               (_1H) | (_2H) },
+        { "Average Lightning Damage",           { "+%u-%u Lightning Damage" },                                          (_1H) | (_2H) },
+        { "Average Poison Damage",              { "+%u-%u Poison Damage" },                                             (_1H) | (_2H) },
         { "Bleed Chance",                       { "%u%% chance to inflict Bleed for %u-%u damage over %u seconds." },   (_1H) | (_2H) | (_OH) },
-        { "Block %",                            { "+%u%% Chance to Block" },                                            (_ARMOR_ALL) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER_ALL|_FOLLOWER_TEMPLAR) },
-        { "Bonus Minimum Arcane Damage",        { "+%u-%u Arcane Damage" },                                             (_1H) | (_2H) },
-        { "Bonus Minimum Cold Damage",          { "+%u-%u Cold Damage" },                                               (_1H) | (_2H) },
-        { "Bonus Minimum Fire Damage",          { "+%u-%u Fire Damage" },                                               (_1H) | (_2H) },
-        { "Bonus Minimum Holy Damage",          { "+%u-%u Holy Damage" },                                               (_1H) | (_2H) },
-        { "Bonus Minimum Lightning Damage",     { "+%u-%u Lightning Damage" },                                          (_1H) | (_2H) },
-        { "Bonus Minimum Poison Damage",        { "+%u-%u Poison Damage" },                                             (_1H) | (_2H) },
-        { "Bonus Minimum Weapon Damage",        { "+%u Minimum Damage" },                                               (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_RING) },
-        { "Bonus vs Elites",                    { "Increases Damage Against Elites by %u%%" },                          (_1H) | (_2H_ALL|_2H_AXE|_2H_BOW|_2H_DAIBO|_2H_CROSSBOW|_2H_MACE|_2H_MIGHTYWEAPON|_2H_STAFF|_2H_SWORD) | (_OH) },
-        { "Cold Resistance",                    { "+%u Cold Resistance" },                                              (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Bonus Arcane Damage",                { "Adds %u%% to Arcane Damage" },                                       (_OH_ALL|_OH_SOURCE) },
+        { "Bonus Cold Damage",                  { "Adds %u%% to Cold Damage" },                                         0 },
+        { "Bonus Fire Damage",                  { "Adds %u%% to Fire Damage" },                                         (_OH_ALL|_OH_SOURCE) },
+        { "Bonus Lightning Damage",             { "Adds %u%% to Lightning Damage" },                                    (_OH_ALL|_OH_SOURCE) },
+        { "Bonus Poison Damage",                { "Adds %u%% to Poison Damage" },                                       0 },
+        { "Bonus vs Elites",                    { "Increases Damage Against Elites by %u%%" },                          (_1H) | (_2H_ALL|_2H_AXE|_2H_BOW|_2H_DAIBO|_2H_CROSSBOW|_2H_MACE|_2H_MIGHTYWEAPON|_2H_STAFF|_2H_SWORD) | (_ARMOR_ALL|_ARMOR_RING) | (_OH) },
         { "Critical Hit Chance",                { "Critical Hit Chance Increased by %u%%" },                            (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
         { "Critical Hit Damage",                { "Critical Hit Damage Increased by %u%%" },                            (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_GLOVES|_ARMOR_RING) | (_FOLLOWER) },
-        { "Fire Resistance",                    { "+%u Fire Resistance" },                                              (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Lightning Resistance",               { "+%u Lightning Resistance" },                                         (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
         { "Min Bleed Damage",                   { "%u%% chance to inflict Bleed for %u-%u damage over %u seconds." },   (_1H) | (_2H) | (_OH) },
-        { "Physical Damage to Attacker",        { "Melee attackers take %u damage per hit" },                           (_ARMOR) | (_OH) },
-        { "Physical Resistance",                { "+%u Physical Resistance" },                                          (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Poison Resistance",                  { "+%u Poison Resistance" },                                            (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Reduced Damage from Elites",         { "Reduces damage from elites by %u%%" },                               (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
-        { "Reduced Damage from Melee Attacks",  { "Reduces damage from melee attacks by %u%%" },                        (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
-        { "Reduced Damage from Ranged Attacks", { "Reduces damage from ranged attacks by %u%%" },                       (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
         { "Weapon Damage %",                    { "+%u%% Damage" },                                                     (_1H) | (_2H) },
 
         // crowd control
         { "Crowd Control",                      { 0 },                                                                  (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_RING|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Chance to Blind on Hit",             { "%u%% Chance to Blind on Hit" },                                      (_1H) | (_2H) | (_OH) },
+        { "Chance to Blind on Hit",             { "%u%% Chance to Blind on Hit" },                                      (_1H) | (_2H) | (_OH) | (_ARMOR_ALL|_ARMOR_AMULET) },
         { "Chance to Chill on Hit",             { "%u%% Chance to Chill on Hit" },                                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_SHOULDERS) | (_OH) },
         { "Chance to Fear on Hit",              { "%u%% Chance to Fear on Hit" },                                       (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
         { "Chance to Freeze on Hit",            { "%u%% Chance to Freeze on Hit" },                                     (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) | (_OH) },
@@ -167,6 +160,22 @@ namespace Diablo
         { "Chance to Slow on Hit",              { "%u%% Chance to Slow on Hit" },                                       (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_PANTS) | (_OH) },
         { "Chance to Stun on Hit",              { "%u%% Chance to Stun on Hit" },                                       (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_GLOVES) | (_OH) },
         { "Crowd Control Reduction",            { "Reduces duration of control impairing effects by %u" },              (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_HELM|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_SHIELD) },
+
+        // defense
+        { "Defense",                            { 0 },                                                                  (_1H_ALL|_1H_WAND) | (_ARMOR) | (_OH) | (_FOLLOWER) },
+        { "All Resistance",                     { "+%u Resistance to All Elements" },                                   (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Arcane Resistance",                  { "+%u Arcane Resistance" },                                            (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Armor",                              { "+%u Armor" },                                                        (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER_ALL|_FOLLOWER_TEMPLAR) },
+        { "Block %",                            { "+%u%% Chance to Block" },                                            (_ARMOR_ALL) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER_ALL|_FOLLOWER_TEMPLAR) },
+        { "Cold Resistance",                    { "+%u Cold Resistance" },                                              (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Fire Resistance",                    { "+%u Fire Resistance" },                                              (_1H_ALL|_1H_WAND) | (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Lightning Resistance",               { "+%u Lightning Resistance" },                                         (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Physical Damage to Attacker",        { "Melee attackers take %u damage per hit" },                           (_ARMOR) | (_OH) },
+        { "Physical Resistance",                { "+%u Physical Resistance" },                                          (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Poison Resistance",                  { "+%u Poison Resistance" },                                            (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
+        { "Reduced Damage from Elites",         { "Reduces damage from elites by %u%%" },                               (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
+        { "Reduced Damage from Melee Attacks",  { "Reduces damage from melee attacks by %u%%" },                        (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_MIGHTYBELT) | (_OH_ALL|_OH_SHIELD) },
+        { "Reduced Damage from Ranged Attacks", { "Reduces damage from ranged attacks by %u%%" },                       (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
 
         // life
         { "Life",                               { 0 },                                                                  (_1H) | (_2H) | (_ARMOR) | (_OH) | (_FOLLOWER)},
@@ -179,12 +188,12 @@ namespace Diablo
         { "Life Per Spirit Spent",              { "Gain %u Life per Spirit Spent" },                                    (_1H_ALL|_1H_FISTWEAPON) | (_2H_ALL|_2H_DAIBO) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
 
         // resource
-        { "Resource",                           { 0 },                                                                  (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_HANDCROSSBOW|_1H_FISTWEAPON|_1H_MIGHTYWEAPON|_1H_WAND) |
+        { "Resource",                           { 0 },                                                                  (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_HANDCROSSBOW|_1H_FISTWEAPON|_1H_MIGHTYWEAPON|_1H_SWORD|_1H_WAND) |
                                                                                                                         (_2H_ALL|_2H_DAIBO|_2H_MIGHTYWEAPON) |
                                                                                                                         (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_MIGHTYBELT|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) |
                                                                                                                         (_OH_ALL|_OH_MOJO|_OH_SOURCE|_OH_QUIVER) },
         { "Arcane Power on Crit",               { "Critical Hits grant %u Arcane Power" },                              (_1H_ALL|_1H_WAND) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_SOURCE) },
-        { "Hatred Regeneration",                { "Increases Hatred Regeneration by %u per Second" },                   (_1H_ALL|_1H_HANDCROSSBOW) | (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_QUIVER) },
+        { "Hatred Regeneration",                { "Increases Hatred Regeneration by %u per Second" },                   (_1H_ALL|_1H_HANDCROSSBOW|_1H_SWORD) | (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_QUIVER) },
         { "Mana Regeneration",                  { "Increases Mana Regeneration by %u per Second" },                     (_1H_ALL|_1H_CEREMONIALKNIFE) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) | (_OH_ALL|_OH_MOJO) },
         { "Max Arcane Power",                   { "+%u Maximum Arcane Power" },                                         (_1H_ALL|_1H_WAND) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_SOURCE) },
         { "Max Discipline",                     { "+%u Maximum Discipline" },                                           (_1H_ALL|_1H_HANDCROSSBOW) | (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_QUIVER) },
@@ -195,7 +204,6 @@ namespace Diablo
         // attributes
         { "Attributes",                         { 0 },                                                                  _ALL },
         { "Dexterity",                          { "+%u Dexterity" },                                                    _ALL },
-        { "Experience",                         { "Monster kills grant +%u experience." },                              _ALL },
         { "Intelligence",                       { "+%u Intelligence" },                                                 _ALL },
         { "Strength",                           { "+%u Strength" },                                                     _ALL },
         { "Vitality",                           { "+%u Vitality" },                                                     _ALL },
@@ -238,6 +246,7 @@ namespace Diablo
         { "Monk Skill Bonus: Wave of Light",                { "Increases Critical Hit Chance of Wave of Light by %u%%" },       (_2H_ALL|_2H_DAIBO|_2H_POLEARM|_2H_STAFF) },
         { "Monk Skill Bonus: Way of the Hundred Fists",     { "Increases Way of the Hundred Fists Damage by %u%%" },            (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
         { "Witch Doctor Skill Bonus: Acid Cloud",           { "Increases Critical Hit Chance of Acid Cloud by %u%%" },          (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) },
+        { "Witch Doctor Skill Bonus: Corpse Spiders",       { "Increases Corpse Spiders Damage by %u%%" },                      (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
         { "Witch Doctor Skill Bonus: Firebats",             { "Reduces resource cost of Firebats by %u Mana." },                (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) },
         { "Witch Doctor Skill Bonus: Firebomb",             { "Reduces resource cost of Firebomb by %u Mana." },                (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR) | (_2H_ALL|_2H_BOW|_2H_CROSSBOW) },
         { "Witch Doctor Skill Bonus: Haunt",                { "Increases Haunt Damage by %u%%" },                               (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR) | (_2H_ALL|_2H_BOW|_2H_CROSSBOW) },
@@ -245,9 +254,9 @@ namespace Diablo
         { "Witch Doctor Skill Bonus: Plague of Toads",      { "Increases Plague of Toads Damage by %u%%" },                     (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR) | (_2H_ALL|_2H_BOW|_2H_CROSSBOW) },
         { "Witch Doctor Skill Bonus: Poison Darts",         { "Increases Poison Dart Damage by %u%%" },                         (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
         { "Witch Doctor Skill Bonus: Spirit Barrage",       { "Increases Spirit Barrage Damage by %u%%" },                      (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Witch Doctor Skill Bonus: Summon Zombie Dogs",   { "Reduces cooldown of Summon Zombie Dogs by %u seconds." },        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) },
+        { "Witch Doctor Skill Bonus: Summon Zombie Dogs",   { "Reduces cooldown of Summon Zombie Dogs by %u seconds." },        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) | (_OH_ALL|_OH_MOJO) },
         { "Witch Doctor Skill Bonus: Wall of Zombies",      { "Reduces cooldown of Wall of Zombies by %u seconds." },           (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Witch Doctor Skill Bonus: Zombie Charger",       { "Reduces resource cost of Zombie Charger by %u Spirit." },        (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
+        { "Witch Doctor Skill Bonus: Zombie Charger",       { "Reduces resource cost of Zombie Charger by %u Mana." },          (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
         { "Wizard Skill Bonus: Arcane Orb",                 { "Increases Critical Hit Chance of Arcane Orb by %u%%" },          (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
         { "Wizard Skill Bonus: Arcane Torrent",             { "Reduces resource cost of Arcane Torrent by %u Arcane Power." },  (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
         { "Wizard Skill Bonus: Blizzard",                   { "Increases Duration of Blizzard by %u Seconds" },                 (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
@@ -260,27 +269,22 @@ namespace Diablo
         { "Wizard Skill Bonus: Meteor",                     { "Reduces resource cost of Meteor by %u Arcane Power." },          (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
         { "Wizard Skill Bonus: Ray of Frost",               { "Increases Critical Hit Chance of Ray of Frost by %u%%" },        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
         { "Wizard Skill Bonus: Shock Pulse",                { "Increases Shock Pulse Damage by %u%%" },                         (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
-        { "Wizard Skill Bonus: Spectral Blade",             { "Increases Spectral Blade Damage by %u%%" },                      (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
+        { "Wizard Skill Bonus: Spectral Blade",             { "Increases Spectral Blade Damage by %u%%" },                      (_1H_ALL|_1H_WAND) | (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
 
         // properties
         { "Properties",                         { 0 },                                                      (_1H) | (_2H) | (_ARMOR) | (_OH) },
-        { "Gold Find",                          { "+%u%% Extra Gold from Monsters" },                       (_ARMOR) | (_OH) },
-        { "Has Sockets",                        { 0 },                                                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
+        { "Experience",                         { "Monster kills grant +%u experience." },                  _ALL },
+        { "Gold Find",                          { "+%u%% Extra Gold from Monsters" },                       (_1H_ALL|_1H_MACE) | (_ARMOR) | (_OH) },
+        { "Has Sockets",                        { 0 },                                                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
         { "Indestructible",                     { "Ignores Durability Loss" },                              (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
         { "Magic Find",                         { "%u%% Better Chance of Finding Magical Items" },          (_ARMOR) | (_OH) },
         { "Movement Speed",                     { "+%u%% Movement Speed" },                                 (_ARMOR_ALL|_ARMOR_BOOTS) },
-        { "Pickup Radius",                      { "Increases Gold and Health Pickup by %u Yards." },        (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) },
-        { "Reduced Level Requirement",          { "Level Requirement Reduced by %u" },                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) },
+        { "Pickup Radius",                      { "Increases Gold and Health Pickup by %u Yards." },        (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_MOJO) },
+        { "Reduced Level Requirement",          { "Level Requirement Reduced by %u" },                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
 
         // other
-        { "Bonus Damage",                       { "+%u-%u Damage" } },
-        { "Bonus Maximum Weapon Damage",        { "+%u Maximum Damage" } },
-        { "Arcane Damage %",                    { "Adds %u%% to Arcane Damage" } },
-        { "Cold Damage %",                      { "Adds %u%% to Cold Damage" } },
-        { "Fire Damage %",                      { "Adds %u%% to Fire Damage" } },
-        { "Lightning Damage %",                 { "Adds %u%% to Lightning Damage" } },
-        { "Poison Damage %",                    { "Adds %u%% to Poison Damage" } },
-        { "Weapon Damage %",                    { "Adds %u%% to Weapon Damage" } },
+        { "Bonus Weapon Damage",                { "Adds %u%% to Weapon Damage" } },
+        { "Maximum Damage",                     { "+%u Maximum Damage" } },
 
         // gem
         { "Empty Socket" },
@@ -341,64 +345,61 @@ namespace Diablo
     const Enum ENUM_RARITIES(_enum_rarities, ACOUNT(_enum_rarities));
 
     //------------------------------------------------------------------------
-    const Coordinate AH_INPUT_LEVEL_MIN =   { -0.5025, 0.471875, };
-    const Coordinate AH_INPUT_LEVEL_MAX =   { -0.434375, 0.471875 };
-    const Coordinate AH_INPUT_PSTAT_VALUE[AH_INPUT_PSTAT_LIMIT] =
-    {
-        { -0.315625, 0.553125 },
-        { -0.315625, 0.588125 },
-        { -0.315625, 0.62375 }
-    };
-    const Coordinate AH_INPUT_UNIQUE =      { -0.44875, 0.70375 };
-    const Coordinate AH_INPUT_BID =         { 0.114375, 0.43125 };
-    const Coordinate AH_INPUT_BUYOUT =      { -0.32875, 0.70375 };
-
     const ComboBox AH_COMBO_CHARACTER       ( _options_character,   ACOUNT(_options_character) );
     const ComboBox AH_COMBO_PRIMARY         ( _options_primary,     ACOUNT(_options_primary) );
     const ComboBox AH_COMBO_SECONDARY       ( _options_secondary,   ACOUNT(_options_secondary) );
     const ComboBox AH_COMBO_RARITY          ( _options_rarity,      ACOUNT(_options_rarity) );
     const ComboBox AH_COMBO_PSTAT           ( _options_pstats,      ACOUNT(_options_pstats) );
-
-    const Coordinate AH_COMBO_COORDS[] = // indexed by Trainer::COMBO_*
+    const ComboBox* AH_COMBO_MAP[] =
     {
-        { -0.354375, 0.4725 },
-
-        { -0.419375, 0.28375 },
-        { -0.419375, 0.35625 },
-        { -0.419375, 0.395625 },
-
-        { -0.4375, 0.55375 },
-        { -0.4375, 0.58875 },
-        { -0.4375, 0.62375 }
+        &AH_COMBO_RARITY,       // COMBO_RARITY
+        &AH_COMBO_CHARACTER,    // COMBO_CHARACTER
+        &AH_COMBO_PRIMARY,      // COMBO_PRIMARY
+        &AH_COMBO_SECONDARY,    // COMBO_SECONDARY
+        &AH_COMBO_PSTAT,        // COMBO_STATS0
+        &AH_COMBO_PSTAT,        // COMBO_STATS1
+        &AH_COMBO_PSTAT,        // COMBO_STATS2
+        &AH_COMBO_PSTAT,        // COMBO_STATS3
+        &AH_COMBO_PSTAT,        // COMBO_STATS4
+        &AH_COMBO_PSTAT,        // COMBO_STATS5
     };
-
-    const Coordinate AH_BUTTON_SEARCH =             { -0.4075,  0.77625 };
-    const Coordinate AH_BUTTON_BID =                { 0.229375, 0.813125 };
-    const Coordinate AH_BUTTON_BUYOUT =             { 0.4475,   0.813125 };
-    const Coordinate AH_BUTTON_BUYOUT_CONFIRM =     { -0.10375, 0.66625 };
-    const Coordinate AH_BUTTON_BUYOUT_CONFIRM_OK =  { 0,        0.4275 };
-
-    const Coordinate AH_LIST_BEGIN =                { -0.24125, 0.27625 };
-    const Coordinate AH_LIST_ICON =                 { 0.04125,  0.04181875 };
-    const Coordinate AH_LIST_NEXT_BUTTON =          { 0.243125, 0.7575 };
-
-    const Coordinate AH_LIST_SORT_DPSARMOR =        { 0.234375, 0.25625 };
-    const Coordinate AH_LIST_SORT_BUYOUT =          { 0.42625,  0.25625 };
-
-    const Coordinate AH_RELOGIN_ACCOUNT =           { 0,        0.54885 };
-    const Coordinate AH_RELOGIN_PASSWORD =          { 0,        0.6523 };
-    const Coordinate AH_RELOGIN_LOGIN =             { 0,        0.79023 };
-    const Coordinate AH_RELOGIN_AUCTIONHOUSE =      { 0.20594,  0.59387 };
 
     const Coordinate COORDS[UI_COUNT] =
     {
+        // UI_BUTTON_SEARCH
+        { F2R_XC(627),  F2R_Y(1245) },
+        // UI_BUTTON_BID
+        { F2R_XC(1646), F2R_Y(1300) },
+        // UI_BUTTON_BIDCONFIRM
+        { F2R_XC(1110), F2R_Y(1159) },
+        // UI_BUTTON_BUYOUT
+        { F2R_XC(2000), F2R_Y(1300) },
+        // UI_BUTTON_BUYOUTCONFIRM
+        { F2R_XC(1110), F2R_Y(1159) },
+        // UI_BUTTON_CREATEAUCTION
+        { F2R_XC(1278), F2R_Y(1299) },
         // UI_BUTTON_SENDTOSTASH
-        { F2R_XC(629), F2R_Y(664) },
+        { F2R_XC(629),  F2R_Y(664) },
+        // UI_BUTTON_LOGIN
+        { F2R_XC(1280), F2R_Y(1265) },
+        // UI_BUTTON_MAINAUCTIONHOUSE
+        { F2R_X (345),  F2R_Y(949) },
+        // UI_BUTTON_PROFILECLOSE
+        { F2R_XC(2196), F2R_Y(165) },
+
+        // UI_LBUTTON_PAGENEXT
+        { F2R_XC(1668), F2R_Y(1212) },
+        // UI_LBUTTON_SORTDPSARMOR
+        { F2R_XC(1662), F2R_Y(408) },
+        // UI_LBUTTON_SORTBUYOUT
+        { F2R_XC(1962), F2R_Y(408) },
+        // UI_LBUTTON_SORTTIMELEFT
+        { F2R_XC(2109), F2R_Y(408) },
 
         // UI_TAB_SEARCH
-        { F2R_XC(791), F2R_Y(240) },
+        { F2R_XC(791),  F2R_Y(240) },
         // UI_TAB_SEARCH_EQUIPMENT
-        { F2R_XC(699), F2R_Y(353) },
+        { F2R_XC(699),  F2R_Y(353) },
         // UI_TAB_SELL
         { F2R_XC(1122), F2R_Y(240) },
         // UI_TAB_COMPLETED
@@ -411,44 +412,71 @@ namespace Diablo
         // UI_CONTAINER_STASHBOXSIZE
         { F2R_X(79.57), F2R_Y(82.3) },
         // UI_CONTAINER_STASHBOX00
-        { F2R_XC(472), F2R_Y(445) },
+        { F2R_XC(472),  F2R_Y(445) },
+        // UI_CONTAINER_LISTICON0
+        { F2R_XC(895),  F2R_Y(443) },
+        // UI_CONTAINER_LISTICONSIZE
+        { F2R_X(66.91), F2R_Y(66.91) },
 
+        // UI_INPUT_FILTERLEVELMIN
+        { F2R_XC(461),  F2R_Y(667) },
+        // UI_INPUT_FILTERLEVELMAX
+        { F2R_XC(570),  F2R_Y(667) },
+        // UI_INPUT_FILTERUNIQUE
+        { F2R_XC(622),  F2R_Y(736) },
+        // UI_INPUT_FILTERBUYOUT
+        { F2R_XC(622),  F2R_Y(785) },
+        // UI_INPUT_FILTERPSTAT0-5
+        { F2R_XC(786),  F2R_Y(880) },
+        { F2R_XC(786),  F2R_Y(935) },
+        { F2R_XC(786),  F2R_Y(991) },
+        { F2R_XC(786),  F2R_Y(1048) },
+        { F2R_XC(786),  F2R_Y(1104) },
+        { F2R_XC(786),  F2R_Y(1160) },
+        // UI_INPUT_MAXBID
+        { F2R_XC(1466), F2R_Y(629) },
         // UI_INPUT_SELLSTARTING
         { F2R_XC(1278), F2R_Y(706) },
         // UI_INPUT_SELLBUYOUT
         { F2R_XC(1278), F2R_Y(826) },
-        // UI_INPUT_CREATEAUCTION
-        { F2R_XC(1278), F2R_Y(1299) },
+        // UI_INPUT_LOGINACCOUNT
+        { F2R_XC(1280), F2R_Y(880) },
+        // UI_INPUT_LOGINPASSWORD
+        { F2R_XC(1280), F2R_Y(1047) },
 
         // UI_COMBO_RARITY
-        { F2R_XC(651), F2R_Y(796) },
+        { F2R_XC(651),  F2R_Y(706) },
         // UI_COMBO_CHARACTER
-        { F2R_XC(455), F2R_Y(496) },
+        { F2R_XC(444),  F2R_Y(496) },
         // UI_COMBO_PRIMARY
-        { F2R_XC(455), F2R_Y(609) },
+        { F2R_XC(444),  F2R_Y(552) },
         // UI_COMBO_SECONDARY
-        { F2R_XC(455), F2R_Y(674) },
-        // UI_COMBO_PSTAT0
-        { F2R_XC(455), F2R_Y(925) },
-        // UI_COMBO_PSTAT1
-        { F2R_XC(455), F2R_Y(982) },
-        // UI_COMBO_PSTAT2
-        { F2R_XC(455), F2R_Y(1040) },
+        { F2R_XC(444),  F2R_Y(608) },
+        // UI_COMBO_PSTAT0-5
+        { F2R_XC(444),  F2R_Y(921) },
+        { F2R_XC(444),  F2R_Y(977) },
+        { F2R_XC(444),  F2R_Y(1033) },
+        { F2R_XC(444),  F2R_Y(1089) },
+        { F2R_XC(444),  F2R_Y(1145) },
+        { F2R_XC(444),  F2R_Y(1201) },
         // UI_COMBO_SIZE
-        { F2R_X(100), F2R_Y(44.8) },
+        { F2R_X(100),   F2R_Y(44.8) },
 
         // UI_POPUP_ERROR
-        { 0,            0.5843 },
+        { F2R_XC(1280),  F2R_Y(936) },
         // UI_POPUP_OK
-        { 0,            0.4275 },
+        { F2R_XC(1280),  F2R_Y(687) },
     };
 
-    const ULong COMBO_HEIGHT[COMBO_COUNT] =
+    const ULong COMBO_DROP_COUNT[COMBO_COUNT] =
     {
         7,
         10,
         5,
         15,
+        10,
+        10,
+        10,
         10,
         10,
         10,

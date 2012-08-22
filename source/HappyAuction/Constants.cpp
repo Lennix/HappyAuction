@@ -24,8 +24,8 @@ namespace HappyAuction
 
 
     //------------------------------------------------------------------------
-    const Char* SCRIPT_PATH =           "Lua/Main.lua";
-    const Char* SCRIPT_STRINGS[SCRIPT_COUNT] =
+    const Char* SCRIPT_PATH =               "Lua/Main.lua";
+    const Char* SCRIPT_FUNCTIONS[SCRIPT_COUNT] =
     {
         // auction/search
         "haBid",
@@ -43,6 +43,7 @@ namespace HappyAuction
         "haSearch",
         "haSortBuyout",
         "haSortDpsArmor",
+        "haSortTimeLeft",
 
         // auction/sell
         "haSell",
@@ -64,6 +65,7 @@ namespace HappyAuction
         "haAlert",
         "haBeep",
         "haLog",
+        "haPrompt",
         "haSleep",
         "haUpTime",
 

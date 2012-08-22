@@ -11,6 +11,7 @@ int WINAPI WinMain(
     int         iCmdShow)
 {
     using namespace Core;
+    using namespace Diablo;
 
     try
     {
@@ -18,7 +19,7 @@ int WINAPI WinMain(
     }
     catch(const Char* exception)
     {
-        System::Message(exception);
+        System::Message(false, exception);
     }
 
     // close error log

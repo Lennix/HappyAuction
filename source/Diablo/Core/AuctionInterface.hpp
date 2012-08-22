@@ -29,8 +29,8 @@ namespace Diablo
         void    Stop();
 
         /**/
-        Bool    WriteFilterBuyout( Long buyout, Bool randomize=false );
-        Bool    ReadFilterBuyout( Long& value );
+        Bool    WriteFilterBuyout( Number buyout, Bool randomize=false );
+        Bool    ReadFilterBuyout( Number& value );
         Bool    WriteFilterUnique( const Char* string );
         Bool    ReadFilterUnique( TextString& string );
 
@@ -43,20 +43,19 @@ namespace Diablo
         Bool    ReadFilterSecondary( FilterSecondaryId& secondary_id );
         Bool    WriteFilterRarity( FilterRarityId rarity_id );
         Bool    ReadFilterRarity( FilterRarityId& rarity_id );
-        Bool    WriteFilterStat( Index index, ItemStatId id, Long value );
-        Bool    ReadFilterStat( Index index, ItemStatId& id, Long& value );
+        Bool    WriteFilterStat( Index index, ItemStatId id, Number value );
+        Bool    ReadFilterStat( Index index, ItemStatId& id, Number& value );
 
-        Bool    WriteFilterLevelMin( Long level );
-        Bool    ReadFilterLevelMin( Long& level );
-        Bool    WriteFilterLevelMax( Long level );
-        Bool    ReadFilterLevelMax( Long& level );
+        Bool    WriteFilterLevelMin( Number level );
+        Bool    ReadFilterLevelMin( Number& level );
+        Bool    WriteFilterLevelMax( Number level );
+        Bool    ReadFilterLevelMax( Number& level );
 
         /**/
         Bool    ActionSearch();
-        Bool    ActionListSortDpsArmor();
-        Bool    ActionListSortBuyout();
+        Bool    ActionListSort( UiId id );
         Bool    ActionListNextPage();
-        Bool    ActionBid( Index index, ULong bid=0 );
+        Bool    ActionBid( Index index, Number bid=0 );
         Bool    ActionBuyout( Index index );
         Bool    ActionSendToStash();
         Bool    ActionReLogin( const Char* account, const Char* password );
@@ -67,7 +66,7 @@ namespace Diablo
         Bool    ReadListItem( Index index, Item& item );
 
         /**/
-        Bool    SellStashItem( Index column, Index row, ULong starting, ULong buyout );
+        Bool    SellStashItem( Index column, Index row, Number starting, Number buyout );
         Bool    HoverStashItem( Index x, Index y, Bool select );
         Bool    ReadStashItem( Index x, Index y, Item& item );
 
@@ -76,6 +75,8 @@ namespace Diablo
         void    HoverGround();
 
     private:
+        Bool    _ClearPopups();
+
         Bool    _WriteComboBox( Id combo_id, Id id );
         Bool    _WriteComboRefresh( Id combo_id, Index option_index, ULong option_count );
 
@@ -84,7 +85,7 @@ namespace Diablo
         Bool    _OptionIdToIndex( Index& option_index, Id option_id, Id group_id, const ComboBox& box, const IgnoreCollection& ignores=IgnoreCollection::GetEmpty() ) const;
         Bool    _WaitSearch();
 
-        Bool    _ReadInputNumber( Id id, Long& number );
+        Bool    _ReadInputNumber( Id id, Number& number );
         void    _Reset();
     };
 }

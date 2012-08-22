@@ -4,18 +4,6 @@
 
 namespace Diablo
 {
-    //------------------------------------------------------------------------
-    static const ComboBox* _COMBOBOX_MAP[] =
-    {
-        &AH_COMBO_RARITY,       // COMBO_RARITY
-        &AH_COMBO_CHARACTER,    // COMBO_CHARACTER
-        &AH_COMBO_PRIMARY,      // COMBO_PRIMARY
-        &AH_COMBO_SECONDARY,    // COMBO_SECONDARY
-        &AH_COMBO_PSTAT,        // COMBO_STATS0
-        &AH_COMBO_PSTAT,        // COMBO_STATS1
-        &AH_COMBO_PSTAT,        // COMBO_STATS2
-    };
-
     // private
     //------------------------------------------------------------------------
     static FilterPrimaryId _SecondaryToPrimaryId( FilterSecondaryId id )
@@ -57,18 +45,24 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterBuyout( Long buyout, Bool randomize )
+    Bool AuctionInterface::WriteFilterBuyout( Number buyout, Bool randomize )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         if(randomize && buyout > 0)
-            buyout += Tools::UniqueRandom<AH_INPUT_BUYOUT_RANDOM_LIMIT>(buyout / 20);
-        _game.SendInputNumber(AH_INPUT_BUYOUT.x, AH_INPUT_BUYOUT.y, buyout);
+        {
+            ULong wbuyout = static_cast<ULong>(NUMBER_WHOLE(buyout));
+            ULong range = wbuyout / 20; // 5%
+            ULong rvalue = Tools::UniqueRandom<AH_INPUT_BUYOUT_RANDOM_LIMIT>(range);
+
+            buyout += NUMBER(rvalue, 0);
+        }
+        _game.SendInputNumber(COORDS[UI_INPUT_FILTERBUYOUT].x, COORDS[UI_INPUT_FILTERBUYOUT].y, buyout);
 
         return true;
     }
 
-    Bool AuctionInterface::ReadFilterBuyout( Long& value )
+    Bool AuctionInterface::ReadFilterBuyout( Number& value )
     {
         // read buyout value
         return _ReadInputNumber(Trainer::OBJECT_INPUT_BUYOUT, value);
@@ -78,7 +72,7 @@ namespace Diablo
     Bool AuctionInterface::WriteFilterUnique( const Char* string )
     {
         // write unique text
-        _game.SendInputText(AH_INPUT_UNIQUE.x, AH_INPUT_UNIQUE.y, "%s", string);
+        _game.SendInputText(COORDS[UI_INPUT_FILTERUNIQUE].x, COORDS[UI_INPUT_FILTERUNIQUE].y, "%s", string);
         return true;
     }
     
@@ -215,7 +209,7 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterStat( Index index, ItemStatId id, Long value )
+    Bool AuctionInterface::WriteFilterStat( Index index, ItemStatId id, Number value )
     {
         assert(index < AH_INPUT_PSTAT_LIMIT);
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
@@ -225,12 +219,12 @@ namespace Diablo
             return false;
 
         // set value
-        _game.SendInputNumber(AH_INPUT_PSTAT_VALUE[index].x, AH_INPUT_PSTAT_VALUE[index].y, value);
+        _game.SendInputNumber(COORDS[index + UI_INPUT_FILTERPSTAT0].x, COORDS[index + UI_INPUT_FILTERPSTAT0].y, value);
 
         return true;
     }
 
-    Bool AuctionInterface::ReadFilterStat( Index index, ItemStatId& id, Long& value )
+    Bool AuctionInterface::ReadFilterStat( Index index, ItemStatId& id, Number& value )
     {
         assert(index < AH_INPUT_PSTAT_LIMIT);
         IgnoreCollection    ignores;
@@ -267,31 +261,31 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterLevelMin( Long level )
+    Bool AuctionInterface::WriteFilterLevelMin( Number level )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
-        _game.SendInputNumber(AH_INPUT_LEVEL_MIN.x, AH_INPUT_LEVEL_MIN.y, level);
+        _game.SendInputNumber(COORDS[UI_INPUT_FILTERLEVELMIN].x, COORDS[UI_INPUT_FILTERLEVELMIN].y, level);
 
         return true;
     }
 
-    Bool AuctionInterface::ReadFilterLevelMin( Long& level )
+    Bool AuctionInterface::ReadFilterLevelMin( Number& level )
     {
         return _ReadInputNumber(Trainer::OBJECT_INPUT_LEVELMIN, level);
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::WriteFilterLevelMax( Long level )
+    Bool AuctionInterface::WriteFilterLevelMax( Number level )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
-        _game.SendInputNumber(AH_INPUT_LEVEL_MAX.x, AH_INPUT_LEVEL_MAX.y, level);
+        _game.SendInputNumber(COORDS[UI_INPUT_FILTERLEVELMAX].x, COORDS[UI_INPUT_FILTERLEVELMAX].y, level);
 
         return true;
     }
 
-    Bool AuctionInterface::ReadFilterLevelMax( Long& level )
+    Bool AuctionInterface::ReadFilterLevelMax( Number& level )
     {
         return _ReadInputNumber(Trainer::OBJECT_INPUT_LEVELMAX, level);
     }
@@ -302,30 +296,19 @@ namespace Diablo
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // hit search button
-        _game.MouseClick(AH_BUTTON_SEARCH.x, AH_BUTTON_SEARCH.y);
+        _game.MouseClick(COORDS[UI_BUTTON_SEARCH].x, COORDS[UI_BUTTON_SEARCH].y);
 
         // wait if requested
         return _WaitSearch();
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::ActionListSortDpsArmor()
+    Bool AuctionInterface::ActionListSort( UiId id )
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // click sort column header
-        _game.MouseClick(AH_LIST_SORT_DPSARMOR.x, AH_LIST_SORT_DPSARMOR.y);
-
-        return _WaitSearch();
-    }
-
-    //------------------------------------------------------------------------
-    Bool AuctionInterface::ActionListSortBuyout()
-    {
-        Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
-
-        // click sort column header
-        _game.MouseClick(AH_LIST_SORT_BUYOUT.x, AH_LIST_SORT_BUYOUT.y);
+        _game.MouseClick(COORDS[id].x, COORDS[id].y);
 
         return _WaitSearch();
     }
@@ -342,7 +325,7 @@ namespace Diablo
         if(_trainer.ReadListNextStatus(listing_status) && listing_status)
         {
             // hit next page button
-            _game.MouseClick(AH_LIST_NEXT_BUTTON.x, AH_LIST_NEXT_BUTTON.y);
+            _game.MouseClick(COORDS[UI_LBUTTON_PAGENEXT].x, COORDS[UI_LBUTTON_PAGENEXT].y);
 
             // wait search
             if(_WaitSearch())
@@ -353,31 +336,25 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::ActionBid( Index index, ULong bid )
+    Bool AuctionInterface::ActionBid( Index index, Number bid )
     {
-        Bool status;
-
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // select item index
         HoverListItem(index, true);
 
         // hit bid button
-        _game.MouseClick(AH_BUTTON_BID.x, AH_BUTTON_BID.y);
+        _game.MouseClick(COORDS[UI_BUTTON_BID].x, COORDS[UI_BUTTON_BID].y);
 
         // set bid amount if any
         if( bid != 0 )
-            _game.SendInputNumber(AH_INPUT_BID.x, AH_INPUT_BID.y, bid);
+            _game.SendInputNumber(COORDS[UI_INPUT_MAXBID].x, COORDS[UI_INPUT_MAXBID].y, bid);
 
         // hit confirm button
-        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y);
+        _game.MouseClick(COORDS[UI_BUTTON_BIDCONFIRM].x, COORDS[UI_BUTTON_BIDCONFIRM].y);
 
-        // hit ok button until done
-        do
-        {
-            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
-        }
-        while(_active && _trainer.ReadPopupStatus(status) && status);
+        // clear ok popup
+        _ClearPopups();
 
         return true;
     }
@@ -386,7 +363,6 @@ namespace Diablo
     Bool AuctionInterface::ActionBuyout( Index index )
     {
         Trainer::ButtonStatus   button_status;
-        Bool                    status;
 
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
@@ -398,17 +374,13 @@ namespace Diablo
             return false;
 
         // hit buyout button
-        _game.MouseClick(AH_BUTTON_BUYOUT.x, AH_BUTTON_BUYOUT.y);
+        _game.MouseClick(COORDS[UI_BUTTON_BUYOUT].x, COORDS[UI_BUTTON_BUYOUT].y);
 
         // hit confirm button
-        _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM.x, AH_BUTTON_BUYOUT_CONFIRM.y);
+        _game.MouseClick(COORDS[UI_BUTTON_BUYOUTCONFIRM].x, COORDS[UI_BUTTON_BUYOUTCONFIRM].y);
 
-        // hit ok button until done
-        do
-        {
-            _game.MouseClick(AH_BUTTON_BUYOUT_CONFIRM_OK.x, AH_BUTTON_BUYOUT_CONFIRM_OK.y);
-        }
-        while(_active && _trainer.ReadPopupStatus(status) && status);
+        // clear ok popup
+        _ClearPopups();
 
         return true;
     }
@@ -470,13 +442,13 @@ namespace Diablo
                 break;
 
             // set account
-            _game.SendInputText(AH_RELOGIN_ACCOUNT.x, AH_RELOGIN_ACCOUNT.y, account);
+            _game.SendInputText(COORDS[UI_INPUT_LOGINACCOUNT].x, COORDS[UI_INPUT_LOGINACCOUNT].y, account);
 
             // set password
-            _game.SendInputText(AH_RELOGIN_PASSWORD.x, AH_RELOGIN_PASSWORD.y, password);
+            _game.SendInputText(COORDS[UI_INPUT_LOGINPASSWORD].x, COORDS[UI_INPUT_LOGINPASSWORD].y, password);
 
             // login
-            _game.MouseClick(AH_RELOGIN_LOGIN.x, AH_RELOGIN_LOGIN.y);
+            _game.MouseClick(COORDS[UI_BUTTON_LOGIN].x, COORDS[UI_BUTTON_LOGIN].y);
 
             // close any popups
             _game.MouseClick(COORDS[UI_POPUP_ERROR].x, COORDS[UI_POPUP_ERROR].y);
@@ -492,14 +464,14 @@ namespace Diablo
             if(!_active)
                 return false;
 
-            // close character profile in case previous popup closer call opened it
-            _game.SendInputKeys("^E", true);
-
             // post login delay
             _game.Sleep(AH_RELOGIN_POSTLOGIN_DELAY);
 
+            // close character profile in case previous popup closer call opened it
+            _game.MouseClick(COORDS[UI_BUTTON_PROFILECLOSE].x, COORDS[UI_BUTTON_PROFILECLOSE].y);
+
             // click auction house button
-            _game.MouseClick(AH_RELOGIN_AUCTIONHOUSE.x, AH_RELOGIN_AUCTIONHOUSE.y, false);
+            _game.MouseClick(COORDS[UI_BUTTON_MAINAUCTIONHOUSE].x, COORDS[UI_BUTTON_MAINAUCTIONHOUSE].y, false);
 
             // auction enter delay
             _game.Sleep(AH_RELOGIN_AUCTIONHOUSE_DELAY);
@@ -518,8 +490,8 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::HoverListItem( Index index, Bool select )
     {
-        Double x = AH_LIST_BEGIN.x + AH_LIST_ICON.x / 2;
-        Double y = AH_LIST_BEGIN.y + (AH_LIST_ICON.y / 2) + index * AH_LIST_ICON.y;
+        Double x = COORDS[UI_CONTAINER_LISTICON0].x + COORDS[UI_CONTAINER_LISTICONSIZE].x / 2;
+        Double y = COORDS[UI_CONTAINER_LISTICON0].y + (COORDS[UI_CONTAINER_LISTICONSIZE].y / 2) + index * COORDS[UI_CONTAINER_LISTICONSIZE].y;
 
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
@@ -556,6 +528,9 @@ namespace Diablo
             // select item
             HoverListItem(index, false);
 
+            // wait a frame
+            _game.SleepFrames(1);
+
             // read item listing
             if(_trainer.ReadListItem(index, item))
             {
@@ -569,25 +544,16 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::SellStashItem( Index column, Index row, ULong starting, ULong buyout )
+    Bool AuctionInterface::SellStashItem( Index column, Index row, Number starting, Number buyout )
     {
-        Bool status;
-
         Tab(UI_TAB_SELL);
 
         // select item
         HoverStashItem(column, row, true);
 
-        // get popup status
-        if(!_trainer.ReadPopupStatus(status))
+        // if an error popup was cleared then fail
+        if(_ClearPopups())
             return false;
-
-        // clear popup if true and fail
-        if(status)
-        {
-            _game.MouseClick(COORDS[UI_POPUP_ERROR].x, COORDS[UI_POPUP_ERROR].y);
-            return false;
-        }
 
         // write starting price
         _game.SendInputNumber(COORDS[UI_INPUT_SELLSTARTING].x, COORDS[UI_INPUT_SELLSTARTING].y, starting);
@@ -596,21 +562,14 @@ namespace Diablo
         _game.SendInputNumber(COORDS[UI_INPUT_SELLBUYOUT].x, COORDS[UI_INPUT_SELLBUYOUT].y, buyout);
 
         // create auction
-        _game.MouseClick(COORDS[UI_INPUT_CREATEAUCTION].x, COORDS[UI_INPUT_CREATEAUCTION].y);
+        _game.MouseClick(COORDS[UI_BUTTON_CREATEAUCTION].x, COORDS[UI_BUTTON_CREATEAUCTION].y);
 
         // wait a few frames
         _game.SleepFrames(4);
 
         // there should be a popup. fail otherwise
-        if(!_trainer.ReadPopupStatus(status) || !status)
+        if(!_ClearPopups())
             return false;
-
-        // hit ok button until done
-        do
-        {
-            _game.MouseClick(COORDS[UI_POPUP_OK].x, COORDS[UI_POPUP_OK].y);
-        }
-        while(_active && _trainer.ReadPopupStatus(status) && status);
 
         return true;
     }
@@ -691,9 +650,41 @@ namespace Diablo
 
     // private
     //------------------------------------------------------------------------
+    Bool AuctionInterface::_ClearPopups()
+    {
+        static const UiId types[] = { UI_POPUP_ERROR, UI_POPUP_OK };
+        Bool status;
+
+        // fail if nothing to close
+        if(!_trainer.ReadPopupStatus(status) || !status)
+            return false;
+
+        // click until closed
+        while(_active)
+        {
+            // handle each popup type
+            for( Index i = 0; i < ACOUNT(types); i++ )
+            {
+                // click closer button
+                _game.MouseClick(COORDS[types[i]].x, COORDS[types[i]].y);
+
+                // read status
+                if(!_trainer.ReadPopupStatus(status))
+                    return false;
+
+                // success if false
+                if(!status)
+                    return true;
+            }
+        }
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     Bool AuctionInterface::_WriteComboBox( Id combo_id, Id option_id )
     {
-        assert(combo_id >= Trainer::OBJECT_COMBO_RARITY && combo_id <= Trainer::OBJECT_COMBO_PSTAT2);
+        assert(combo_id >= Trainer::OBJECT_COMBO_RARITY && combo_id <= Trainer::OBJECT_COMBO_PSTAT5);
         Index   option_index;
         ULong   option_count;
         Bool    status = false;
@@ -719,22 +710,26 @@ namespace Diablo
         const Coordinate&   coordinate =    COORDS[combo_id + UI_COMBO_RARITY];
         const Coordinate&   size =          COORDS[UI_COMBO_SIZE];
         ULong               window_height = _game.GetWindow().GetHeight();
-        ULong               combo_height =  Tools::Min(COMBO_HEIGHT[combo_id], option_count);
+        ULong               drop_count =  Tools::Min(COMBO_DROP_COUNT[combo_id], option_count);
         ULong               confirm_index;
 
         // determine box selector height
         Double size_y = window_height > COMBO_BOX_REZMAP_MAX ?
-            (size.y * window_height) :
-            COMBO_SELECTOR_REZMAP[Tools::Max(window_height, COMBO_BOX_REZMAP_MIN) - COMBO_BOX_REZMAP_MIN];
+            size.y :
+            ( COMBO_SELECTOR_REZMAP[Tools::Max(window_height, COMBO_BOX_REZMAP_MIN) - COMBO_BOX_REZMAP_MIN] / window_height );
 
         // open dropdown
-        _game.MouseClickAbsolute(_game.X(coordinate.x + size.x / 2, true), _game.Y(coordinate.y, true) - (ULong)(size_y * .8));
+        _game.MouseClick(coordinate.x + size.x / 2, coordinate.y - size_y * .8);
 
         // calculate screen index
-        Index screen_index = combo_height - Tools::Min(option_count - option_index, combo_height);
+        Index screen_index = drop_count - Tools::Min(option_count - option_index, drop_count);
+
+        // calculated constrained combo y (due to resolution)
+        Double combo_bottom = coordinate.y + (size_y * drop_count);
+        Double constrained_y = (combo_bottom > 1.0) ? coordinate.y - (combo_bottom - 1.0) : coordinate.y;
 
         // click selection
-        _game.MouseClickAbsolute(_game.X(coordinate.x + size.x / 2, true), _game.Y(coordinate.y, true) + (ULong)((screen_index * size_y) + (size_y / 2)));
+        _game.MouseClick(coordinate.x + size.x / 2, constrained_y + (screen_index * size_y) + (size_y / 2));
 
         // confirm option index
         if(!_trainer.ReadComboIndex(combo_id, &confirm_index) || confirm_index != option_index)
@@ -778,7 +773,7 @@ namespace Diablo
                 // read current stat indexes and build ignore list
                 if(combo_id != ITEM_STAT_NONE)
                 {
-                    for( Id stat_id = Trainer::OBJECT_COMBO_PSTAT0; stat_id <= Trainer::OBJECT_COMBO_PSTAT2; stat_id++ )
+                    for( Id stat_id = Trainer::OBJECT_COMBO_PSTAT0; stat_id <= Trainer::OBJECT_COMBO_PSTAT5; stat_id++ )
                     {
                         // ignore target
                         if(stat_id != combo_id)
@@ -808,7 +803,7 @@ namespace Diablo
                 return false;
         }
         // rarity, character, primary
-        else if(!_OptionIdToIndex(option_index, option_id, INVALID_ID, *_COMBOBOX_MAP[combo_id], ignores))
+        else if(!_OptionIdToIndex(option_index, option_id, INVALID_ID, *AH_COMBO_MAP[combo_id], ignores))
             option_index = option_id;
 
         return true;
@@ -910,15 +905,15 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool AuctionInterface::_ReadInputNumber( Id id, Long& number )
+    Bool AuctionInterface::_ReadInputNumber( Id id, Number& number )
     {
         TextString out;
 
         *out = 0;
         if(!_trainer.ReadInputText(id, out) || *out == 0)
-            number = -1;
+            number = NUMBER(-1,0);
         else
-            number = atoi(out);
+            number = Tools::StrToNumber(out);
 
         return true;
     }

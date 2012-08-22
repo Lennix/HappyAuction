@@ -1,4 +1,4 @@
-HappyAuction v0.9.10
+HappyAuction v0.9.11
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -25,8 +25,8 @@ INCLUDED BOTS
 - LogResults:   Sets filters and scans all results logging all items to a file
 - LogStash:     Logs all items in your stash. Includes item sell example.
 - BestMojo:     Finds the highest damage mojo.
-- GemMiner:     More complex bot that searches across multiple filters finding
-                and buying cheap items with expensive gems.
+- GemMiner:     More complex and useful bot that scans multiple searches for
+                cheap listings with expensive gems.
 
 
 NOTES
@@ -97,7 +97,7 @@ AUCTION/SEARCH:
     searches. It's necessary to use this option when calling haSearch more
     than once per minute (unless Blizzard changes this) or you'll get old
     search results.
-    - amount:       buyout amount. -1 to clear.
+    - amount:       buyout amount. -1 represents empty.
     - randomize:    if true adds small unique random value to amount.
     - status:       true if successful
 
@@ -164,12 +164,17 @@ AUCTION/SEARCH:
     - status:   true if successful
 
 - haSortBuyout() -> status
-    Toggles buyout column sorting order
+    Toggles "Buyout" column sorting order
     - status:   true if successful
 
 - haSortDpsArmor() -> status
-    Toggles DPS or Armor column sorting order
+    Toggles "DPS" or "Armor" column sorting order
     - status:   true if successful
+
+- haSortTimeLeft() -> status
+    Toggles "Time Left" column sorting order
+    - status:   true if successful
+
 
 
 AUCTION/SELL:
@@ -261,15 +266,15 @@ SETTINGS:
 
 - haSetLogin(name, password)
     Enables automatic relogin. If a disconnect error occurs will attempt to
-    relogin, restore state, and continue script. Note that only scripted state
-    is restored. see example in Main.lua.
+    relogin, restore state, and continue script. see example in Main.lua.
     - name:     account name
     - password: account password
 
 
 UTILITIES:
 - haAlert(message)
-    Opens popup message with specified message.
+    Opens popup message with specified message. This halts the script and
+    persists until user hits OK button.
     - message:  message string
 
 - haBeep()
@@ -278,6 +283,11 @@ UTILITIES:
 - haLog(message)
     Writes a message to the User.log file
     - message:  message string
+
+- haPrompt(message) -> status
+    Like haAlert but with a YES/NO buttons.
+    - message:  message string
+    - status:   true if user hit YES button
 
 - haSleep(delay)
 - haSleep(low, high)
