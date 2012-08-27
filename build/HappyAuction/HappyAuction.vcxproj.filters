@@ -27,9 +27,6 @@
     <ClInclude Include="..\..\source\HappyAuction\Core\AuthRunner.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\HappyAuction\Core\WatchdogRunner.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\source\HappyAuction\Resource\IconActive.ico">

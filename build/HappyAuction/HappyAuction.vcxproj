@@ -128,7 +128,6 @@
     <ClInclude Include="..\..\source\HappyAuction\Core\AuthRunner.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Core\Script.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Core\ScriptRunner.hpp" />
-    <ClInclude Include="..\..\source\HappyAuction\Core\WatchdogRunner.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Resource\resource.h" />
     <ClInclude Include="..\..\source\HappyAuction\Constants.hpp" />
     <ClInclude Include="..\..\source\HappyAuction\Enums.hpp" />
