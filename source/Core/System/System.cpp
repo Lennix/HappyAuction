@@ -1,11 +1,11 @@
 #include <Core/System/System.hpp>
+#include <Core/Tools.hpp>
 #include <windows.h>
 
 namespace Core
 {
     //------------------------------------------------------------------------
-    static const Char* _CLASS_NAME =    "HappyCore";
-    static const Char* _MESSAGE_TITLE = "Derp";
+    static const Char _FORMAT_HOTKEY[] = "%s.%s";
 
 
     //------------------------------------------------------------------------
@@ -21,17 +21,20 @@ namespace Core
         APPWM_NOP           = WM_APP + 1,
     };
 
+    struct HotKeyEntry
+    {
+        System::HotKeyHandler   handler;
+        void*                   custom;
+    };
 
     // local
     //------------------------------------------------------------------------
     static HWND                     _hwnd = NULL;
-    static ULong                    _hotkey_modifier = 0;
-    static ULong                    _hotkey_key = 0;
-    static System::HotKeyHandler    _hotkey_handler = NULL;
-    static void*                    _hotkey_custom = NULL;
+    static HINSTANCE                _hinstance = NULL;
     static const Char*              _title = "";
-    static System::Status           _status = System::STATUS_IDLE;
-    static Id                       _STATUS_ICONS[System::STATUS_COUNT] = {0};
+    static HotKeyEntry              _hotkeys[SYSTEM_HOTKEY_LIMIT];
+    static Index                    _status = 0;
+    static Id                       _STATUS_ICONS[SYSTEM_STATUS_LIMIT] = {0};
 
     //------------------------------------------------------------------------
     static void _SysTrayAdd( HWND hwnd, Id uid, Id callbackmsg, const Char* tooltip )
@@ -150,8 +153,11 @@ namespace Core
             return 0;
 
         case WM_HOTKEY:
-            if(_hotkey_handler)
-                _hotkey_handler(_hotkey_custom);
+            if( wparam < SYSTEM_HOTKEY_LIMIT )
+            {
+                HotKeyEntry& entry = _hotkeys[wparam];
+                entry.handler(entry.custom);
+            }
             return 0;
 
         case WM_COMMAND:
@@ -173,17 +179,16 @@ namespace Core
 
     // class
     //------------------------------------------------------------------------
-    Bool System::Run( const Char* title )
+    Bool System::Initialize( const Char* title )
     {
-        WNDCLASSEX  wclass;
-        MSG         msg;
+        WNDCLASSEX wclass;
 
         // set title
         if(title)
             _title = title;
 
         // get instance
-        HINSTANCE hinstance = (HINSTANCE)GetModuleHandle(NULL);
+        _hinstance = (HINSTANCE)GetModuleHandle(NULL);
 
         // register window class
         wclass.cbSize = sizeof(wclass);
@@ -191,13 +196,13 @@ namespace Core
         wclass.lpfnWndProc = _WndProc;
         wclass.cbClsExtra = 0;
         wclass.cbWndExtra = 0;
-        wclass.hInstance = hinstance;
-        wclass.hIcon = LoadIcon( NULL, MAKEINTRESOURCE(_STATUS_ICONS[System::STATUS_IDLE]) );
+        wclass.hInstance = _hinstance;
+        wclass.hIcon = LoadIcon( NULL, MAKEINTRESOURCE(_STATUS_ICONS[0]) );
         wclass.hIconSm = wclass.hIcon;
         wclass.hCursor = LoadCursor( NULL, IDC_ARROW );
         wclass.hbrBackground = NULL;
         wclass.lpszMenuName = NULL;
-        wclass.lpszClassName = _CLASS_NAME;
+        wclass.lpszClassName = SYSTEM_CLASS_NAME;
 
         // register class
         RegisterClassEx(&wclass);
@@ -213,15 +218,29 @@ namespace Core
             CW_USEDEFAULT,
             NULL,
             NULL,
-            hinstance,
+            _hinstance,
             NULL );
 
         if(_hwnd == NULL)
             return false;
 
-        // set hotkey
-        if(_hotkey_handler && !RegisterHotKey(_hwnd, 1, _hotkey_modifier, _hotkey_key))
-            return false;
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    void System::Finalize()
+    {
+        // destroy window
+        DestroyWindow(_hwnd);
+
+        // unregister class
+        UnregisterClass(SYSTEM_CLASS_NAME, _hinstance);
+    }
+
+    //------------------------------------------------------------------------
+    Bool System::Run()
+    {
+        MSG msg;
 
         // run loop
         while(GetMessage(&msg, NULL, 0, 0 ) > 0)
@@ -230,35 +249,106 @@ namespace Core
             DispatchMessage(&msg); 
         }
 
-        // unset hotkey
-        if(_hotkey_handler)
-            UnregisterHotKey(_hwnd, 1);
+        return true;
+    }
 
-        // destroy window
-        DestroyWindow(_hwnd);
+    //------------------------------------------------------------------------
+    void System::SetStatus( Index index )
+    {
+        assert(index < SYSTEM_HOTKEY_LIMIT);
+        _status = index;
+        _SysTrayUpdate(_hwnd, ID_TRAYICON);
+    }
 
-        // unregister class
-        UnregisterClass(_CLASS_NAME, hinstance);
+    //------------------------------------------------------------------------
+    void System::SetStatusIcon( Index index, Id icon_id )
+    {
+        assert(index < SYSTEM_STATUS_LIMIT);
+        _STATUS_ICONS[index] = icon_id;
+    }
+
+    //------------------------------------------------------------------------
+    Index System::GetStatus()
+    {
+        return _status;
+    }
+
+    //------------------------------------------------------------------------
+    Bool System::AddHotKey( Index index, Bits modifiers, Id key, System::HotKeyHandler handler, void* custom )
+    {
+        assert(index < SYSTEM_HOTKEY_LIMIT);
+        HotKeyEntry& entry = _hotkeys[index];
+
+        // register hotkey
+        if(!RegisterHotKey(_hwnd, index, modifiers, key))
+            return false;
+
+        // set hotkey entry
+        entry.handler = handler;
+        entry.custom = custom;
+
+        return true;
+    }
+
+    Bool System::RemoveHotKey( Index index )
+    {
+        assert(index < SYSTEM_HOTKEY_LIMIT);
+        HotKeyEntry& entry = _hotkeys[index];
+
+        // remove hotkey
+        UnregisterHotKey(_hwnd, index);
+        entry.handler = NULL;
+        entry.custom = NULL;
+
+        return true;
+    }
+
+    Bool System::ParseHotKey( Bits& modifiers, Id& key, const Char* string )
+    {
+        TextString  s1;
+        TextString  s2;
+        const Char* ps;
+        ULong       scount;
+
+        key = 0;
+        modifiers = 0;
+
+        if( *string == 0 )
+            return false;
+
+        // parse string
+        Tools::StrFormatRead(scount, string, _FORMAT_HOTKEY, s1, s2);
+        if(scount == 0 || scount > 2)
+            return false;
+
+        // parse modifiers
+        if(scount == 2)
+        {
+            for( ps = s1; *ps; *ps++)
+            {
+                ULong   modifier;
+                Char    modifier_pattern[] = { *ps, 0 };
+
+                if(!SYSTEM_HOTKEY_MODIFIERS.FindObject(modifier, modifier_pattern))
+                    return false;
+
+                modifiers |= modifier;
+            }
+
+            ps = s2;
+        }
+        else
+            ps = s1;
+
+        // parse key
+        if(!SYSTEM_HOTKEY_KEYS.FindObject(key, ps))
+            return false;
 
         return true;
     }
 
     //------------------------------------------------------------------------
-    void System::SetStatus( System::Status status )
-    {
-        _status = status;
-        _SysTrayUpdate(_hwnd, ID_TRAYICON);
-    }
-
-    //------------------------------------------------------------------------
-    void System::SetStatusIcon( System::Status status, Id icon_id )
-    {
-        assert(status < System::STATUS_COUNT);
-        _STATUS_ICONS[status] = icon_id;
-    }
-
-    //------------------------------------------------------------------------
-    Bool System::Message( Bool cancel, const Char* format, ... )
+    Bool System::Message( Bool prompt, const Char* format, ... )
     {
         TextString  message;
         va_list     args;
@@ -272,26 +362,12 @@ namespace Core
 
         // show message box
         Bits flags = MB_OK|MB_SETFOREGROUND;
-        if(cancel)
+        if(prompt)
             flags |= MB_YESNO;
-        Int status = MessageBox(NULL, message, _MESSAGE_TITLE, flags);
+        Int status = MessageBox(NULL, message, SYSTEM_MESSAGE_TITLE, flags);
 
         // success if user hit yes or did not fail
         return status != 0 && status != IDNO;
-    }
-
-    //------------------------------------------------------------------------
-    Bool System::SetHotKey( ULong modifier, ULong key, System::HotKeyHandler handler, void* custom )
-    {
-        assert(_hotkey_handler == NULL);
-        assert(_hotkey_custom == NULL);
-
-        _hotkey_modifier = modifier;
-        _hotkey_key = key;
-        _hotkey_handler = handler;
-        _hotkey_custom = custom;
-
-        return true;
     }
 
     //------------------------------------------------------------------------
@@ -321,5 +397,37 @@ namespace Core
 
         // convert to milliseconds
         return time / 10000;
+    }
+
+    //------------------------------------------------------------------------
+    void System::Log( LogId id, const Char* format, ... )
+    {
+        static FILE* handle[LOG_COUNT] = { 0 };
+
+        FILE*& file = handle[id];
+
+        if(format == NULL)
+        {
+            if(file != NULL)
+            {
+                fclose(file);
+                file = NULL;
+            }
+        }
+        else
+        {
+            if(file == NULL)
+                file = fopen(TOOLS_LOG_PATH[id], "wt");
+
+            if(file)
+            {
+                va_list args;
+                va_start(args, format);
+                vfprintf(file, format, args);
+                va_end(args);
+
+                fflush(file);
+            }
+        }
     }
 }

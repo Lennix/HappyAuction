@@ -11,31 +11,48 @@ namespace HappyAuction
         TextString  name;
         TextString  password;
 
-        StateLogin() { name[0]=0; password[0]=0; }
+        StateLogin()
+        {
+            *name = 0;
+            *password = 0;
+        }
     };
 
     /**/
     struct StateFiltersStat
     {
-        Id      id;
-        Number  value;
+        TextString  name;
+        Number      value;
 
-        StateFiltersStat(): id(INVALID_ID), value(NUMBER(-1,0)) {}
+        StateFiltersStat():
+            value(NUMBER(-1,0))
+        {
+            *name = 0;
+        }
     };
 
     /**/
     struct StateFilters
     {
-        Id                  character;
-        Id                  type;
-        Id                  rarity;
+        TextString          character;
+        TextString          type;
+        TextString          rarity;
         Number              level_min;
         Number              level_max;
         Number              buyout;
         TextString          unique;
-        StateFiltersStat    stat[AH_INPUT_PSTAT_LIMIT];
+        StateFiltersStat    stat[AH_PSTAT_LIMIT];
 
-        StateFilters(): character(INVALID_ID), type(INVALID_ID), rarity(INVALID_ID), level_min(NUMBER(-1,0)), level_max(NUMBER(-1,0)), buyout(NUMBER(-1,0)) { unique[0]=0; }
+        StateFilters():
+            level_min(NUMBER(-1,0)),
+            level_max(NUMBER(-1,0)),
+            buyout(NUMBER(-1,0))
+        {
+            *character = 0;
+            *type = 0;
+            *rarity = 0;
+            *unique = 0;
+        }
     };
 
     /**/

@@ -1,296 +1,135 @@
-//PATCH: monitor defense: _1H_ALL|_1H_WAND should be _1H_ALL|_1H_AXE
 #pragma once
 #include <Diablo/Constants.hpp>
 #include <Diablo/Enums.hpp>
 
 namespace Diablo
 {
+    // private
+    //------------------------------------------------------------------------
     #define FIXED_REZ_X 2560
     #define FIXED_REZ_Y 1600
+
     #define F2R_Y(y)    ((Double)y / (Double)FIXED_REZ_Y)
     #define F2R_X(x)    F2R_Y(x)
     #define F2R_XC(x)   ((Double)(x - (FIXED_REZ_X / 2)) / (Double)FIXED_REZ_Y)
 
     //------------------------------------------------------------------------
-    static const ULong _C_ALL =         ~0;
-    static const ULong _C_BARB =        BIT(FILTER_CHAR_BARBARIAN);
-    static const ULong _C_DH =          BIT(FILTER_CHAR_DEMONHUNTER);
-    static const ULong _C_MONK =        BIT(FILTER_CHAR_MONK);
-    static const ULong _C_WD =          BIT(FILTER_CHAR_WITCHDOCTOR);
-    static const ULong _C_WIZ =         BIT(FILTER_CHAR_WIZARD);
-
-    static const UHuge _ALL =           ~0;
-    static const UHuge _1H_ALL =        B64(FILTER_SEC_1H_ALL), _1H_AXE = B64(FILTER_SEC_1H_AXE), _1H_CEREMONIALKNIFE = B64(FILTER_SEC_1H_CEREMONIALKNIFE), _1H_HANDCROSSBOW = B64(FILTER_SEC_1H_HANDCROSSBOW), _1H_DAGGER = B64(FILTER_SEC_1H_DAGGER), _1H_FISTWEAPON = B64(FILTER_SEC_1H_FISTWEAPON), _1H_MACE = B64(FILTER_SEC_1H_MACE), _1H_MIGHTYWEAPON = B64(FILTER_SEC_1H_MIGHTYWEAPON), _1H_SPEAR = B64(FILTER_SEC_1H_SPEAR), _1H_SWORD = B64(FILTER_SEC_1H_SWORD), _1H_WAND = B64(FILTER_SEC_1H_WAND);
-    static const UHuge _2H_ALL =        B64(FILTER_SEC_2H_ALL), _2H_AXE = B64(FILTER_SEC_2H_AXE), _2H_BOW = B64(FILTER_SEC_2H_BOW), _2H_DAIBO = B64(FILTER_SEC_2H_DAIBO), _2H_CROSSBOW = B64(FILTER_SEC_2H_CROSSBOW), _2H_MACE = B64(FILTER_SEC_2H_MACE), _2H_MIGHTYWEAPON = B64(FILTER_SEC_2H_MIGHTYWEAPON), _2H_POLEARM = B64(FILTER_SEC_2H_POLEARM), _2H_STAFF = B64(FILTER_SEC_2H_STAFF), _2H_SWORD = B64(FILTER_SEC_2H_SWORD);
-    static const UHuge _OH_ALL =        B64(FILTER_SEC_OH_ALL), _OH_MOJO = B64(FILTER_SEC_OH_MOJO), _OH_SOURCE = B64(FILTER_SEC_OH_SOURCE), _OH_QUIVER = B64(FILTER_SEC_OH_QUIVER), _OH_SHIELD = B64(FILTER_SEC_OH_SHIELD);
-    static const UHuge _ARMOR_ALL =     B64(FILTER_SEC_ARMOR_ALL), _ARMOR_AMULET = B64(FILTER_SEC_ARMOR_AMULET), _ARMOR_BELT = B64(FILTER_SEC_ARMOR_BELT), _ARMOR_BOOTS = B64(FILTER_SEC_ARMOR_BOOTS), _ARMOR_BRACERS = B64(FILTER_SEC_ARMOR_BRACERS), _ARMOR_CHESTARMOR = B64(FILTER_SEC_ARMOR_CHESTARMOR), _ARMOR_CLOAK = B64(FILTER_SEC_ARMOR_CLOAK), _ARMOR_GLOVES = B64(FILTER_SEC_ARMOR_GLOVES), _ARMOR_HELM = B64(FILTER_SEC_ARMOR_HELM), _ARMOR_PANTS = B64(FILTER_SEC_ARMOR_PANTS), _ARMOR_MIGHTYBELT = B64(FILTER_SEC_ARMOR_MIGHTYBELT), _ARMOR_RING = B64(FILTER_SEC_ARMOR_RING), _ARMOR_SHOULDERS = B64(FILTER_SEC_ARMOR_SHOULDERS), _ARMOR_SPIRITSTONE = B64(FILTER_SEC_ARMOR_SPIRITSTONE), _ARMOR_VOODOOMASK = B64(FILTER_SEC_ARMOR_VOODOOMASK), _ARMOR_WIZARDHAT = B64(FILTER_SEC_ARMOR_WIZARDHAT);
-    static const UHuge _FOLLOWER_ALL =  B64(FILTER_SEC_FOLLOWER_ALL), _FOLLOWER_ENCHANTRESS = B64(FILTER_SEC_FOLLOWER_ENCHANTRESS), _FOLLOWER_SCOUNDREL = B64(FILTER_SEC_FOLLOWER_SCOUNDREL), _FOLLOWER_TEMPLAR = B64(FILTER_SEC_FOLLOWER_TEMPLAR);
-    static const UHuge _1H =            _1H_ALL | _1H_AXE | _1H_CEREMONIALKNIFE | _1H_HANDCROSSBOW | _1H_DAGGER | _1H_FISTWEAPON | _1H_MACE | _1H_MIGHTYWEAPON | _1H_SPEAR | _1H_SWORD | _1H_WAND;
-    static const UHuge _2H =            _2H_ALL | _2H_AXE | _2H_BOW | _2H_DAIBO | _2H_CROSSBOW | _2H_MACE | _2H_MIGHTYWEAPON | _2H_POLEARM | _2H_STAFF | _2H_SWORD;
-    static const UHuge _OH =            _OH_ALL | _OH_MOJO | _OH_SOURCE | _OH_QUIVER | _OH_SHIELD;
-    static const UHuge _ARMOR =         _ARMOR_ALL | _ARMOR_AMULET | _ARMOR_BELT | _ARMOR_BOOTS | _ARMOR_BRACERS | _ARMOR_CHESTARMOR | _ARMOR_CLOAK | _ARMOR_GLOVES | _ARMOR_HELM | _ARMOR_PANTS | _ARMOR_MIGHTYBELT | _ARMOR_RING | _ARMOR_SHOULDERS | _ARMOR_SPIRITSTONE | _ARMOR_VOODOOMASK | _ARMOR_WIZARDHAT;
-    static const UHuge _FOLLOWER =      _FOLLOWER_ALL | _FOLLOWER_ENCHANTRESS | _FOLLOWER_SCOUNDREL | _FOLLOWER_TEMPLAR;
+    static const ULong _C_ALL =     ~0;
+    static const ULong _C_BARB =    BIT(FILTER_CHAR_BARBARIAN);
+    static const ULong _C_DH =      BIT(FILTER_CHAR_DEMONHUNTER);
+    static const ULong _C_MONK =    BIT(FILTER_CHAR_MONK);
+    static const ULong _C_WD =      BIT(FILTER_CHAR_WITCHDOCTOR);
+    static const ULong _C_WIZ =     BIT(FILTER_CHAR_WIZARD);
 
     //------------------------------------------------------------------------
-    const ComboOption _options_character[] =
+    static const IdEnum::Item _char_ids[] =
     {
-        { "Barbarian",      { 0 }, _ALL },
-        { "Demon Hunter",   { 0 }, _ALL },
-        { "Monk",           { 0 }, _ALL },
-        { "Witch Doctor",   { 0 }, _ALL },
-        { "Wizard",         { 0 }, _ALL },
+        { "Barbarian",      FILTER_CHAR_BARBARIAN },
+        { "Demon Hunter",   FILTER_CHAR_DEMONHUNTER },
+        { "Monk",           FILTER_CHAR_MONK },
+        { "Witch Doctor",   FILTER_CHAR_WITCHDOCTOR },
+        { "Wizard",         FILTER_CHAR_WIZARD },
     };
 
-    const ComboOption _options_primary[] =
+    static const IdEnum::Item _primary_ids[] =
     {
-        { "1-Hand",             { 0 }, _ALL },
-        { "2-Hand",             { 0 }, _ALL },
-        { "Off-Hand",           { 0 }, _ALL },
-        { "Armor",              { 0 }, _ALL },
-        { "Follower Special",   { 0 }, _ALL },
+        { "1-Hand",             FILTER_PRI_1H },
+        { "2-Hand",             FILTER_PRI_2H },
+        { "Off-Hand",           FILTER_PRI_OH },
+        { "Armor",              FILTER_PRI_ARMOR },
+        { "Follower Special",   FILTER_PRI_FOLLOWER },
     };
 
-    const ComboOption _options_secondary[] =
+    static const ComboSecDepEnum::Item _combo_secondary_deps[] =
     {
         // 1-Hand
-        { "All 1-Hand Item Types",      { 0 }, B64(FILTER_PRI_1H), _C_ALL },
-        { "Axe",                        { 0 }, B64(FILTER_PRI_1H), _C_ALL },
-        { "Ceremonial Knife",           { 0 }, B64(FILTER_PRI_1H), _C_WD },
-        { "Hand Crossbow",              { 0 }, B64(FILTER_PRI_1H), _C_DH },
-        { "Dagger",                     { 0 }, B64(FILTER_PRI_1H), _C_ALL },
-        { "Fist Weapon",                { 0 }, B64(FILTER_PRI_1H), _C_MONK },
-        { "Mace",                       { 0 }, B64(FILTER_PRI_1H), _C_ALL },
-        { "Mighty Weapon",              { 0 }, B64(FILTER_PRI_1H), _C_BARB },
-        { "Spear",                      { 0 }, B64(FILTER_PRI_1H), _C_ALL },
-        { "Sword",                      { 0 }, B64(FILTER_PRI_1H), _C_ALL },
-        { "Wand",                       { 0 }, B64(FILTER_PRI_1H), _C_WIZ },
+        { "All 1-Hand Item Types",      { FILTER_PRI_1H, _C_ALL } },
+        { "Axe",                        { FILTER_PRI_1H, _C_ALL } },
+        { "Ceremonial Knife",           { FILTER_PRI_1H, _C_WD } },
+        { "Hand Crossbow",              { FILTER_PRI_1H, _C_DH } },
+        { "Dagger",                     { FILTER_PRI_1H, _C_ALL } },
+        { "Fist Weapon",                { FILTER_PRI_1H, _C_MONK } },
+        { "Mace",                       { FILTER_PRI_1H, _C_ALL } },
+        { "Mighty Weapon",              { FILTER_PRI_1H, _C_BARB } },
+        { "Spear",                      { FILTER_PRI_1H, _C_ALL } },
+        { "Sword",                      { FILTER_PRI_1H, _C_ALL } },
+        { "Wand",                       { FILTER_PRI_1H, _C_WIZ } },
 
         // 2-Hand
-        { "All 2-Hand Item Types",      { 0 }, B64(FILTER_PRI_2H), _C_ALL },
-        { "Two-Handed Axe",             { 0 }, B64(FILTER_PRI_2H), _C_BARB|_C_MONK|_C_WD|_C_WIZ },
-        { "Bow",                        { 0 }, B64(FILTER_PRI_2H), _C_DH|_C_WD|_C_WIZ },
-        { "Daibo",                      { 0 }, B64(FILTER_PRI_2H), _C_MONK },
-        { "Crossbow",                   { 0 }, B64(FILTER_PRI_2H), _C_DH|_C_WD|_C_WIZ },
-        { "Two-Handed Mace",            { 0 }, B64(FILTER_PRI_2H), _C_BARB|_C_MONK|_C_WD|_C_WIZ },
-        { "Two-Handed Mighty Weapon",   { 0 }, B64(FILTER_PRI_2H), _C_BARB },
-        { "Polearm",                    { 0 }, B64(FILTER_PRI_2H), _C_BARB|_C_MONK|_C_WD },
-        { "Staff",                      { 0 }, B64(FILTER_PRI_2H), _C_MONK|_C_WD|_C_WIZ },
-        { "Two-Handed Sword",           { 0 }, B64(FILTER_PRI_2H), _C_BARB|_C_MONK|_C_WD|_C_WIZ },
+        { "All 2-Hand Item Types",      { FILTER_PRI_2H, _C_ALL } },
+        { "Two-Handed Axe",             { FILTER_PRI_2H, _C_BARB|_C_MONK|_C_WD|_C_WIZ } },
+        { "Bow",                        { FILTER_PRI_2H, _C_DH|_C_WD|_C_WIZ } },
+        { "Daibo",                      { FILTER_PRI_2H, _C_MONK } },
+        { "Crossbow",                   { FILTER_PRI_2H, _C_DH|_C_WD|_C_WIZ } },
+        { "Two-Handed Mace",            { FILTER_PRI_2H, _C_BARB|_C_MONK|_C_WD|_C_WIZ } },
+        { "Two-Handed Mighty Weapon",   { FILTER_PRI_2H, _C_BARB } },
+        { "Polearm",                    { FILTER_PRI_2H, _C_BARB|_C_MONK|_C_WD } },
+        { "Staff",                      { FILTER_PRI_2H, _C_MONK|_C_WD|_C_WIZ } },
+        { "Two-Handed Sword",           { FILTER_PRI_2H, _C_BARB|_C_MONK|_C_WD|_C_WIZ } },
 
         // Off-Hand
-        { "All Off-Hand Item Types",    { 0 }, B64(FILTER_PRI_OH), _C_ALL },
-        { "Mojo",                       { 0 }, B64(FILTER_PRI_OH), _C_WD },
-        { "Source",                     { 0 }, B64(FILTER_PRI_OH), _C_WIZ },
-        { "Quiver",                     { 0 }, B64(FILTER_PRI_OH), _C_DH },
-        { "Shield",                     { 0 }, B64(FILTER_PRI_OH), _C_ALL },
+        { "All Off-Hand Item Types",    { FILTER_PRI_OH, _C_ALL } },
+        { "Mojo",                       { FILTER_PRI_OH, _C_WD } },
+        { "Source",                     { FILTER_PRI_OH, _C_WIZ } },
+        { "Quiver",                     { FILTER_PRI_OH, _C_DH } },
+        { "Shield",                     { FILTER_PRI_OH, _C_ALL } },
 
         // Armor
-        { "All Armor Item Types",       { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Amulet",                     { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Belt",                       { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Boots",                      { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Bracers",                    { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Chest Armor",                { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Cloak",                      { 0 }, B64(FILTER_PRI_ARMOR), _C_DH },
-        { "Gloves",                     { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Helm",                       { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Pants",                      { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Mighty Belt",                { 0 }, B64(FILTER_PRI_ARMOR), _C_BARB },
-        { "Ring",                       { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Shoulders",                  { 0 }, B64(FILTER_PRI_ARMOR), _C_ALL },
-        { "Spirit Stone",               { 0 }, B64(FILTER_PRI_ARMOR), _C_MONK },
-        { "Voodoo Mask",                { 0 }, B64(FILTER_PRI_ARMOR), _C_WD },
-        { "Wizard Hat",                 { 0 }, B64(FILTER_PRI_ARMOR), _C_WIZ },
+        { "All Armor Item Types",       { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Amulet",                     { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Belt",                       { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Boots",                      { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Bracers",                    { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Chest Armor",                { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Cloak",                      { FILTER_PRI_ARMOR, _C_DH } },
+        { "Gloves",                     { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Helm",                       { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Pants",                      { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Mighty Belt",                { FILTER_PRI_ARMOR, _C_BARB } },
+        { "Ring",                       { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Shoulders",                  { FILTER_PRI_ARMOR, _C_ALL } },
+        { "Spirit Stone",               { FILTER_PRI_ARMOR, _C_MONK } },
+        { "Voodoo Mask",                { FILTER_PRI_ARMOR, _C_WD } },
+        { "Wizard Hat",                 { FILTER_PRI_ARMOR, _C_WIZ } },
 
         // Follower Special
-        { "All Follower Special Item Types", { 0 }, B64(FILTER_PRI_FOLLOWER), _C_ALL },
-        { "Enchantress Focus",          { 0 }, B64(FILTER_PRI_FOLLOWER), _C_ALL },
-        { "Scoundrel Token",            { 0 }, B64(FILTER_PRI_FOLLOWER), _C_ALL },
-        { "Templar Relic",              { 0 }, B64(FILTER_PRI_FOLLOWER), _C_ALL },
+        { "All Follower Special Item Types", { FILTER_PRI_FOLLOWER, _C_ALL } },
+        { "Enchantress Focus",          { FILTER_PRI_FOLLOWER, _C_ALL } },
+        { "Scoundrel Token",            { FILTER_PRI_FOLLOWER, _C_ALL } },
+        { "Templar Relic",              { FILTER_PRI_FOLLOWER, _C_ALL } },
     };
 
-    const ComboOption _options_rarity[] =
+    static const IdEnum::Item _gem_stats[] =
     {
-        { "All",        { 0 }, _ALL },
-        { "Inferior",   { 0 }, _ALL },
-        { "Normal",     { 0 }, _ALL },
-        { "Superior",   { 0 }, _ALL },
-        { "Magic",      { 0 }, _ALL },
-        { "Rare",       { 0 }, _ALL },
-        { "Legendary",  { 0 }, _ALL },
+        // amethyst
+        { "Vitality",                   GEM_STAT_VITALITY },
+        { "% Life",                     GEM_STAT_LIFEP },
+        { "Each Hit Adds +",            GEM_STAT_LIFEONHIT },
+
+        // emerald
+        { "Dexterity",                  GEM_STAT_DEXTERITY },
+        { "Extra Gold from Monsters",   GEM_STAT_GOLDFIND },
+        { "Critical Hit Damage",        GEM_STAT_CRITICALHITDAMAGE },
+
+        // ruby
+        { "Strength",                   GEM_STAT_STRENGTH },
+        { "Increases Bonus Experience", GEM_STAT_BONUSEXPERIENCE },
+        { "Damage",                     GEM_STAT_AVERAGEDAMAGE },
+
+        // topaz
+        { "Intelligence",               GEM_STAT_INTELLIGENCE },
+        { "Finding Magical Items",      GEM_STAT_MAGICFIND },
+        { "Melee attackers take",       GEM_STAT_PHYSICALDAMAGETOATTACKER },
     };
 
-    const ComboOption _options_pstats[] =
+    static const IdEnum::Item _gem_types[] =
     {
-        { "None",                               { 0 },                                                                  _ALL },
-
-        // damage
-        { "Damage",                             { 0 },                                                                  (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) | (_FOLLOWER) },
-        { "Attack Speed",                       { "+%u Attacks per Second" },                                           (_1H_ALL|_1H_SWORD) },
-        { "Attack Speed %",                     { "Increases Attack Speed by %u%%",
-                                                  "Attack Speed Increased by %u%%" },                                   (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_GLOVES|_ARMOR_RING) | (_OH_ALL|_OH_QUIVER)},
-        { "Average Arcane Damage",              { "+%u-%u Arcane Damage" },                                             (_1H) | (_2H) },
-        { "Average Cold Damage",                { "+%u-%u Cold Damage" },                                               (_1H) | (_2H) },
-        { "Average Damage",                     { "+%u Minimum Damage",
-                                                  "+%u-%u Damage" },                                                    (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_RING) },
-        { "Average Fire Damage",                { "+%u-%u Fire Damage" },                                               (_1H) | (_2H) },
-        { "Average Holy Damage",                { "+%u-%u Holy Damage" },                                               (_1H) | (_2H) },
-        { "Average Lightning Damage",           { "+%u-%u Lightning Damage" },                                          (_1H) | (_2H) },
-        { "Average Poison Damage",              { "+%u-%u Poison Damage" },                                             (_1H) | (_2H) },
-        { "Bleed Chance",                       { "%u%% chance to inflict Bleed for %u-%u damage over %u seconds." },   (_1H) | (_2H) | (_OH) },
-        { "Bonus Arcane Damage",                { "Adds %u%% to Arcane Damage" },                                       (_OH_ALL|_OH_SOURCE) },
-        { "Bonus Cold Damage",                  { "Adds %u%% to Cold Damage" },                                         0 },
-        { "Bonus Fire Damage",                  { "Adds %u%% to Fire Damage" },                                         (_OH_ALL|_OH_SOURCE) },
-        { "Bonus Lightning Damage",             { "Adds %u%% to Lightning Damage" },                                    (_OH_ALL|_OH_SOURCE) },
-        { "Bonus Poison Damage",                { "Adds %u%% to Poison Damage" },                                       0 },
-        { "Bonus vs Elites",                    { "Increases Damage Against Elites by %u%%" },                          (_1H) | (_2H_ALL|_2H_AXE|_2H_BOW|_2H_DAIBO|_2H_CROSSBOW|_2H_MACE|_2H_MIGHTYWEAPON|_2H_STAFF|_2H_SWORD) | (_ARMOR_ALL|_ARMOR_RING) | (_OH) },
-        { "Critical Hit Chance",                { "Critical Hit Chance Increased by %u%%" },                            (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Critical Hit Damage",                { "Critical Hit Damage Increased by %u%%" },                            (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_GLOVES|_ARMOR_RING) | (_FOLLOWER) },
-        { "Min Bleed Damage",                   { "%u%% chance to inflict Bleed for %u-%u damage over %u seconds." },   (_1H) | (_2H) | (_OH) },
-        { "Weapon Damage %",                    { "+%u%% Damage" },                                                     (_1H) | (_2H) },
-
-        // crowd control
-        { "Crowd Control",                      { 0 },                                                                  (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_RING|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Chance to Blind on Hit",             { "%u%% Chance to Blind on Hit" },                                      (_1H) | (_2H) | (_OH) | (_ARMOR_ALL|_ARMOR_AMULET) },
-        { "Chance to Chill on Hit",             { "%u%% Chance to Chill on Hit" },                                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_SHOULDERS) | (_OH) },
-        { "Chance to Fear on Hit",              { "%u%% Chance to Fear on Hit" },                                       (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Chance to Freeze on Hit",            { "%u%% Chance to Freeze on Hit" },                                     (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) | (_OH) },
-        { "Chance to Immobilize on Hit",        { "%u%% Chance to Immobilize on Hit" },                                 (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BOOTS) | (_OH) },
-        { "Chance to Knockback on Hit",         { "%u%% Chance to Knockback on Hit" },                                  (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BRACERS) | (_OH) },
-        { "Chance to Slow on Hit",              { "%u%% Chance to Slow on Hit" },                                       (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_PANTS) | (_OH) },
-        { "Chance to Stun on Hit",              { "%u%% Chance to Stun on Hit" },                                       (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_GLOVES) | (_OH) },
-        { "Crowd Control Reduction",            { "Reduces duration of control impairing effects by %u" },              (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_HELM|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_SHIELD) },
-
-        // defense
-        { "Defense",                            { 0 },                                                                  (_1H_ALL|_1H_WAND) | (_ARMOR) | (_OH) | (_FOLLOWER) },
-        { "All Resistance",                     { "+%u Resistance to All Elements" },                                   (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Arcane Resistance",                  { "+%u Arcane Resistance" },                                            (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Armor",                              { "+%u Armor" },                                                        (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER_ALL|_FOLLOWER_TEMPLAR) },
-        { "Block %",                            { "+%u%% Chance to Block" },                                            (_ARMOR_ALL) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER_ALL|_FOLLOWER_TEMPLAR) },
-        { "Cold Resistance",                    { "+%u Cold Resistance" },                                              (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Fire Resistance",                    { "+%u Fire Resistance" },                                              (_1H_ALL|_1H_WAND) | (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Lightning Resistance",               { "+%u Lightning Resistance" },                                         (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Physical Damage to Attacker",        { "Melee attackers take %u damage per hit" },                           (_ARMOR) | (_OH) },
-        { "Physical Resistance",                { "+%u Physical Resistance" },                                          (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Poison Resistance",                  { "+%u Poison Resistance" },                                            (_ARMOR) | (_OH_ALL|_OH_SHIELD) | (_FOLLOWER) },
-        { "Reduced Damage from Elites",         { "Reduces damage from elites by %u%%" },                               (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
-        { "Reduced Damage from Melee Attacks",  { "Reduces damage from melee attacks by %u%%" },                        (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_MIGHTYBELT) | (_OH_ALL|_OH_SHIELD) },
-        { "Reduced Damage from Ranged Attacks", { "Reduces damage from ranged attacks by %u%%" },                       (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_SHIELD) },
-
-        // life
-        { "Life",                               { 0 },                                                                  (_1H) | (_2H) | (_ARMOR) | (_OH) | (_FOLLOWER)},
-        { "Extra Health from Globes",           { "Health Globes Grant +%u Life." },                                    (_ARMOR) | (_OH) },
-        { "Life %",                             { "+%u%% Life" },                                                       (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_MIGHTYBELT|_ARMOR_RING|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Life Regeneration",                  { "Regenerates %u Life per Second" },                                   (_ARMOR) | (_OH) | (_FOLLOWER) },
-        { "Life Steal",                         { "%u%% of Damage Dealt Is Converted to Life" },                        (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Life after Kill",                    { "+%u Life after Each Kill" },                                         (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_RING) | (_FOLLOWER) },
-        { "Life on Hit",                        { "Each Hit Adds +%u Life" },                                           (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_RING) | (_FOLLOWER) },
-        { "Life Per Spirit Spent",              { "Gain %u Life per Spirit Spent" },                                    (_1H_ALL|_1H_FISTWEAPON) | (_2H_ALL|_2H_DAIBO) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-
-        // resource
-        { "Resource",                           { 0 },                                                                  (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_HANDCROSSBOW|_1H_FISTWEAPON|_1H_MIGHTYWEAPON|_1H_SWORD|_1H_WAND) |
-                                                                                                                        (_2H_ALL|_2H_DAIBO|_2H_MIGHTYWEAPON) |
-                                                                                                                        (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_MIGHTYBELT|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) |
-                                                                                                                        (_OH_ALL|_OH_MOJO|_OH_SOURCE|_OH_QUIVER) },
-        { "Arcane Power on Crit",               { "Critical Hits grant %u Arcane Power" },                              (_1H_ALL|_1H_WAND) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_SOURCE) },
-        { "Hatred Regeneration",                { "Increases Hatred Regeneration by %u per Second" },                   (_1H_ALL|_1H_HANDCROSSBOW|_1H_SWORD) | (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_QUIVER) },
-        { "Mana Regeneration",                  { "Increases Mana Regeneration by %u per Second" },                     (_1H_ALL|_1H_CEREMONIALKNIFE) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) | (_OH_ALL|_OH_MOJO) },
-        { "Max Arcane Power",                   { "+%u Maximum Arcane Power" },                                         (_1H_ALL|_1H_WAND) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_SOURCE) },
-        { "Max Discipline",                     { "+%u Maximum Discipline" },                                           (_1H_ALL|_1H_HANDCROSSBOW) | (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) | (_OH_ALL|_OH_QUIVER) },
-        { "Max Fury",                           { "+%u Maximum Fury" },                                                 (_1H_ALL|_1H_MIGHTYWEAPON) | (_2H_ALL|_2H_MIGHTYWEAPON) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Max Mana",                           { "+%u Maximum Mana" },                                                 (_1H_ALL|_1H_CEREMONIALKNIFE) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) | (_OH_ALL|_OH_MOJO) },
-        { "Spirit Regeneration",                { "Increases Spirit Regeneration by %u per Second" },                   (_1H_ALL|_1H_FISTWEAPON) | (_2H_ALL|_2H_DAIBO) | (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-
-        // attributes
-        { "Attributes",                         { 0 },                                                                  _ALL },
-        { "Dexterity",                          { "+%u Dexterity" },                                                    _ALL },
-        { "Intelligence",                       { "+%u Intelligence" },                                                 _ALL },
-        { "Strength",                           { "+%u Strength" },                                                     _ALL },
-        { "Vitality",                           { "+%u Vitality" },                                                     _ALL },
-
-        // skills
-        { "Skills",                             { 0 },                                                                          (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR|_1H_SWORD|_1H_WAND) |
-                                                                                                                                (_2H_ALL|_2H_AXE|_2H_BOW|_2H_DAIBO|_2H_CROSSBOW|_2H_MACE|_2H_MIGHTYWEAPON|_2H_POLEARM|_2H_STAFF|_2H_SWORD) |
-                                                                                                                                (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_MIGHTYBELT|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) |
-                                                                                                                                (_OH) },
-        { "Barbarian Skill Bonus: Bash",                    { "Increases Bash Damage by %u%%" },                                (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Barbarian Skill Bonus: Cleave",                  { "Increases Cleave Damage by %u%%" },                              (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Barbarian Skill Bonus: Frenzy",                  { "Increases Frenzy Damage by %u%%" },                              (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Barbarian Skill Bonus: Hammer of the Ancients",  { "Reduces resource cost of Hammer of the Ancients by %u Fury." },  (_2H_ALL|_2H_AXE|_2H_MACE|_2H_MIGHTYWEAPON|_2H_POLEARM|_2H_SWORD) | (_OH_ALL|_OH_SHIELD) },
-        { "Barbarian Skill Bonus: Overpower",               { "Increases Critical Hit Chance of Overpower by %u%%" },           (_2H_ALL|_2H_AXE|_2H_MACE|_2H_MIGHTYWEAPON|_2H_POLEARM|_2H_SWORD) | (_OH_ALL|_OH_SHIELD) },
-        { "Barbarian Skill Bonus: Rend",                    { "Reduces resource cost of Rend by %u Fury." },                    (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Barbarian Skill Bonus: Revenge",                 { "Increases Critical Hit Chance of Revenge by %u%%" },             (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Barbarian Skill Bonus: Seismic Slam",            { "Increases Critical Hit Chance of Seismic Slam by %u%%" },        (_2H_ALL|_2H_AXE|_2H_MACE|_2H_MIGHTYWEAPON|_2H_POLEARM|_2H_SWORD) | (_OH_ALL|_OH_SHIELD) },
-        { "Barbarian Skill Bonus: Weapon Throw",            { "Reduces resource cost of Weapon Throw by %u Fury." },            (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_MIGHTYBELT) },
-        { "Barbarian Skill Bonus: Whirlwind",               { "Increases Critical Hit Chance of Whirlwind by %u%%" },           (_2H_ALL|_2H_AXE|_2H_MACE|_2H_MIGHTYWEAPON|_2H_POLEARM|_2H_SWORD) | (_OH_ALL|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Bola Shot",            { "Increases Bola Shot Damage by %u%%" },                           (_OH_ALL|_OH_QUIVER|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Chakram",              { "Reduces resource cost of Chakram by %u Hatred." },               (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) },
-        { "Demon Hunter Skill Bonus: Elemental Arrow",      { "Increases Elemental Arrow Damage by %u%%" },                     (_OH_ALL|_OH_QUIVER|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Entangling Shot",      { "Increases Entangling Shot Damage by %u%%" },                     (_OH_ALL|_OH_QUIVER|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Evasive Fire",         { "Increases Evasive Fire Damage by %u%%" },                        (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) },
-        { "Demon Hunter Skill Bonus: Grenades",             { "Increases Grenades Damage by %u%%" },                            (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) },
-        { "Demon Hunter Skill Bonus: Hungering Arrow",      { "Increases Hungering Arrow Damage by %u%%" },                     (_OH_ALL|_OH_QUIVER|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Impale",               { "Reduces resource cost of Impale by %u Hatred." },                (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) },
-        { "Demon Hunter Skill Bonus: Multishot",            { "Increases Critical Hit Chance of Multishot by %u%%" },           (_OH_ALL|_OH_QUIVER|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Rapid Fire",           { "Increases Critical Hit Chance of Rapid Fire by %u%%" },          (_OH_ALL|_OH_QUIVER|_OH_SHIELD) },
-        { "Demon Hunter Skill Bonus: Spike Trap",           { "Increases Spike Trap Damage by %u%%" },                          (_ARMOR_ALL|_ARMOR_CHESTARMOR|_ARMOR_CLOAK) },
-        { "Demon Hunter Skill Bonus: Strafe",               { "Increases Critical Hit Chance of Strafe by %u%%" },              0 },
-        { "Monk Skill Bonus: Crippling Wave",               { "Increases Crippling Wave Damage by %u%%" },                      (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Monk Skill Bonus: Cyclone Strike",               { "Reduces resource cost of Cyclone Strike by %u Spirit." },        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Monk Skill Bonus: Deadly Reach",                 { "Increases Deadly Reach Damage by %u%%" },                        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Monk Skill Bonus: Exploding Palm",               { "Increases Exploding Palm Damage by %u%%" },                      (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Monk Skill Bonus: Fists of Thunder",             { "Increases Fists of Thunder Damage by %u%%" },                    (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Monk Skill Bonus: Lashing Tail Kick",            { "Reduces resource cost of Lashing Tail Kick by %u Spirit." },     (_2H_ALL|_2H_DAIBO|_2H_POLEARM|_2H_STAFF) },
-        { "Monk Skill Bonus: Sweeping Wind",                { "Increases Sweeping Wind Damage by %u%%" },                       (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Monk Skill Bonus: Tempest Rush",                 { "Increases Critical Hit Chance of Tempest Rush by %u%%" },        (_2H_ALL|_2H_DAIBO|_2H_POLEARM|_2H_STAFF) },
-        { "Monk Skill Bonus: Wave of Light",                { "Increases Critical Hit Chance of Wave of Light by %u%%" },       (_2H_ALL|_2H_DAIBO|_2H_POLEARM|_2H_STAFF) },
-        { "Monk Skill Bonus: Way of the Hundred Fists",     { "Increases Way of the Hundred Fists Damage by %u%%" },            (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_SPIRITSTONE) },
-        { "Witch Doctor Skill Bonus: Acid Cloud",           { "Increases Critical Hit Chance of Acid Cloud by %u%%" },          (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) },
-        { "Witch Doctor Skill Bonus: Corpse Spiders",       { "Increases Corpse Spiders Damage by %u%%" },                      (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Witch Doctor Skill Bonus: Firebats",             { "Reduces resource cost of Firebats by %u Mana." },                (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) },
-        { "Witch Doctor Skill Bonus: Firebomb",             { "Reduces resource cost of Firebomb by %u Mana." },                (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR) | (_2H_ALL|_2H_BOW|_2H_CROSSBOW) },
-        { "Witch Doctor Skill Bonus: Haunt",                { "Increases Haunt Damage by %u%%" },                               (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR) | (_2H_ALL|_2H_BOW|_2H_CROSSBOW) },
-        { "Witch Doctor Skill Bonus: Locust Swarm",         { "Increases Locust Swarm Damage by %u%%" },                        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) },
-        { "Witch Doctor Skill Bonus: Plague of Toads",      { "Increases Plague of Toads Damage by %u%%" },                     (_1H_ALL|_1H_CEREMONIALKNIFE|_1H_DAGGER|_1H_SPEAR) | (_2H_ALL|_2H_BOW|_2H_CROSSBOW) },
-        { "Witch Doctor Skill Bonus: Poison Darts",         { "Increases Poison Dart Damage by %u%%" },                         (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Witch Doctor Skill Bonus: Spirit Barrage",       { "Increases Spirit Barrage Damage by %u%%" },                      (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Witch Doctor Skill Bonus: Summon Zombie Dogs",   { "Reduces cooldown of Summon Zombie Dogs by %u seconds." },        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_VOODOOMASK) | (_OH_ALL|_OH_MOJO) },
-        { "Witch Doctor Skill Bonus: Wall of Zombies",      { "Reduces cooldown of Wall of Zombies by %u seconds." },           (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Witch Doctor Skill Bonus: Zombie Charger",       { "Reduces resource cost of Zombie Charger by %u Mana." },          (_2H_ALL|_2H_BOW|_2H_CROSSBOW) | (_OH_ALL|_OH_MOJO|_OH_SHIELD) },
-        { "Wizard Skill Bonus: Arcane Orb",                 { "Increases Critical Hit Chance of Arcane Orb by %u%%" },          (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
-        { "Wizard Skill Bonus: Arcane Torrent",             { "Reduces resource cost of Arcane Torrent by %u Arcane Power." },  (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
-        { "Wizard Skill Bonus: Blizzard",                   { "Increases Duration of Blizzard by %u Seconds" },                 (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
-        { "Wizard Skill Bonus: Disintegrate",               { "Reduces resource cost of Disintegrate by %u Arcane Power." },    (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
-        { "Wizard Skill Bonus: Electrocute",                { "Increases Electrocute Damage by %u%%" },                         (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
-        { "Wizard Skill Bonus: Energy Twister",             { "Increases Critical Hit Chance of Energy Twister by %u%%" },      (_1H_ALL|_1H_DAGGER|_1H_SPEAR|_1H_SWORD|_1H_WAND) | (_2H_ALL|_2H_STAFF) },
-        { "Wizard Skill Bonus: Explosive Blast",            { "Increases Critical Hit Chance of Explosive Blast by %u%%" },     (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
-        { "Wizard Skill Bonus: Hydra",                      { "Reduces resource cost of Hydra by %u Arcane Power." },           (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
-        { "Wizard Skill Bonus: Magic Missile",              { "Increases Magic Missile Damage by %u%%" },                       (_1H_ALL|_1H_DAGGER|_1H_SPEAR|_1H_SWORD|_1H_WAND) | (_2H_ALL|_2H_STAFF) },
-        { "Wizard Skill Bonus: Meteor",                     { "Reduces resource cost of Meteor by %u Arcane Power." },          (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
-        { "Wizard Skill Bonus: Ray of Frost",               { "Increases Critical Hit Chance of Ray of Frost by %u%%" },        (_ARMOR_ALL|_ARMOR_HELM|_ARMOR_WIZARDHAT) },
-        { "Wizard Skill Bonus: Shock Pulse",                { "Increases Shock Pulse Damage by %u%%" },                         (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
-        { "Wizard Skill Bonus: Spectral Blade",             { "Increases Spectral Blade Damage by %u%%" },                      (_1H_ALL|_1H_WAND) | (_OH_ALL|_OH_SOURCE|_OH_SHIELD) },
-
-        // properties
-        { "Properties",                         { 0 },                                                      (_1H) | (_2H) | (_ARMOR) | (_OH) },
-        { "Experience",                         { "Monster kills grant +%u experience." },                  _ALL },
-        { "Gold Find",                          { "+%u%% Extra Gold from Monsters" },                       (_1H_ALL|_1H_MACE) | (_ARMOR) | (_OH) },
-        { "Has Sockets",                        { 0 },                                                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_AMULET|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_RING|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Indestructible",                     { "Ignores Durability Loss" },                              (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-        { "Magic Find",                         { "%u%% Better Chance of Finding Magical Items" },          (_ARMOR) | (_OH) },
-        { "Movement Speed",                     { "+%u%% Movement Speed" },                                 (_ARMOR_ALL|_ARMOR_BOOTS) },
-        { "Pickup Radius",                      { "Increases Gold and Health Pickup by %u Yards." },        (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH_ALL|_OH_MOJO) },
-        { "Reduced Level Requirement",          { "Level Requirement Reduced by %u" },                      (_1H) | (_2H) | (_ARMOR_ALL|_ARMOR_BELT|_ARMOR_BOOTS|_ARMOR_BRACERS|_ARMOR_CHESTARMOR|_ARMOR_CLOAK|_ARMOR_GLOVES|_ARMOR_HELM|_ARMOR_PANTS|_ARMOR_MIGHTYBELT|_ARMOR_SHOULDERS|_ARMOR_SPIRITSTONE|_ARMOR_VOODOOMASK|_ARMOR_WIZARDHAT) | (_OH) },
-
-        // other
-        { "Bonus Weapon Damage",                { "Adds %u%% to Weapon Damage" } },
-        { "Maximum Damage",                     { "+%u Maximum Damage" } },
-
-        // gem
-        { "Empty Socket" },
-        { "Bonus Experience",                   { "Increases Bonus Experience by %u%%" } },
+        { "Empty",                      GEM_TYPE_EMPTY },
+        { "Amethyst",                   GEM_TYPE_AMETHYST },
+        { "Emerald",                    GEM_TYPE_EMERALD },
+        { "Ruby",                       GEM_TYPE_RUBY },
+        { "Topaz",                      GEM_TYPE_TOPAZ },
     };
-
 
     //------------------------------------------------------------------------
     static const ULong _item_gem_lifeonhit[ITEM_GEM_RANK_LIMIT] =
@@ -313,58 +152,25 @@ namespace Diablo
 
     // public
     //------------------------------------------------------------------------
-    ULong               GAME_GLOBAL_DELAY = 0; // ms
-
-    const Char*         GAME_WINDOW_TITLE = "Diablo III";
-    const Char*         GAME_WINDOW_CLASS = "D3 Main Window Class";
-
-    const ULongArray    ITEM_GEM_LIFEONHIT(_item_gem_lifeonhit, ACOUNT(_item_gem_lifeonhit));
-    const ULongArray    ITEM_GEM_CRITICALHITDAMAGE(_item_gem_criticalhitdamage, ACOUNT(_item_gem_criticalhitdamage));
-    const ULongArray    ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE(_item_gem_bonusminimumweapondamage, ACOUNT(_item_gem_bonusminimumweapondamage));
-    const ULongArray    ITEM_GEM_PHYSICALDAMAGETOATTACKER(_item_gem_physicaldamagetoattacker, ACOUNT(_item_gem_physicaldamagetoattacker));
-    const Char*         ITEM_GEM_TYPE_STRINGS[] =
-    {
-        "Empty",
-        "Amethyst",
-        "Emerald",
-        "Ruby",
-        "Topaz",
-    };
-
-    static const EnumItem _enum_rarities[] =
-    {
-        EnumItem(EQRARITY_ALL,          "All"),
-        EnumItem(EQRARITY_INFERIOR,     "Inferior"),
-        EnumItem(EQRARITY_NORMAL,       "Normal"),
-        EnumItem(EQRARITY_SUPERIOR,     "Superior"),
-        EnumItem(EQRARITY_MAGIC,        "Magic"),
-        EnumItem(EQRARITY_RARE,         "Rare"),
-        EnumItem(EQRARITY_LEGENDARY,    "Legendary"),
-        EnumItem(EQRARITY_SET,          "Set"),
-    };
-    const Enum ENUM_RARITIES(_enum_rarities, ACOUNT(_enum_rarities));
+    const Char*             GAME_WINDOW_TITLE =     "Diablo III";
+    const Char*             GAME_WINDOW_CLASS =     "D3 Main Window Class";
+    ULong                   GAME_GLOBAL_DELAY =     0;      // ms
 
     //------------------------------------------------------------------------
-    const ComboBox AH_COMBO_CHARACTER       ( _options_character,   ACOUNT(_options_character) );
-    const ComboBox AH_COMBO_PRIMARY         ( _options_primary,     ACOUNT(_options_primary) );
-    const ComboBox AH_COMBO_SECONDARY       ( _options_secondary,   ACOUNT(_options_secondary) );
-    const ComboBox AH_COMBO_RARITY          ( _options_rarity,      ACOUNT(_options_rarity) );
-    const ComboBox AH_COMBO_PSTAT           ( _options_pstats,      ACOUNT(_options_pstats) );
-    const ComboBox* AH_COMBO_MAP[] =
-    {
-        &AH_COMBO_RARITY,       // COMBO_RARITY
-        &AH_COMBO_CHARACTER,    // COMBO_CHARACTER
-        &AH_COMBO_PRIMARY,      // COMBO_PRIMARY
-        &AH_COMBO_SECONDARY,    // COMBO_SECONDARY
-        &AH_COMBO_PSTAT,        // COMBO_STATS0
-        &AH_COMBO_PSTAT,        // COMBO_STATS1
-        &AH_COMBO_PSTAT,        // COMBO_STATS2
-        &AH_COMBO_PSTAT,        // COMBO_STATS3
-        &AH_COMBO_PSTAT,        // COMBO_STATS4
-        &AH_COMBO_PSTAT,        // COMBO_STATS5
-    };
+    const ULongArray        ITEM_GEM_LIFEONHIT(_item_gem_lifeonhit, ACOUNT(_item_gem_lifeonhit));
+    const ULongArray        ITEM_GEM_CRITICALHITDAMAGE(_item_gem_criticalhitdamage, ACOUNT(_item_gem_criticalhitdamage));
+    const ULongArray        ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE(_item_gem_bonusminimumweapondamage, ACOUNT(_item_gem_bonusminimumweapondamage));
+    const ULongArray        ITEM_GEM_PHYSICALDAMAGETOATTACKER(_item_gem_physicaldamagetoattacker, ACOUNT(_item_gem_physicaldamagetoattacker));
+    const IdEnum            ITEM_GEM_STAT_IDS(_gem_stats, ACOUNT(_gem_stats));
+    const IdEnum            ITEM_GEM_TYPE_IDS(_gem_types, ACOUNT(_gem_types));
 
-    const Coordinate COORDS[UI_COUNT] =
+    //------------------------------------------------------------------------
+    const IdEnum            AH_COMBO_CHAR_IDS(_char_ids, ACOUNT(_char_ids));
+    const IdEnum            AH_COMBO_PRIMARY_IDS(_primary_ids, ACOUNT(_primary_ids));
+    const ComboSecDepEnum   AH_COMBO_SECONDARY_DEPS(_combo_secondary_deps, ACOUNT(_combo_secondary_deps));
+
+    //------------------------------------------------------------------------
+    const Coordinate UI_COORDS[UI_COUNT] =
     {
         // UI_BUTTON_SEARCH
         { F2R_XC(627),  F2R_Y(1245) },
@@ -417,6 +223,8 @@ namespace Diablo
         { F2R_XC(895),  F2R_Y(443) },
         // UI_CONTAINER_LISTICONSIZE
         { F2R_X(66.91), F2R_Y(66.91) },
+        // UI_CONTAINER_COMBOROWSIZE
+        { F2R_X(100),   F2R_Y(44.8) },
 
         // UI_INPUT_FILTERLEVELMIN
         { F2R_XC(461),  F2R_Y(667) },
@@ -459,16 +267,19 @@ namespace Diablo
         { F2R_XC(444),  F2R_Y(1089) },
         { F2R_XC(444),  F2R_Y(1145) },
         { F2R_XC(444),  F2R_Y(1201) },
-        // UI_COMBO_SIZE
-        { F2R_X(100),   F2R_Y(44.8) },
 
         // UI_POPUP_ERROR
-        { F2R_XC(1280),  F2R_Y(936) },
+        { F2R_XC(1280), F2R_Y(936) },
         // UI_POPUP_OK
-        { F2R_XC(1280),  F2R_Y(687) },
+        { F2R_XC(1280), F2R_Y(687) },
+        // UI_POPUP_UNIQUE
+        { F2R_XC(500),  F2R_Y(793) },
+
+        // UI_OTHER_GROUND
+        { F2R_XC(1280), F2R_Y(4) },
     };
 
-    const ULong COMBO_DROP_COUNT[COMBO_COUNT] =
+    const ULong UI_COMBO_DROP_COUNT[COMBO_COUNT] =
     {
         7,
         10,
@@ -482,7 +293,7 @@ namespace Diablo
         10,
     };
 
-    const Double COMBO_SELECTOR_REZMAP[] =
+    const Double UI_COMBO_REZMAP[] =
     {
         18.214286,
         18.214286,

@@ -9,7 +9,7 @@ namespace Diablo
     class AuctionInterface
     {
     private:
-        typedef FixedArray<Index, AH_INPUT_PSTAT_LIMIT> IgnoreCollection;
+        typedef FixedArray<Index, AH_PSTAT_LIMIT> IgnoreCollection;
         typedef IgnoreCollection::Iterator              IgnoreIterator;
 
     private:
@@ -35,16 +35,17 @@ namespace Diablo
         Bool    ReadFilterUnique( TextString& string );
 
         /**/
-        Bool    WriteFilterChar( FilterCharId char_id );
-        Bool    ReadFilterChar( FilterCharId& char_id );
-        Bool    WriteFilterPrimary( FilterPrimaryId primary_id );
-        Bool    ReadFilterPrimary( FilterPrimaryId& primary_id );
-        Bool    WriteFilterSecondary( FilterSecondaryId secondary_id );
-        Bool    ReadFilterSecondary( FilterSecondaryId& secondary_id );
-        Bool    WriteFilterRarity( FilterRarityId rarity_id );
-        Bool    ReadFilterRarity( FilterRarityId& rarity_id );
-        Bool    WriteFilterStat( Index index, ItemStatId id, Number value );
-        Bool    ReadFilterStat( Index index, ItemStatId& id, Number& value );
+        Bool    WriteFilterChar( const Char* name );
+        Bool    ReadFilterChar( TextString name );
+        Bool    WriteFilterPrimary( const Char* name );
+        Bool    ReadFilterPrimary( TextString name );
+        Bool    WriteFilterSecondary( const Char* name );
+        Bool    WriteFilterSecondaryAuto( const Char* name );
+        Bool    ReadFilterSecondary( TextString name );
+        Bool    WriteFilterRarity( const Char* name );
+        Bool    ReadFilterRarity( TextString name );
+        Bool    WriteFilterStat( Index index, const Char* name, Number value );
+        Bool    ReadFilterStat( Index index, TextString name, Number& value );
 
         Bool    WriteFilterLevelMin( Number level );
         Bool    ReadFilterLevelMin( Number& level );
@@ -72,19 +73,10 @@ namespace Diablo
 
         /**/
         Bool    Tab( Id primary, Id secondary=INVALID_ID );
-        void    HoverGround();
 
     private:
         Bool    _ClearPopups();
-
-        Bool    _WriteComboBox( Id combo_id, Id id );
-        Bool    _WriteComboRefresh( Id combo_id, Index option_index, ULong option_count );
-
-        Bool    _CalculateOptionIndex( Index& option_index, ULong& option_count, Id combo_id, Id option_id );
-        Bool    _OptionIndexToId( Id& option_id, Index option_index, Id group_id, const ComboBox& box, const IgnoreCollection& ignores=IgnoreCollection::GetEmpty() ) const;
-        Bool    _OptionIdToIndex( Index& option_index, Id option_id, Id group_id, const ComboBox& box, const IgnoreCollection& ignores=IgnoreCollection::GetEmpty() ) const;
         Bool    _WaitSearch();
-
         Bool    _ReadInputNumber( Id id, Number& number );
         void    _Reset();
     };

@@ -12,10 +12,12 @@ namespace HappyAuction
     private:
         Script  _script;
         Bool    _active;
+        Index   _instance;
 
     public:
         /**/
-        ScriptRunner():
+        ScriptRunner( Index instance ):
+            _script(instance),
             _active(false)
         {
         }
@@ -29,25 +31,34 @@ namespace HappyAuction
         /**/
         void Run()
         {
-            _UpdateActiveStatus(true);
+            _OnStart();
             _script.Start();
-            _UpdateActiveStatus(false);
+            _OnStop();
         }
 
         /**/
         void Stop()
         {
-            _script.Stop();
+            if(_active)
+                _script.Stop();
             Thread::Wait();
-            _UpdateActiveStatus(false);
         }
 
     private:
         /**/
-        void _UpdateActiveStatus( Bool active )
+        void _OnStart()
         {
-            System::SetStatus(active ? System::STATUS_ACTIVE : System::STATUS_IDLE);
-            _active = active;
+            _active = true;
+            System::SetStatus( System::GetStatus() + 1 );
+        }
+
+        /**/
+        void _OnStop()
+        {
+            if(System::GetStatus() > 0)
+                System::SetStatus( System::GetStatus() - 1 );
+
+            _active = false;
         }
     };
 }

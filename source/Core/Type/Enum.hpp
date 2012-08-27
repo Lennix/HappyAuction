@@ -1,83 +1,88 @@
 #pragma once
+#include <Core/Tools.hpp>
 #include <Core/Types.hpp>
 #include <Core/Type/Array.hpp>
 
 namespace Core
 {
     /**/
-    class EnumItem
+    template<typename TYPE>
+    struct EnumItem
     {
-    public:
-        Id          _id;
-        const Char* _string;
-
-    public:
-        /**/
-        EnumItem( Id id, const Char* string ):
-            _id(id),
-            _string(string)
-        {
-        }
-
-        /**/
-        Id GetId() const
-        {
-            return _id;
-        }
-
-        /**/
-        const Char* GetString() const
-        {
-            return _string;
-        }
+        const Char* name;
+        TYPE        object;
     };
 
     /**/
+    template<typename TYPE>
     class Enum
     {
     public:
-        typedef Array<const EnumItem>       ItemCollection;
-        typedef ItemCollection::Iterator    ItemIterator;
+        typedef EnumItem<TYPE>                      Item;
+        typedef Array<const Item>                   ItemCollection;
+        typedef typename ItemCollection::Iterator   ItemIterator;
 
     private:
         ItemCollection _items;
 
     public:
         /**/
-        Enum( const EnumItem* items, UShort count ):
+        Enum( const Item* items, UShort count ):
             _items(items, count)
         {
         }
 
         /**/
-        const Char* operator[]( Index index ) const
+        Bool FindName( TextString name, const TYPE& object ) const
         {
-            if(index < _items.GetCount())
-                return _items[index].GetString();
-            else
-                return "";
+            for(ItemIterator i = _items.Begin(); i != _items.End(); i++)
+            {
+                if( object == i->object )
+                {
+                    Tools::StrNCpy(name, i->name, sizeof(TextString));
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /**/
-        const Char* GetString( Id id ) const
+        Bool FindObject( TYPE& object, const Char* pattern, Bool invert=false ) const
         {
-            for(ItemIterator i = _items.Begin(); i != _items.End(); i++)
-                if(i->GetId() == id)
-                    return i->GetString();
+            ULong   pattern_length = strlen(pattern);
+            ULong   best_score = ~0;
+            Index   best_index = INVALID_INDEX;
 
-            return NULL;
-        }
+            // search items for object with matching pattern
+            for( Index i = 0; best_score && i < _items.GetCount(); i++ )
+            {
+                const Item& item = _items[i];
 
-        /**/
-        Id GetId( const Char* string ) const
-        {
-            const EnumItem* found = NULL;
+                // substring search
+                if(invert ? Tools::StrSearch(item.name, pattern) : Tools::StrSearch(pattern, item.name))
+                {
+                    ULong   name_length = strlen(item.name);
+                    ULong   score = invert ? (pattern_length - name_length) : (name_length - pattern_length);
 
-            for(ItemIterator i = _items.Begin(); i != _items.End(); i++)
-                if(strcmp(string, i->GetString()) == 0)
-                    return i->GetId();
+                    // elect best match
+                    if(score < best_score)
+                    {
+                        best_score = score;
+                        best_index = i;
+                    }
+                }
+            }
 
-            return INVALID_ID;
+            if(best_index == INVALID_INDEX)
+                return false;
+            object = _items[best_index].object;
+
+            return true;
         }
     };
+
+    /* common enum types */
+    typedef Enum<Id>    IdEnum;
+    typedef Enum<Bits>  BitsEnum;
 }

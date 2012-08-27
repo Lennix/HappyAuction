@@ -213,11 +213,27 @@
 			Name="Resource"
 			>
 			<File
-				RelativePath="..\..\source\HappyAuction\Resource\IconActive.ico"
+				RelativePath="..\..\source\HappyAuction\Resource\IconIdle.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\HappyAuction\Resource\IconIdle.ico"
+				RelativePath="..\..\source\HappyAuction\Resource\IconStatus1.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\HappyAuction\Resource\IconStatus2.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\HappyAuction\Resource\IconStatus3.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\HappyAuction\Resource\IconStatus4.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\HappyAuction\Resource\IconStatus4p.ico"
 				>
 			</File>
 			<File

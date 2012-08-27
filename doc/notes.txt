@@ -1,14 +1,10 @@
-- updated for 1.0.4
-    - added haSortTimeLeft()
-- fixed minor relogin bug that would delay the process by unintentionally opening options menu.
-- now supports decimal numbers. so an item with 4.5 crit will be read as 4.5 not 4.
-- added haPrompt(). like haAlert() but with YES/NO buttons and return status. see README.
+- fix HA hogging CPU unnecessarily (should see it at 0% now)
+- support botting across multiple d3 clients. see README:Notes section
+- support different hotkey (autoassigned or configurable)
+- added haGetInstance() to distinguish one d3 client from another
 
-
-- USD/RMAH swap support
-- support new item types
-- show error and kill script when haFilterStat fails. this is to prevent unwanted purchases.
-
-
-- add native call support
-- clear "high transaction volume" popups
+- performance review
+- fix a relogin issue causing login process to get stuck on some systems
+- support logging for multiple instances
+- expose more manual control of search list (page prev/next, item count)
+- improve RMAH support

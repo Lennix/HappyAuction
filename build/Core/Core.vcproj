@@ -158,6 +158,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\Core\System\Mutex.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\Core\System\Process.hpp"
 				>
 			</File>
@@ -174,6 +178,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\Core\System\Window.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\Core\System\Window.hpp"
 				>
 			</File>
@@ -183,6 +191,10 @@
 			>
 			<File
 				RelativePath="..\..\source\Core\Support\Lua.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\Core\Support\Settings.hpp"
 				>
 			</File>
 		</Filter>

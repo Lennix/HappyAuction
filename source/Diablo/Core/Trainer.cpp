@@ -7,18 +7,25 @@ namespace Diablo
 {
     // local
     //------------------------------------------------------------------------
+    static const ULong  _DROPDOWN_STRING_LIMIT =    64;
+
     static const Char*  _D3_MODULE =                "Diablo III.exe";
     static const Char*  _BNET_MODULE =              "battle.net.dll";
 
+    static const Char*  _HINT_DROPDOWN =            "Root.TopLayer.DropDown";
+    static const Char*  _HINT_DROPDOWNCONTENT =     "Root.TopLayer.DropDown._content";
+    static const Char*  _HINT_DROPDOWNCONTENTSTACK ="Root.TopLayer.DropDown._content._stackpanel";
+
+    static const Char   _FORMAT_COMBO_TEXT[] =      "{c:%s}%s{/c}";
     static const Char   _FORMAT_ITEM_NAME[] =       "{C:%s}%s{/C}";
     static const Char   _FORMAT_ITEM_RARITYTYPE[] = "{c:%s}%s %s{/c}";
-    static const Char   _FORMAT_SOCKET_EMPTY[] =    "{c_bonus}Empty Socket{/c}";
+    static const Char   _FORMAT_SOCKET_EMPTY[] =    "{c_bonus}%s{/c}";
     static const Char*  _FORMAT_SOCKET_GEM =        "{icon:bullet} %s\n";
     static const Char*  _FORMAT_STAT[] = {
-        "{icon:bullet} {c:ff6969ff}%s{c:%s}{/c}\n",
-        "{icon:bullet} {c:ff6969ff}%s{/c}\n",
-        "{c:ff6969ff}{icon:bullet}%s{c:ffff0000}%s{/c}{/c}\n",
-        "{c:ff6969ff}{icon:bullet}%s{/c}\n",
+        "{icon:bullet} {c:%s}%s{c:ffff0000}%s{/c}{/c}\n",
+        "{icon:bullet} {c:%s}%s{/c}\n",
+        "{c:%s}{icon:bullet}%s{c:ffff0000}%s{/c}{/c}\n",
+        "{c:%s}{icon:bullet}%s{/c}\n",
     };
 
     static const Char*  _HINT_LISTITEM_ITEM =       "D3_ITEM";
@@ -58,6 +65,7 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.CompletedMenu.CompletedMenuContainer.CompletedItemContainer.CompletedItemSendToButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchBuyoutButton",
 
+        "Root.TopLayer",
         "Root.TopLayer.BattleNetLightBox_main.LayoutRoot.LightBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.PageHeader",
     };
@@ -152,8 +160,10 @@ namespace Diablo
         _memory(process),
         _d3_base(0),
         _bnet_base(0),
+        _combo_count(0),
         _trained(false)
     {
+        assert(_DROPDOWN_STRING_LIMIT <= sizeof(TextString));
     }
 
     //------------------------------------------------------------------------
@@ -223,7 +233,7 @@ namespace Diablo
         Tools::StrNCpy(ui_input.text, text, sizeof(ui_input.text));
 
         // write input
-        _process.WriteMemory(ui_object.addr_child2, &ui_input, strlen(ui_input.text)+1);
+        _process.WriteMemory(ui_object.addr2_value, &ui_input, strlen(ui_input.text)+1);
 
         return true;
     }
@@ -243,7 +253,7 @@ namespace Diablo
             return false;
 
         // read input
-        if(!_process.ReadMemory(ui_object.addr_child2, &ui_input, sizeof(ui_input)))
+        if(!_process.ReadMemory(ui_object.addr2_value, &ui_input, sizeof(ui_input)))
             return false;
 
         // copy text
@@ -287,6 +297,102 @@ namespace Diablo
             *index = object.n5[0];
         if(count)
             *count = object.n5[3];
+
+        return true;
+    }
+
+    Bool Trainer::ReadComboString( Id id, TextString string, Bool strip )
+    {
+        _UiObject   object;
+        ULong       count;
+        TextString  found;
+        TextString  dummy;
+
+        // must be trained
+        if(!_trained)
+            return false;
+
+        // read ui object
+        if(!_ReadUiObject(object, id))
+            return false;
+
+        // read child object
+        if(!_process.ReadMemory(object.addr3_child, &object, sizeof(object)))
+            return false;
+
+        // read value
+        if(!_process.ReadMemory(object.addr2_value, found, _DROPDOWN_STRING_LIMIT))
+            return false;
+
+        // strip formatting if any else use original string
+        if(!strip || !Tools::StrFormatRead(count, found, _FORMAT_COMBO_TEXT, dummy, string, dummy) || count != 2)
+            Tools::StrNCpy(string, found, sizeof(TextString));
+
+        return true;
+    }
+
+    Bool Trainer::ReadComboRowBegin()
+    {
+        _UiObject object;
+
+        _combo_count = 0;
+
+        // top layer
+        if(!_ReadUiObject(object, OBJECT_TOP))
+            return false;
+
+        // drop down
+        if(!_ReadUiChild(object, _HINT_DROPDOWN, object))
+            return false;
+
+        // drop down content
+        if(!_ReadUiChild(object, _HINT_DROPDOWNCONTENT, object))
+            return false;
+
+        // drop down content stack
+        if(!_ReadUiChild(object, _HINT_DROPDOWNCONTENTSTACK, object))
+            return false;
+
+        // read item list
+        ULong count = object.addr1_count = Tools::Min(object.addr1_count, UI_COMBO_ROW_LIMIT);
+        if(!_process.ReadMemory(object.addr1_children, _combo_addresses, sizeof(ULong) * count))
+            return false;
+
+        _combo_count = count;
+
+        return true;
+    }
+
+    Bool Trainer::ReadComboRow( Index index, TextString string )
+    {
+        _UiObject  object;
+
+        // must be ready
+        if(!_trained)
+            return false;
+
+        // end of list
+        if(index >= _combo_count)
+            return false;
+
+        // read item object
+        if(!_process.ReadMemory(_combo_addresses[index], &object, sizeof(object)))
+            return false;
+
+        // read text
+        if(!_process.ReadMemory(object.addr2_value, string, _DROPDOWN_STRING_LIMIT))
+            return false;
+
+        return true;
+    }
+
+    Bool Trainer::ReadComboRowCount( ULong& count )
+    {
+        // require combo state
+        if(_combo_count == 0)
+            return false;
+
+        count = _combo_count;
 
         return true;
     }
@@ -508,8 +614,6 @@ namespace Diablo
         _UiHoverHeader  ui_header;
         _UiHoverName    ui_name;
         TextString      color;
-        TextString      rarity;
-        TextString      type;
         ULong           count;
 
         // read ui object
@@ -517,7 +621,7 @@ namespace Diablo
             return false;
 
         // read hover name
-        if(!_process.ReadMemory(ui_object.addr_child2, &ui_name, sizeof(ui_name)))
+        if(!_process.ReadMemory(ui_object.addr2_value, &ui_name, sizeof(ui_name)))
             return false;
 
         // parse name
@@ -531,23 +635,15 @@ namespace Diablo
             return false;
 
         // read hover header
-        if(!_process.ReadMemory(ui_object.addr_child2, &ui_header, sizeof(ui_header)))
+        if(!_process.ReadMemory(ui_object.addr2_value, &ui_header, sizeof(ui_header)))
             return false;
 
         // parse dps/armor
-        Number dpsarmor = Tools::StrToNumber(ui_header.dpsarmor);
-        if(dpsarmor >= ITEM_STAT_VALUE_MIN && dpsarmor <= ITEM_STAT_VALUE_MAX)
-            item.dpsarmor = dpsarmor;
+        Tools::StrToNumber(item.dpsarmor, ui_header.dpsarmor);
 
         // parse rarity/type
-        if( *ui_header.raretype != 0 &&
-            Tools::StrFormatRead(count, ui_header.raretype, _FORMAT_ITEM_RARITYTYPE, color, rarity, type) &&
-            count == 3 )
-        {
-            item.rarity = ENUM_RARITIES.GetId(rarity);
-            if(item.rarity != INVALID_ID)
-                item.type = AH_COMBO_SECONDARY.Find(type);
-        }
+        if( *ui_header.raretype )
+            Tools::StrFormatRead(count, ui_header.raretype, _FORMAT_ITEM_RARITYTYPE, color, item.rarity, item.type);
 
         return true;
     }
@@ -565,12 +661,12 @@ namespace Diablo
             return false;
 
         // read stats
-        if(!_process.ReadMemory(ui_object.addr_child2, &ui_stats, sizeof(ui_stats)))
+        if(!_process.ReadMemory(ui_object.addr2_value, &ui_stats, sizeof(ui_stats)))
             return false;
 
         // parse
         stats.Empty();
-        for( ptext = ui_stats.text; (ptext = _ParseItemStatText(ptext, item_stat, false)) && !stats.IsFull(); )
+        for( ptext = ui_stats.text; (ptext = _ParseItemStatLine(item_stat, ptext, false)) && !stats.IsFull(); )
             stats.Push(item_stat);
 
         return true;
@@ -594,7 +690,7 @@ namespace Diablo
                 return false;
 
             // read socket
-            if(!_process.ReadMemory(ui_object.addr_child2, &ui_socket, sizeof(ui_socket)))
+            if(!_process.ReadMemory(ui_object.addr2_value, &ui_socket, sizeof(ui_socket)))
                 return false;
 
             // ignore nulls
@@ -602,7 +698,7 @@ namespace Diablo
                 continue;
 
             // parse
-            if(_ParseItemStatText(ui_socket.text, item_stat, true) != NULL)
+            if(_ParseItemStatLine(item_stat, ui_socket.text, true) != NULL)
                 sockets.Push(item_stat);
             else
                 return false;
@@ -621,9 +717,9 @@ namespace Diablo
             return false;
 
         // write null chars
-        if(!_process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverHeader, dpsarmor), 0))
+        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverHeader, dpsarmor), 0))
             return false;
-        if(!_process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverHeader, raretype), 0))
+        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverHeader, raretype), 0))
             return false;
 
         // read ui object
@@ -631,7 +727,7 @@ namespace Diablo
             return false;
 
         // write null char
-        return _process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverName, text), 0);
+        return _process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverName, text), 0);
     }
 
     //------------------------------------------------------------------------
@@ -644,7 +740,7 @@ namespace Diablo
             return false;
 
         // write null char
-        return _process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverStats, text), 0);
+        return _process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverStats, text), 0);
     }
 
     //------------------------------------------------------------------------
@@ -660,9 +756,24 @@ namespace Diablo
                 return false;
 
             // write null char
-            if(!_process.WriteByte(ui_object.addr_child2 + FIELD_OFFSET(_UiHoverSocket, text), 0))
+            if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverSocket, text), 0))
                 return false;
         }
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool Trainer::_ReadListRoot( _AhList& object )
+    {
+        // get list root object from static chain
+        ULong address = _process.ReadChainAddress( _d3_base, _CHAIN_SEARCHRESULTS );
+        if(address == 0)
+            return false;
+
+        // read list object
+        if(!_process.ReadMemory(address, &object, sizeof(object)))
+            return false;
 
         return true;
     }
@@ -688,18 +799,27 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    Bool Trainer::_ReadListRoot( _AhList& object )
+    Bool Trainer::_ReadUiChild( _UiObject& child, const Char* path, const _UiObject& parent )
     {
-        // get list root object from static chain
-        ULong address = _process.ReadChainAddress( _d3_base, _CHAIN_SEARCHRESULTS );
-        if(address == 0)
+        ULong address_list[UI_COMBO_ROW_LIMIT];
+
+        // read address list
+        if(!_process.ReadMemory(parent.addr1_children, address_list, sizeof(ULong) * parent.addr1_count))
             return false;
 
-        // read list object
-        if(!_process.ReadMemory(address, &object, sizeof(object)))
-            return false;
+        // locate child in reverse order
+        for( Long i = parent.addr1_count - 1; i >= 0; i-- )
+        {
+            // read object
+            if(_process.ReadMemory(address_list[i], &child, sizeof(_UiObject)))
+            {
+                // check path
+                if(strcmp(child.path, path) == 0)
+                    return true;
+            }
+        }
 
-        return true;
+        return false;
     }
 
     //------------------------------------------------------------------------
@@ -741,13 +861,36 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    const Char* Trainer::_ParseItemStatText( const Char* text, Item::Stat& stat, Bool is_socket ) const
+    void Trainer::_ParseItemStatString( Item::Stat& stat, const Char* text ) const
     {
-        Index       i;
-        TextString  stat_string;
+        // copy text
+        Tools::StrNCpy(stat.text, text, sizeof(stat.text));
+
+        // collect values
+        stat.values.Empty();
+        while(*text)
+        {
+            Number      number;
+            const Char* next = Tools::StrToNumber(number, text, false);
+            if(next > text)
+            {
+                if(stat.values.GetCount() < stat.values.GetLimit())
+                    stat.values.Push(number);
+                text = next;
+            }
+            else
+                text++;
+        }
+    }
+
+    //------------------------------------------------------------------------
+    const Char* Trainer::_ParseItemStatLine( Item::Stat& stat, const Char* text, Bool is_socket ) const
+    {
         TextString  dummy_string;
-        Char*       pstat_string = stat_string;
+        TextString  stat_text;
+        Char*       pstat_text = stat_text;
         ULong       count;
+        Index       i;
 
         // stop at null or newline
         if(*text == 0 || *text == '\n')
@@ -757,43 +900,32 @@ namespace Diablo
         if(is_socket)
         {
             // if empty socket
-            if(memcmp(text, _FORMAT_SOCKET_EMPTY, sizeof(_FORMAT_SOCKET_EMPTY)) == 0)
+            if( (!Tools::StrFormatRead(count, text, _FORMAT_SOCKET_EMPTY, pstat_text) || count != 1) &&
+            // or has gem stats
+                (!Tools::StrFormatRead(count, text, _FORMAT_SOCKET_GEM, pstat_text) || count != 1) )
             {
-                stat.id = ITEM_STAT_EMPTYSOCKET;
-                return text + sizeof(_FORMAT_SOCKET_EMPTY);
-            }
-            // else read gem stats
-            else if( !Tools::StrFormatRead(count, text, _FORMAT_SOCKET_GEM, pstat_string) || count != 1 )
-            {
-                Tools::Log( LOG_ERROR, "ITEM: SOCKET: %s\n", text);
                 return NULL;
             }
         }
         else
         {
-            ULong length;
-
             // read regular item stat (has different formats)
-            for( i = 0; i < ACOUNT(_FORMAT_STAT) && ((length = Tools::StrFormatRead(count, text, _FORMAT_STAT[i], pstat_string, dummy_string)) == 0 || count < 1); i++ );
+            for( i = 0; i < ACOUNT(_FORMAT_STAT) && ((count = Tools::StrFormatRead(count, text, _FORMAT_STAT[i], dummy_string, pstat_text, dummy_string)) == 0 || count < 2); i++ );
             if(i == ACOUNT(_FORMAT_STAT))
             {
-                Tools::Log( LOG_ERROR, "ITEM: FORMAT: %s\n", text);
                 return NULL;
             }
 
             // remove leading whitespace
-            for(; *pstat_string && isspace(*pstat_string); pstat_string++);
+            for(; *pstat_text && isspace(*pstat_text); pstat_text++);
 
-            // increment to next item
-            text += length;
         }
 
         // parse stat text
-        if(!Support::ParseItemStatString(stat, pstat_string))
-        {
-            Tools::Log( LOG_ERROR, "ITEM: UNKNOWN: %s\n", pstat_string);
-            return NULL;
-        }
+        _ParseItemStatString(stat, pstat_text);
+
+        // increment to next item
+        text += count;
 
         return text;
     }

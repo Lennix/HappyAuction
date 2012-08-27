@@ -2,6 +2,7 @@
 #include <HappyAuction/Root.hpp>
 #include <HappyAuction/Constants.hpp>
 #include <HappyAuction/Core/State.hpp>
+#include <HappyAuction/Enums.hpp>
 #include <Diablo/Core/Game.hpp>
 #include <Diablo/Core/AuctionInterface.hpp>
 #include <Diablo/Core/Support.hpp>
@@ -20,12 +21,14 @@ namespace HappyAuction
         AuctionInterface    _ahi;
         Bool                _active;
         State               _state;
+        Index               _instance;
 
     public:
         /**/
-        Script():
+        Script( Index instance ):
             _ahi(_game),
-            _active(false)
+            _active(false),
+            _instance(instance)
         {
         }
 
@@ -38,14 +41,14 @@ namespace HappyAuction
             {
                 // initialize game and auction interface
                 if(!_game.Start() || !_ahi.Start())
-                    throw EXCEPTION_INITIALIZE;
+                    throw EXCEPTION_SCRIPT;
 
                 // sync state
                 _StateSync();
 
                 // start lua script
                 if(!Lua::Start(SCRIPT_PATH))
-                    System::Message(false, EXCEPTION_SCRIPT, Lua::GetError());
+                    System::Message(false, EXCEPTION_LUA, Lua::GetError());
             }
             catch(const Char* exception)
             {
@@ -53,14 +56,16 @@ namespace HappyAuction
             }
 
             // close user log
-            Tools::Log(LOG_USER, NULL);
+            System::Log(LOG_USER, NULL);
 
-            _active = false;
+            // cleanup
+            Stop();
         }
 
         /**/
         void Stop()
         {
+            // stop everything
             _active = false;
             _game.Stop();
             _ahi.Stop();
@@ -78,19 +83,19 @@ namespace HappyAuction
             GAME_GLOBAL_DELAY = 0;
 
             // filters:type
-            _ahi.ReadFilterSecondary(reinterpret_cast<FilterSecondaryId&>(filters.type));
+            _ahi.ReadFilterSecondary(filters.type);
 
             // filters:character
-            _ahi.ReadFilterChar(reinterpret_cast<FilterCharId&>(filters.character));
+            _ahi.ReadFilterChar(filters.character);
 
             // filters:rarity
-            _ahi.ReadFilterRarity(reinterpret_cast<FilterRarityId&>(filters.rarity));
+            _ahi.ReadFilterRarity(filters.rarity);
 
             // filters:stats
-            for( Index i = 0; i < AH_INPUT_PSTAT_LIMIT; i++ )
+            for( Index i = 0; i < AH_PSTAT_LIMIT; i++ )
             {
                 StateFiltersStat& stat = filters.stat[i];
-                _ahi.ReadFilterStat(i, reinterpret_cast<ItemStatId&>(stat.id), stat.value);
+                _ahi.ReadFilterStat(i, stat.name, stat.value);
             }
 
             // filters:level
@@ -110,30 +115,30 @@ namespace HappyAuction
         void _StateRestore()
         {
             const StateFilters& filters = _state.filters;
-            const StateSearch& search = _state.search;
-            ULong           global_delay = GAME_GLOBAL_DELAY;
+            const StateSearch&  search = _state.search;
+            ULong               global_delay = GAME_GLOBAL_DELAY;
 
             // disable global delay
             GAME_GLOBAL_DELAY = 0;
 
             // filters:type
-            if(filters.type != INVALID_ID)
-                _ahi.WriteFilterSecondary(static_cast<FilterSecondaryId>(filters.type));
+            if(*filters.type)
+                _ahi.WriteFilterSecondaryAuto(filters.type);
 
             // filters:character
-            if(filters.character != INVALID_ID)
-                _ahi.WriteFilterChar(static_cast<FilterCharId>(filters.character));
+            if(*filters.character)
+                _ahi.WriteFilterChar(filters.character);
 
             // filters:rarity
-            if(filters.rarity != INVALID_ID)
-                _ahi.WriteFilterRarity(static_cast<FilterRarityId>(filters.rarity));
+            if(*filters.rarity)
+                _ahi.WriteFilterRarity(filters.rarity);
 
             // filters:stats
-            for( Index i = 0; i < AH_INPUT_PSTAT_LIMIT; i++ )
+            for( Index i = 0; i < AH_PSTAT_LIMIT; i++ )
             {
                 const StateFiltersStat& stat = filters.stat[i];
-                if(stat.id != INVALID_ID)
-                    _ahi.WriteFilterStat(i, static_cast<ItemStatId>(stat.id), stat.value);
+                if(*stat.name)
+                    _ahi.WriteFilterStat(i, stat.name, stat.value);
             }
 
             // filters:level
@@ -264,12 +269,12 @@ namespace HappyAuction
             // haSortBuyout() -> status
             case SCRIPT_HASORTBUYOUT:
             case SCRIPT_HAACTIONSORTBUYOUT://DEPRECATED
-                return _haSort(UI_LBUTTON_SORTDPSARMOR);
+                return _haSort(UI_LBUTTON_SORTBUYOUT);
 
             // haSortDpsArmor() -> status
             case SCRIPT_HASORTDPSARMOR:
             case SCRIPT_HAACTIONSORTDPSARMOR://DEPRECATED
-                return _haSort(UI_LBUTTON_SORTBUYOUT);
+                return _haSort(UI_LBUTTON_SORTDPSARMOR);
 
             // haSortTimeLeft() -> status
             case SCRIPT_HASORTTIMELEFT:
@@ -308,6 +313,10 @@ namespace HappyAuction
 
 
             //---- SETTINGS --------------------------------------------------
+            // haGetInstance() -> instance
+            case SCRIPT_HAGETINSTANCE:
+                return _haGetInstance();
+
             // haSetGlobalDelay(delay)
             case SCRIPT_HASETGLOBALDELAY:
                 return _haSetGlobalDelay();
@@ -388,7 +397,7 @@ namespace HappyAuction
                 Bool randomize = _GetStackBool(2);
                 Bool status = _ahi.WriteFilterBuyout(buyout, randomize);
 
-                if(status && buyout > 0)
+                if(status)
                     _state.filters.buyout = buyout;
 
                 _PushStack(status);
@@ -405,12 +414,12 @@ namespace HappyAuction
         /**/
         ULong _haFilterChar()
         {
-            Id      id = AH_COMBO_CHARACTER.Find(_GetStackString(1));
-            Bool    status = false;
+            const Char* name = _GetStackString(1);
+            Bool        status = false;
 
-            if(id != INVALID_ID && _ahi.WriteFilterChar(static_cast<FilterCharId>(id)))
+            if(name && _ahi.WriteFilterChar(name))
             {
-                _state.filters.character = id;
+                Tools::StrNCpy(_state.filters.character, name, sizeof(_state.filters.character));
                 status = true;
             }
 
@@ -444,12 +453,12 @@ namespace HappyAuction
         /**/
         ULong _haFilterRarity()
         {
-            Id      id = AH_COMBO_RARITY.Find(_GetStackString(1));
-            Bool    status = false;
+            const Char* name = _GetStackString(1);
+            Bool        status = false;
 
-            if(id != INVALID_ID && _ahi.WriteFilterRarity(static_cast<FilterRarityId>(id)))
+            if(name && _ahi.WriteFilterRarity(name))
             {
-                _state.filters.rarity = id;
+                Tools::StrNCpy(_state.filters.rarity, name, sizeof(_state.filters.rarity));
                 status = true;
             }
 
@@ -460,18 +469,20 @@ namespace HappyAuction
         /**/
         ULong _haFilterStat()
         {
-            Index   index = _GetStackULong(1) - 1;
-            Id      id =    AH_COMBO_PSTAT.Find(_GetStackString(2));
-            Number  value = _GetStackNumber(3);
-            Bool    status = false;
+            Index       index = _GetStackULong(1) - 1;
+            const Char* name = _GetStackString(2);
+            Number      value = _GetStackNumber(3);
+            Bool        status = false;
 
-            if( index < AH_INPUT_PSTAT_LIMIT &&
-                id != INVALID_ID &&
+            if( index < AH_PSTAT_LIMIT &&
                 value <= ITEM_STAT_VALUE_MAX &&
-                _ahi.WriteFilterStat(index, static_cast<ItemStatId>(id), value))
+                _ahi.WriteFilterStat(index, name, value))
             {
                 StateFiltersStat& stat = _state.filters.stat[index];
-                stat.id = id;
+                if(name)
+                    Tools::StrNCpy(stat.name, name, sizeof(stat.name));
+                else
+                    *stat.name = 0;
                 stat.value = value;
                 status = true;
             }
@@ -485,8 +496,8 @@ namespace HappyAuction
         {
             Bool status = true;
 
-            for( Index index = 0; index < AH_INPUT_PSTAT_LIMIT; index++ )
-                status &= _ahi.WriteFilterStat(index, ITEM_STAT_NONE, 0);
+            for( Index index = 0; index < AH_PSTAT_LIMIT; index++ )
+                status &= _ahi.WriteFilterStat(index, NULL, NUMBER(-1,0));
 
             _PushStack(status);
             return 1;
@@ -495,12 +506,12 @@ namespace HappyAuction
         /**/
         ULong _haFilterType()
         {
-            Id      id = AH_COMBO_SECONDARY.Find(_GetStackString(1));
-            Bool    status = false;
+            const Char* name = _GetStackString(1);
+            Bool        status = false;
 
-            if(id != INVALID_ID && _ahi.WriteFilterSecondary(static_cast<FilterSecondaryId>(id)))
+            if(name && _ahi.WriteFilterSecondaryAuto(name))
             {
-                _state.filters.type = id;
+                Tools::StrNCpy(_state.filters.type, name, sizeof(_state.filters.type));
                 status = true;
             }
 
@@ -580,11 +591,11 @@ namespace HappyAuction
             Bool    status = false;
 
             // check range
-            if(index > 0 && index <= AH_LIST_ROW_LIMIT)
+            if(index > 0 && index <= AH_RESULTS_ROW_LIMIT)
             {
                 // ground hover to reset duplicate selection
                 if(_state.search.row == index)
-                    _ahi.HoverGround();
+                    _game.MouseMoveGround();
 
                 // read list item
                 if(_ahi.ReadListItem(index - 1, _state.item))
@@ -752,30 +763,30 @@ namespace HappyAuction
         void _PushItemStat( const Item::Stat& stat, Bool socket )
         {
             const Item::ValueCollection& values = stat.values;
-            Index index;
+            TextString  string;
+            Index       index;
 
             // name
-            _SetTable("name", AH_COMBO_PSTAT[stat.id].name);
+            _SetTable("name", "");//DEPRECATED
+            _SetTable("text", stat.text);
 
             // gem rank and type
             if(socket)
             {
-                GemTypeId type = GEM_TYPE_EMPTY;
-                GemRankId rank = GEM_RANK_NONE;
+                GemTypeId   type = GEM_TYPE_EMPTY;
+                ULong       rank = 0;
 
                 Support::GetGemInfo(type, rank, stat);
 
-                _SetTable("gem", ITEM_GEM_TYPE_STRINGS[type]);
+                _SetTable("gem", ITEM_GEM_TYPE_IDS.FindName(string, type) ? string : "");
                 _SetTable("rank", rank);
             }
 
             // values
             for( index = 0; index < values.GetLimit(); index++ )
             {
-                TextString key;
-
-                sprintf(key, "value%u", index + 1);
-                _SetTable(key, (index < values.GetCount()) ? values[index] : 0);
+                sprintf(string, "value%u", index + 1);
+                _SetTable(string, (index < values.GetCount()) ? values[index] : 0);
             }
         }
 
@@ -806,8 +817,8 @@ namespace HappyAuction
             _SetTable("xtime", _state.item.xtime);
             _SetTable("name", _state.item.name);
             _SetTable("id", _state.item.id);
-            _SetTable("rarity", (_state.item.rarity != INVALID_ID) ? ENUM_RARITIES[_state.item.rarity] : "");
-            _SetTable("type", (_state.item.type != INVALID_ID) ? AH_COMBO_SECONDARY[_state.item.type].name : "");
+            _SetTable("rarity", _state.item.rarity);
+            _SetTable("type", _state.item.type);
 
             // objects
             _PushTable("stats");
@@ -836,6 +847,13 @@ namespace HappyAuction
         }
 
         //---- SETTINGS ------------------------------------------------------
+        /**/
+        ULong _haGetInstance()
+        {
+            _PushStack(_instance + 1);
+            return 1;
+        }
+
         /**/
         ULong _haSetGlobalDelay()
         {
@@ -887,8 +905,8 @@ namespace HappyAuction
         {
             const Char* message = _GetStackString(1);
 
-            if(message)
-                Tools::Log(LOG_USER, "%s\n", message);
+            if(message && _instance == 0)
+                System::Log(LOG_USER, "%s\n", message);
 
             return 0;
         }

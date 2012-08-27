@@ -1,5 +1,6 @@
 #pragma once
 #include <HappyAuction/Root.hpp>
+#include <HappyAuction/Constants.hpp>
 
 namespace HappyAuction
 {
@@ -37,6 +38,7 @@ namespace HappyAuction
         SCRIPT_HAITEMSTAT,
 
         // settings
+        SCRIPT_HAGETINSTANCE,
         SCRIPT_HASETGLOBALDELAY,
         SCRIPT_HASETLOGIN,
 
@@ -64,6 +66,14 @@ namespace HappyAuction
 
         SCRIPT_HATEST,
         SCRIPT_COUNT,
+    };
+
+    /**/
+    enum
+    {
+        SETTINGS_HOTKEY1,
+        SETTINGS_HOTKEYLAST = (SETTINGS_HOTKEY1 + APPLICATION_APPLET_LIMIT - 1),
+        SETTINGS_COUNT
     };
 }
  

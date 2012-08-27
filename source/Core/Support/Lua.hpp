@@ -131,10 +131,12 @@ namespace HappyAuction
         const Number _GetStackNumber( Index index )
         {
             const Char* nstring = lua_tostring( _lua, index );
+            Number      number = 0;
+
             if(nstring)
-                return Tools::StrToNumber(nstring);
-            else
-                return 0;
+                Tools::StrToNumber(number, nstring);
+
+            return number;
         }
 
         const Char* _GetStackString( Index index )

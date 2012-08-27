@@ -15,15 +15,15 @@ int WINAPI WinMain(
 
     try
     {
-        HappyAuction::Application().Run();
+        HappyAuction::Application::GetInstance().Run();
     }
     catch(const Char* exception)
     {
         System::Message(false, exception);
     }
 
-    // close error log
-    Tools::Log(LOG_ERROR, NULL);
+    // close log
+    System::Log(LOG_ERROR, NULL);
 
     return 0;
 }

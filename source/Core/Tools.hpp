@@ -1,6 +1,5 @@
 #pragma once
 #include <Core/Type/Array.hpp>
-#include <Core/Constants.hpp>
 #include <Core/Types.hpp>
 #include <stdio.h>
 
@@ -74,14 +73,14 @@ namespace Core
         }
 
         /**/
-        static Number StrToNumber( const Char* string, const Char** end=NULL )
+        static const Char* StrToNumber( Number& number, const Char* string, Bool negatives=true )
         {
             Number  whole = 0;
             ULong   decimal = 0;
             Bool    negative = false;
             Char    c;
 
-            if(*string == '-')
+            if(*string == '-' && negatives)
                 negative = true;
 
             for(;(c=*string) && c >= '0' && c <= '9'; string++)
@@ -96,10 +95,9 @@ namespace Core
                 for(; (c=*string) && c >= '0' && c <= '9'; string++);
             }
 
-            if(end)
-                *end = string;
+            number = NUMBER(negative ? -whole : whole, decimal);
 
-            return NUMBER(negative ? -whole : whole, decimal);
+            return string;
         }
 
         /**/
@@ -129,7 +127,7 @@ namespace Core
                     switch(*(format++))
                     {
                     case 'u':
-                        *((Number*)va_arg(args, Number*)) = StrToNumber(string, &string);
+                        string = StrToNumber(*((Number*)va_arg(args, Number*)), string);
                         count++;
                         break;
                     case 's':
@@ -202,37 +200,6 @@ namespace Core
         static void MemZero( TYPE* memory, ULong count=1 )
         {
             memset(memory, 0, sizeof(TYPE) * count);
-        }
-
-        /**/
-        static void Log( LogId id, const Char* format, ... )
-        {
-            static FILE* handle[LOG_COUNT] = { 0 };
-            FILE*& file = handle[id];
-
-            if(format == NULL)
-            {
-                if(file != NULL)
-                {
-                    fclose(file);
-                    file = NULL;
-                }
-            }
-            else
-            {
-                if(file == NULL)
-                    file = fopen(TOOLS_LOG_PATH[id], "wt");
-
-                if(file)
-                {
-                    va_list args;
-                    va_start(args, format);
-                    vfprintf(file, format, args);
-                    va_end(args);
-
-                    fflush(file);
-                }
-            }
         }
 
         /**/

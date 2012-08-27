@@ -184,7 +184,7 @@
 			Name="Type"
 			>
 			<File
-				RelativePath="..\..\source\Diablo\Type\ComboBox.hpp"
+				RelativePath="..\..\source\Diablo\Type\EnumObjects.hpp"
 				>
 			</File>
 			<File

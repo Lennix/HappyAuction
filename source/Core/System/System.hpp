@@ -8,31 +8,32 @@ namespace Core
     class System
     {
     public:
-        /**/
-        enum Status
-        {
-            STATUS_IDLE ,
-            STATUS_ACTIVE,
-            STATUS_COUNT
-        };
-
-    public:
         typedef void (*HotKeyHandler)( void* custom );
 
     public:
         /**/
-        static Bool Run( const Char* title=NULL );
+        static Bool     Initialize( const Char* title=NULL );
+        static void     Finalize();
+        static Bool     Run();
 
         /**/
-        static void SetStatus( Status status );
-        static void SetStatusIcon( Status status, Id icon_id );
+        static void     SetStatus( Index index );
+        static void     SetStatusIcon( Index index, Id icon_id );
+        static Index    GetStatus();
 
         /**/
-        static Bool Message( Bool cancel, const Char* format, ... );
-        static Bool SetHotKey( ULong modifier, ULong key, HotKeyHandler handler, void* custom );
-        static Bool GetClipBoard( Char* buffer, ULong limit );
+        static Bool     AddHotKey( Index index, Bits modifiers, Id key, System::HotKeyHandler handler, void* custom );
+        static Bool     RemoveHotKey( Index index );
+        static Bool     ParseHotKey( Bits& modifiers, Id& key, const Char* string );
 
         /**/
-        static UHuge GetTimeMs();
+        static Bool     Message( Bool cancel, const Char* format, ... );
+        static Bool     GetClipBoard( Char* buffer, ULong limit );
+
+        /**/
+        static UHuge    GetTimeMs();
+
+        /**/
+        static void     Log( LogId id, const Char* format, ... );
     };
 }

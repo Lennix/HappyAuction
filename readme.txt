@@ -1,10 +1,10 @@
-HappyAuction v0.9.11
+HappyAuction v0.9.13
 
 DESCRIPTION
 ------------------------------------------------------------------------------
 HappyAuction is a C++ open source LUA scriptable Diablo 3 auction house bot.
-It offers full control over the AH. Some popular bot scripts are included.
-Happy botting! :D
+It offers full control over the AH. Multiple clients are supported. Some
+popular bot scripts are included. Happy botting! :D
 
 
 INSTRUCTIONS
@@ -36,9 +36,18 @@ NOTES
 - There will be a brief 2-3 second delay before running a script the first
   time. This is necessary to run a memory scan of Diablo 3 to detect
   everything HappyAuction needs to operate.
-- Performance depends on your FPS.
+- Beyond network latency performance depends on your FPS. Disabling vertical
+  sync should also help.
 - Do not use Video/Letterbox option.
-- HappyAuction has not been tested with RMAH but should work.
+- Multiple client support is enabled by adding additional hotkeys:
+- Hotkeys are configured through the generated file: bin/Settings.cfg.
+    - The hotkey format is MOD.KEY or KEY. Examples:
+        HotKey1=C.F12       first instance hotkey set to CONTROL-F12
+        HotKey2=F11         second instance hotkey set to F11
+        HotKey3=CS.NUM0     third instance hotkey set to CONTROL-SHIFT-NUMPAD0
+    - supported Modifiers:  A:ALT, C:CONTROL, S:SHIFT, W:WINDOWSKEY
+    - supported Keys:       0-9, A-Z, F1-F12, NUM0-NUM9
+    - HappyAuction must be restarted (right click icon/exit) to update hotkeys
 
 
 SECURITY
@@ -121,9 +130,9 @@ AUCTION/SEARCH:
 - haFilterStat(index, id, value) -> status
     Sets item preferred stat and minimum value filter.
     - index: specify which of the 3 stat filters to use. range: 1-3
-    - id:       substring identifier of type.
+    - id:       substring identifier of type. nil to clear.
                 example: 'level req' will match 'Reduced Level Requirement'
-    - value:    minimum value for this filter. range: 0-999
+    - value:    minimum value for this filter. range: 0-999. -1 to clear.
     - status:   true if successful
 
 - haFilterStatClear() -> status
@@ -234,7 +243,7 @@ ITEM:
                     less than mbid if there are bidders, otherwise equal.
     - item.buyout:  the buyout price or 0 if there is no buyout
     - item.stats:   a list of stat objects containing:
-        - name:     the name of the stat. example: 'Intelligence'
+        - text:     stat text as seen in tooltip. example: '+42 Intelligence'
         - value1-4: stat values. for most stats only value1 will be used.
     - item.sockets: a list of socket objects containing:
         - name:     gem stat name. example: 'Dexterity'
@@ -256,6 +265,11 @@ ITEM:
 
 
 SETTINGS:
+- haGetInstance() -> instance
+    Returns a client instance number to distinguish one client from another
+    when running multiple D3 clients.
+    - instance:     Unique from 1 to 32.
+    
 - haSetGlobalDelay(delay)
     Adds a global delay to every future action taken. This includes delays
     not available to haSleep such as the individual actions taken by

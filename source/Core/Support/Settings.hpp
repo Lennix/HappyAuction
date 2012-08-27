@@ -1,12 +1,9 @@
 #pragma once
-#include <HappyAuction/Root.hpp>
-#include <Core/Array.hpp>
+#include <Core/Type/Array.hpp>
 #include <Core/Tools.hpp>
 #include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
-namespace HappyAuction
+namespace Core
 {
     /**/
     class Settings
@@ -29,21 +26,14 @@ namespace HappyAuction
 
     public:
         /**/
-        Settings( const Char* path, const ItemCollection& items ):
+        Settings( const Char* path, ItemCollection& items ):
             _path(path),
             _items(items),
             _ready(false),
             _accessed(0)
         {
-        }
-
-        /**/
-        void Load()
-        {
-             if(!_ReadFile())
-                _WriteFile();
-             _UpdateTime();
-             _ready = true;
+            _ReadFile();
+            _WriteFile();
         }
 
         /**/
@@ -116,22 +106,6 @@ namespace HappyAuction
 
             fclose(file);
             return true;
-        }
-
-        /**/
-        void _UpdateTime()
-        {
-            struct _stat s;
-            if(_stat(_path, &s) == 0)
-                _accessed = (ULong)s.st_mtime;
-        }
-
-        /**/
-        Bool _IsUpdated()
-        {
-            ULong last = _accessed;
-            _UpdateTime();
-            return last != _accessed;
         }
     };
 }

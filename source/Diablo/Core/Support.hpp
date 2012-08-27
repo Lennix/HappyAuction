@@ -12,41 +12,48 @@ namespace Diablo
     {
     public:
         /**/
-        static Bool GetGemInfo( GemTypeId& type, GemRankId& rank, const Item::Stat& stat )
+        static Bool GetGemInfo( GemTypeId& type, ULong& rank, const Item::Stat& stat )
         {
+            type = GEM_TYPE_EMPTY;
+            rank = 0;
+
             if(stat.values.GetCount() > 0)
             {
-                ULong   value = static_cast<ULong>(NUMBER_WHOLE(stat.values[0]));
-                Index   rank_index;
+                ULong       value = static_cast<ULong>(NUMBER_WHOLE(stat.values[0]));
+                GemStatId   stat_id;
+
+                // parse gem stat
+                if(!ITEM_GEM_STAT_IDS.FindObject(reinterpret_cast<Id&>(stat_id), stat.text, true))
+                    return false;
 
                 // get type from stat id
-                switch(stat.id)
+                switch(stat_id)
                 {
                 // amethyst
-                case ITEM_STAT_VITALITY:
-                case ITEM_STAT_LIFEP:
-                case ITEM_STAT_LIFEONHIT:
+                case GEM_STAT_VITALITY:
+                case GEM_STAT_LIFEP:
+                case GEM_STAT_LIFEONHIT:
                     type = GEM_TYPE_AMETHYST;
                     break;
 
                 // emerald
-                case ITEM_STAT_DEXTERITY:
-                case ITEM_STAT_GOLDFIND:
-                case ITEM_STAT_CRITICALHITDAMAGE:
+                case GEM_STAT_DEXTERITY:
+                case GEM_STAT_GOLDFIND:
+                case GEM_STAT_CRITICALHITDAMAGE:
                     type = GEM_TYPE_EMERALD;
                     break;
 
                 // ruby
-                case ITEM_STAT_STRENGTH:
-                case ITEM_STAT_BONUSEXPERIENCE:
-                case ITEM_STAT_AVERAGEDAMAGE:
+                case GEM_STAT_STRENGTH:
+                case GEM_STAT_BONUSEXPERIENCE:
+                case GEM_STAT_AVERAGEDAMAGE:
                     type = GEM_TYPE_RUBY;
                     break;
 
                 // topaz
-                case ITEM_STAT_INTELLIGENCE:
-                case ITEM_STAT_MAGICFIND:
-                case ITEM_STAT_PHYSICALDAMAGETOATTACKER:
+                case GEM_STAT_INTELLIGENCE:
+                case GEM_STAT_MAGICFIND:
+                case GEM_STAT_PHYSICALDAMAGETOATTACKER:
                     type = GEM_TYPE_TOPAZ;
                     break;
 
@@ -55,88 +62,44 @@ namespace Diablo
                 }
 
                 // get rank from stat value
-                switch(stat.id)
+                switch(stat_id)
                 {
-                case ITEM_STAT_VITALITY:
-                case ITEM_STAT_DEXTERITY:
-                case ITEM_STAT_STRENGTH:
-                case ITEM_STAT_INTELLIGENCE:
-                    rank_index = ((value - 6) / 4 + 1);
+                case GEM_STAT_VITALITY:
+                case GEM_STAT_DEXTERITY:
+                case GEM_STAT_STRENGTH:
+                case GEM_STAT_INTELLIGENCE:
+                    rank = ((value - 6) / 4 + 1);
                     break;
                 
-                case ITEM_STAT_GOLDFIND:
-                case ITEM_STAT_MAGICFIND:
-                case ITEM_STAT_BONUSEXPERIENCE:
-                    rank_index = ((value - 5) / 2 + 1);
+                case GEM_STAT_GOLDFIND:
+                case GEM_STAT_MAGICFIND:
+                case GEM_STAT_BONUSEXPERIENCE:
+                    rank = ((value - 5) / 2 + 1);
                     break;
 
-                case ITEM_STAT_LIFEP:
-                    rank_index = (value - 4);
+                case GEM_STAT_LIFEP:
+                    rank = (value - 4);
                     break;
 
-                case ITEM_STAT_LIFEONHIT:
-                    rank_index = ITEM_GEM_LIFEONHIT.IndexOf(ITEM_GEM_LIFEONHIT.FlatSearch(value)) + 1;
+                case GEM_STAT_LIFEONHIT:
+                    rank = ITEM_GEM_LIFEONHIT.IndexOf(ITEM_GEM_LIFEONHIT.FlatSearch(value)) + 1;
                     break;
 
-                case ITEM_STAT_CRITICALHITDAMAGE:
-                    rank_index = ITEM_GEM_CRITICALHITDAMAGE.IndexOf(ITEM_GEM_CRITICALHITDAMAGE.FlatSearch(value)) + 1;
+                case GEM_STAT_CRITICALHITDAMAGE:
+                    rank = ITEM_GEM_CRITICALHITDAMAGE.IndexOf(ITEM_GEM_CRITICALHITDAMAGE.FlatSearch(value)) + 1;
                     break;
 
-                case ITEM_STAT_AVERAGEDAMAGE:
-                    rank_index = ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE.IndexOf(ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE.FlatSearch(value)) + 1;
+                case GEM_STAT_AVERAGEDAMAGE:
+                    rank = ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE.IndexOf(ITEM_GEM_BONUSMINIMUMWEAPONDAMAGE.FlatSearch(value)) + 1;
                     break;
 
-                case ITEM_STAT_PHYSICALDAMAGETOATTACKER:
-                    rank_index = ITEM_GEM_PHYSICALDAMAGETOATTACKER.IndexOf(ITEM_GEM_PHYSICALDAMAGETOATTACKER.FlatSearch(value)) + 1;
+                case GEM_STAT_PHYSICALDAMAGETOATTACKER:
+                    rank = ITEM_GEM_PHYSICALDAMAGETOATTACKER.IndexOf(ITEM_GEM_PHYSICALDAMAGETOATTACKER.FlatSearch(value)) + 1;
                     break;
                 }
-
-                if(rank_index >= GEM_RANK_LIMIT)
-                    return false;
-                rank = static_cast<GemRankId>(rank_index);
-            }
-            else
-            {
-                type = GEM_TYPE_EMPTY;
-                rank = GEM_RANK_NONE;
             }
 
             return true;
-        }
-
-        /**/
-        static Bool ParseItemStatString( Item::Stat& stat, const Char* string )
-        {
-            const ComboBox::OptionCollection& options = AH_COMBO_PSTAT.GetOptions();
-            Item::ValueCollection& values = stat.values;
-
-            values.SetCount(values.GetLimit());
-
-            for( Index i = 0; i < options.GetCount(); i++ )
-            {
-                const ComboOption& option = options[i];
-
-                if( option.format )
-                {
-                    ULong count;
-                    
-                    for( Index j = 0; option.format[j] && j < ACOUNT(option.format); j++ )
-                    {
-                        if(Tools::StrFormatRead(count, string, option.format[j], &values[0], &values[1], &values[2], &values[3]))
-                        {
-                            if(count == 0 || (values[0] >= ITEM_STAT_VALUE_MIN && values[0] <= ITEM_STAT_VALUE_MAX))
-                            {
-                                values.SetCount(count);
-                                stat.id = static_cast<ItemStatId>(i);
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            values.SetCount(0);
-            return false;
         }
     };
 }

@@ -46,6 +46,7 @@ namespace Diablo
             OBJECT_BUTTON_SENDTOSTASH,
             OBJECT_BUTTON_BUYOUT,
 
+            OBJECT_TOP,
             OBJECT_MAIN_POPUP,
             OBJECT_MAIN_AUCTION,
 
@@ -68,14 +69,18 @@ namespace Diablo
             ULong   n2[3];
             Char    path[0x100];    // 038
             Byte    _2[0x328];
-            ULong   addr_child1;    // 460
-            Byte    _3[0x018];
+            ULong   addr1_children; // 460
+            Byte    _3[0x004];
+            ULong   addr1_count;    // 468
+            Byte    _4[0x010];
             ULong   n3[4];          // 47c
-            Byte    _4[0x058];
+            Byte    _5[0x058];
             ULong   n4;             // 4e4
-            Byte    _5[0x5E0];
-            ULong   addr_child2;    // ac8
-            Byte    _6[0x220];
+            Byte    _6[0x5E0];
+            ULong   addr2_value;    // ac8
+            Byte    _7[0x00c];
+            ULong   addr3_child;    // ad8
+            Byte    _8[0x210];
             ULong   n5[4];          // cec
         };
 
@@ -93,6 +98,8 @@ namespace Diablo
         ULong           _address[OBJECT_COUNT];
         ULong           _d3_base;
         ULong           _bnet_base;
+        ULong           _combo_count;
+        ULong           _combo_addresses[UI_COMBO_ROW_LIMIT];
         Bool            _trained;
 
     public:
@@ -106,6 +113,11 @@ namespace Diablo
         /**/
         Bool WriteComboIndex( Id id, Index index );
         Bool ReadComboIndex( Id id, Index* index=NULL, ULong* count=NULL );
+
+        Bool ReadComboString( Id id, TextString string, Bool strip=true );
+        Bool ReadComboRowBegin();
+        Bool ReadComboRow( Index index, TextString string );
+        Bool ReadComboRowCount( ULong& count );
 
         /**/
         Bool WriteInputText( Id id, const Char* text );
@@ -143,16 +155,20 @@ namespace Diablo
         Bool _ClearHoverItemSockets();
 
         /**/
-        Bool _ReadUiObject( _UiObject& object, Id id );
         Bool _ReadListRoot( _AhList& object );
+
+        /**/
+        Bool _ReadUiObject( _UiObject& object, Id id );
+        Bool _ReadUiChild( _UiObject& child, const Char* path, const _UiObject& parent );
 
         /**/
         Bool _IsValidUiObject( const _UiObject& object );
 
         /**/
-        const Char* _ParseItemStatText( const Char* text, Item::Stat& stat, Bool is_socket ) const;
+        Bool OnScan( ULong address, const Byte* memory, ULong length );
 
         /**/
-        Bool OnScan( ULong address, const Byte* memory, ULong length );
+        void        _ParseItemStatString( Item::Stat& stat, const Char* text ) const;
+        const Char* _ParseItemStatLine( Item::Stat& stat, const Char* text, Bool is_socket ) const;
     };
 }

@@ -1,7 +1,9 @@
+//MUTEX AROUND EVERYTHING
 #pragma once
-#include <Core/Root.hpp>
+#include <Core/Constants.hpp>
+#include <Core/Type/Array.hpp>
 #include <Core/Types.hpp>
-#include <Core/Tools.hpp>
+#include <Core/System/Mutex.hpp>
 #include <Core/System/Thread.hpp>
 #include <windows.h>
 
@@ -16,11 +18,25 @@ namespace Core
             Byte b, g ,r, a;
         };
 
+        struct _EnumWindowParameters
+        {
+            const Char*     search_name;
+            const Char*     search_class;
+            HWND            found_hwnd;
+            Bool            unique;
+        };
+
+        typedef FixedArray<HWND, WINDOW_ACTIVE_LIMIT>   ActiveCollection;
+        typedef ActiveCollection::Iterator              ActiveIterator;
+
     private:
         HWND    _hwnd;
         Bool    _key_ctrl;
         ULong   _width;
         ULong   _height;
+
+        static ActiveCollection _actives;
+        static Mutex            _mutex;
 
     public:
         /**/
@@ -28,6 +44,45 @@ namespace Core
             _hwnd(NULL),
             _key_ctrl(false)
         {
+        }
+
+        /**/
+        Bool Open( const Char* name, const Char* id, Bool unique=true )
+        {
+            _EnumWindowParameters param = { name, id, NULL, unique };
+            assert(_hwnd == NULL);
+
+            // lock
+            _mutex.Lock();
+
+            // fail if active full
+            if(!_actives.IsFull())
+            {
+                // enum windows
+                EnumWindows( _EnumWindowsProc, (LPARAM)&param );
+
+                // success if hwnd found
+                _hwnd = param.found_hwnd;
+            }
+
+            // unlock
+            _mutex.UnLock();
+
+            return (_hwnd != NULL);
+        }
+
+        void Close()
+        {
+            if(_hwnd)
+            {
+                // remove hwnd from actives
+                _mutex.Lock();
+                _actives.PopSwap(_actives.IndexOf(_actives.FlatSearch(_hwnd)));
+                _mutex.UnLock();
+
+                // null handle
+                _hwnd = NULL;
+            }
         }
 
         /**/
@@ -39,7 +94,7 @@ namespace Core
         /**/
         Bool IsActive() const
         {
-            return IsWindow(_hwnd) == TRUE;
+            return _hwnd && IsWindow(_hwnd) == TRUE;
         }
 
         /**/
@@ -54,12 +109,6 @@ namespace Core
         }
 
         /**/
-        void Focus()
-        {
-            SetForegroundWindow(_hwnd);
-        }
-
-        /**/
         void SendMouseButton( ULong x, ULong y )
         {
             SendMouseMove(x, y, false);
@@ -67,16 +116,6 @@ namespace Core
             LPARAM lparam = (x | (y << 16));
             PostMessage(_hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lparam);
             PostMessage(_hwnd, WM_LBUTTONUP, 0, lparam);
-
-            /*
-            INPUT input[2] = {0};
-
-            input[0].type = INPUT_MOUSE;
-            input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-            input[1].type = INPUT_MOUSE;
-            input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-            SendInput(2, input, sizeof(INPUT));
-            */
         }
 
         /**/
@@ -174,7 +213,7 @@ namespace Core
         /**/
         Bool SetDimensions( ULong x, ULong y, ULong width, ULong height )
         {
-            static RECT rect;
+            RECT rect;
 
             // get current window dimensions
             if(!GetWindowRect(_hwnd, &rect))
@@ -191,13 +230,6 @@ namespace Core
 
             // update dimensions
             return RefreshDimensions();
-        }
-
-        /**/
-        Bool Find( const Char* name, const Char* id=NULL )
-        {
-            _hwnd = FindWindow((LPCTSTR)id, (LPCTSTR)name);
-            return (_hwnd != NULL);
         }
 
         /**/
@@ -239,6 +271,27 @@ namespace Core
 
     private:
         /**/
+        static BOOL CALLBACK _EnumWindowsProc( HWND hwnd, LPARAM lparam )
+        {
+            _EnumWindowParameters&  param = *reinterpret_cast<_EnumWindowParameters*>(lparam);
+            TextString              class_name;
+
+            // ignore if unique requested and already active
+            if(param.unique && _actives.FlatSearch(hwnd) != _actives.End())
+                return TRUE;
+
+            // compare class name
+            if( GetClassName(hwnd, class_name, sizeof(class_name)) && strcmp(param.search_class, class_name) == 0 )
+            {
+                param.found_hwnd = hwnd;
+                _actives.Push(hwnd);
+                return FALSE;
+            }
+
+            return TRUE;
+        }
+
+        /**/
         void _SendKey( ULong key, Bool extended, Bool up=false )
         {
             if(extended)
@@ -258,16 +311,6 @@ namespace Core
                 else
                     PostMessage(_hwnd, WM_CHAR, key, 0x001E0001);
             }
-
-            /*
-            INPUT input = {0};
-
-            input.type = INPUT_KEYBOARD;
-            input.ki.dwFlags = (extended * KEYEVENTF_EXTENDEDKEY) | (up * KEYEVENTF_KEYUP);
-            input.ki.wVk = extended ? key : VkKeyScan(key);
-
-            SendInput(1, &input, sizeof(INPUT));
-            */
         }
     };
 }

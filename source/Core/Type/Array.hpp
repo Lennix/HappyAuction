@@ -125,6 +125,18 @@ namespace Core
         }
 
         /**/
+        inline Bool PopSwap( Index index )
+        {
+            assert(_count > 0);
+            if(--_count > index)
+            {
+                _memory[index] = _memory[_count];
+                return true;
+            }
+            return false;
+        }
+
+        /**/
         inline void Empty()
         {
             _count = 0;

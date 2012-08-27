@@ -55,7 +55,11 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON_IDLE           ICON                    "IconIdle.ico"
-IDI_ICON_ACTIVE         ICON                    "IconActive.ico"
+IDI_ICON_STATUS1        ICON                    "IconStatus1.ico"
+IDI_ICON_STATUS2        ICON                    "IconStatus2.ico"
+IDI_ICON_STATUS3        ICON                    "IconStatus3.ico"
+IDI_ICON_STATUS4        ICON                    "IconStatus4.ico"
+IDI_ICON_STATUS4P       ICON                    "IconStatus4p.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

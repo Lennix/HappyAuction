@@ -14,12 +14,12 @@ namespace Diablo
         /**/
         struct Stat
         {
-            ItemStatId      id;
+            TextString      text;
             ValueCollection values;
 
-            Stat():
-                id(ITEM_STAT_NONE)
+            Stat()
             {
+                *text = 0;
             }
 
             static const Stat& GetDefault()
@@ -42,8 +42,8 @@ namespace Diablo
         Number              buyout;
         ULong               rtime;
         ULong               xtime;
-        Id                  rarity;
-        Id                  type;
+        TextString          rarity;
+        TextString          type;
 
         StatCollection      stats;
         SocketCollection    sockets;
@@ -58,7 +58,7 @@ namespace Diablo
         /**/
         void Empty()
         {
-            name[0] = 0;
+            *name = 0;
             id = 0;
             dpsarmor = 0;
             current_bid = 0;
@@ -66,8 +66,8 @@ namespace Diablo
             buyout = 0;
             rtime = 0;
             xtime = 0;
-            rarity = INVALID_ID;
-            type = INVALID_ID;
+            *rarity = 0;
+            *type = 0;
             stats.Empty();
             sockets.Empty();
         }
@@ -75,20 +75,36 @@ namespace Diablo
         /**/
         Bool IsValid()
         {
-            return type != INVALID_ID;
+            return *type != 0;
         }
 
         /**/
         const Stat* FindStat( const Char* pattern ) const
         {
-            const ComboBox::OptionCollection& options = AH_COMBO_PSTAT.GetOptions();
+            ULong       pattern_length = strlen(pattern);
+            ULong       best_score = ~0;
+            const Stat* best_stat = NULL;
 
-            if(pattern != NULL)
-                for( StatIterator i = stats.Begin(); i != stats.End(); ++i )
-                    if(options[i->id].Match(pattern))
-                        return i;
+            // search stats for object with matching pattern
+            for( Index i = 0; best_score && i < stats.GetCount(); i++ )
+            {
+                const Stat& stat = stats[i];
 
-            return NULL;
+                // substring search
+                if(Tools::StrSearch(pattern, stat.text))
+                {
+                    ULong score = strlen(stat.text) - pattern_length;
+
+                    // elect best match
+                    if(score < best_score)
+                    {
+                        best_score = score;
+                        best_stat = &stat;
+                    }
+                }
+            }
+
+            return best_stat;
         }
     };
 }
