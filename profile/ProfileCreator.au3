@@ -67,7 +67,7 @@ Global $loginflag = False
 Const $version = "1"
 
 ;files
-Const $Ini = "Profiles.ini"
+Const $Ini = "..\build\HappyAuction\Profiles.ini"
 Const $Txt = "..\build\HappyAuction\Lua\Main.lua"
 Const $Bat = "Update.bat"
 

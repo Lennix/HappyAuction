@@ -41,8 +41,8 @@ namespace HappyAuction
                     error = true;
             }
             _runner.Stop();
-//            if (error)
-//                System::Message("Session expired");
+            if (error)
+                System::Message(true,"Session expired");
         }
 
         /**/
