@@ -1094,7 +1094,7 @@ Func iGet($action, $params = "")
 	$http = ObjCreate("WinHttp.WinHttpRequest.5.1")
 	$http.Open("POST", "http://d3ahbot.com/index.php?component=backend&action=" & $action, false)
 	$http.SetRequestHeader ("Content-Type", "application/x-www-form-urlencoded")
-	$http.SetCredentials("zero", "sehrklein", 0)
+;	$http.SetCredentials("zero", "sehrklein", 0)
 	$http.Send($params)
 	ConsoleWrite($http.ResponseText & @CR)
 	$hRet = _JSONDecode($http.ResponseText)
@@ -1174,14 +1174,14 @@ Func forceBotUpdate()
 	Local $fileName = "HappyAuctionAdvanced.exe.new"
 	FileDelete($fileName)
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName, 1, $continue)
-	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName)
+	InetGet("http://d3ahbot.com/index.php?component=update&action=bot&sid=" & $sessionID, $fileName)
 EndFunc
 
 Func forceCreatorUpdate()
 	Local $fileName = "ProfileCreator.exe.new"
 	FileDelete($fileName)
 	;InetGet("http://d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName, 1, $continue)
-	InetGet("http://zero:sehrklein@d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName)
+	InetGet("http://d3ahbot.com/index.php?component=update&action=creator&sid=" & $sessionID, $fileName)
 EndFunc
 #endregion
 #region BATCHFILE
