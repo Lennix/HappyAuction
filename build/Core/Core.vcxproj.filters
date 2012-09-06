@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="System">
+      <UniqueIdentifier>{5862ae93-37b4-420b-92c9-5d66a721b41e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support">
+      <UniqueIdentifier>{50db9055-b260-46e1-afd8-aca4a0df0f39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Type">
+      <UniqueIdentifier>{f0babfb6-3748-4755-9619-2a3a207389d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\Core\System\MemoryScanner.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Mutex.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Process.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\System.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Thread.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\Window.hpp">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Support\Lua.hpp">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Support\Settings.hpp">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Type\Array.hpp">
+      <Filter>Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Type\Enum.hpp">
+      <Filter>Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Core\Constants.hpp" />
+    <ClInclude Include="..\..\source\Core\Enums.hpp" />
+    <ClInclude Include="..\..\source\Core\Root.hpp" />
+    <ClInclude Include="..\..\source\Core\Tools.hpp" />
+    <ClInclude Include="..\..\source\Core\Types.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\Core\System\System.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Core\System\Window.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Core\Constants.cpp" />
+  </ItemGroup>
+</Project>

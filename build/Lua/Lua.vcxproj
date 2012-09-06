@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3FAD6019-260B-4E68-B56F-426D419F4A79}</ProjectGuid>
+    <RootNamespace>Lua</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4996; 4146;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4996; 4146;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\Lua\lapi.c" />
+    <ClCompile Include="..\..\source\Lua\lauxlib.c" />
+    <ClCompile Include="..\..\source\Lua\lbaselib.c" />
+    <ClCompile Include="..\..\source\Lua\lbitlib.c" />
+    <ClCompile Include="..\..\source\Lua\lcode.c" />
+    <ClCompile Include="..\..\source\Lua\lcorolib.c" />
+    <ClCompile Include="..\..\source\Lua\lctype.c" />
+    <ClCompile Include="..\..\source\Lua\ldblib.c" />
+    <ClCompile Include="..\..\source\Lua\ldebug.c" />
+    <ClCompile Include="..\..\source\Lua\ldo.c" />
+    <ClCompile Include="..\..\source\Lua\ldump.c" />
+    <ClCompile Include="..\..\source\Lua\lfunc.c" />
+    <ClCompile Include="..\..\source\Lua\lgc.c" />
+    <ClCompile Include="..\..\source\Lua\linit.c" />
+    <ClCompile Include="..\..\source\Lua\liolib.c" />
+    <ClCompile Include="..\..\source\Lua\llex.c" />
+    <ClCompile Include="..\..\source\Lua\lmathlib.c" />
+    <ClCompile Include="..\..\source\Lua\lmem.c" />
+    <ClCompile Include="..\..\source\Lua\loadlib.c" />
+    <ClCompile Include="..\..\source\Lua\lobject.c" />
+    <ClCompile Include="..\..\source\Lua\lopcodes.c" />
+    <ClCompile Include="..\..\source\Lua\loslib.c" />
+    <ClCompile Include="..\..\source\Lua\lparser.c" />
+    <ClCompile Include="..\..\source\Lua\lstate.c" />
+    <ClCompile Include="..\..\source\Lua\lstring.c" />
+    <ClCompile Include="..\..\source\Lua\lstrlib.c" />
+    <ClCompile Include="..\..\source\Lua\ltable.c" />
+    <ClCompile Include="..\..\source\Lua\ltablib.c" />
+    <ClCompile Include="..\..\source\Lua\ltm.c" />
+    <ClCompile Include="..\..\source\Lua\lundump.c" />
+    <ClCompile Include="..\..\source\Lua\lvm.c" />
+    <ClCompile Include="..\..\source\Lua\lzio.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\Lua\lapi.h" />
+    <ClInclude Include="..\..\source\Lua\lauxlib.h" />
+    <ClInclude Include="..\..\source\Lua\lcode.h" />
+    <ClInclude Include="..\..\source\Lua\lctype.h" />
+    <ClInclude Include="..\..\source\Lua\ldebug.h" />
+    <ClInclude Include="..\..\source\Lua\ldo.h" />
+    <ClInclude Include="..\..\source\Lua\lfunc.h" />
+    <ClInclude Include="..\..\source\Lua\lgc.h" />
+    <ClInclude Include="..\..\source\Lua\llex.h" />
+    <ClInclude Include="..\..\source\Lua\llimits.h" />
+    <ClInclude Include="..\..\source\Lua\lmem.h" />
+    <ClInclude Include="..\..\source\Lua\lobject.h" />
+    <ClInclude Include="..\..\source\Lua\lopcodes.h" />
+    <ClInclude Include="..\..\source\Lua\lparser.h" />
+    <ClInclude Include="..\..\source\Lua\lstate.h" />
+    <ClInclude Include="..\..\source\Lua\lstring.h" />
+    <ClInclude Include="..\..\source\Lua\ltable.h" />
+    <ClInclude Include="..\..\source\Lua\ltm.h" />
+    <ClInclude Include="..\..\source\Lua\lua.h" />
+    <ClInclude Include="..\..\source\Lua\lua.hpp" />
+    <ClInclude Include="..\..\source\Lua\luaconf.h" />
+    <ClInclude Include="..\..\source\Lua\lualib.h" />
+    <ClInclude Include="..\..\source\Lua\lundump.h" />
+    <ClInclude Include="..\..\source\Lua\lvm.h" />
+    <ClInclude Include="..\..\source\Lua\lzio.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
