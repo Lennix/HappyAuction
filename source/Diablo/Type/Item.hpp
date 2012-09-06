@@ -36,6 +36,7 @@ namespace Diablo
     public:
         TextString          name;
         ULong               id;
+        Number              ilevel;
         Number              dpsarmor;
         Number              current_bid;
         Number              max_bid;
@@ -60,6 +61,7 @@ namespace Diablo
         {
             *name = 0;
             id = 0;
+            ilevel = 0;
             dpsarmor = 0;
             current_bid = 0;
             max_bid = 0;
@@ -79,7 +81,7 @@ namespace Diablo
         }
 
         /**/
-        const Stat* FindStat( const Char* pattern ) const
+        const Stat* FindStat( const Char* pattern, Bool substring ) const
         {
             ULong       pattern_length = strlen(pattern);
             ULong       best_score = ~0;
@@ -91,7 +93,7 @@ namespace Diablo
                 const Stat& stat = stats[i];
 
                 // substring search
-                if(Tools::StrSearch(pattern, stat.text))
+                if(Tools::StrSearch(pattern, stat.text, !substring))
                 {
                     ULong score = strlen(stat.text) - pattern_length;
 

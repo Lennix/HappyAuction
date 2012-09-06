@@ -9,6 +9,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     static const ULong  _DROPDOWN_STRING_LIMIT =    64;
 
+    static const Char   _CLEAR_CHAR =               '_';
     static const Char*  _D3_MODULE =                "Diablo III.exe";
     static const Char*  _BNET_MODULE =              "battle.net.dll";
 
@@ -19,6 +20,7 @@ namespace Diablo
     static const Char   _FORMAT_COMBO_TEXT[] =      "{c:%s}%s{/c}";
     static const Char   _FORMAT_ITEM_NAME[] =       "{C:%s}%s{/C}";
     static const Char   _FORMAT_ITEM_RARITYTYPE[] = "{c:%s}%s %s{/c}";
+    static const Char   _FORMAT_ITEM_ILEVEL[] =     "%s: %u";
     static const Char   _FORMAT_SOCKET_EMPTY[] =    "{c_bonus}%s{/c}";
     static const Char*  _FORMAT_SOCKET_GEM =        "{icon:bullet} %s\n";
     static const Char*  _FORMAT_STAT[] = {
@@ -54,7 +56,10 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.EquipmentSearch.BuyoutTextBox",
 
         "Root.TopLayer.item 2.stack.frame body.stack.stats",
-        "Root.TopLayer.item 2.stack.frame body.stack.main.large_itembutton",
+        //"Root.TopLayer.item 2.stack.frame body.stack.main.stack.special_stats",
+        "Root.TopLayer.item 2.stack.frame body.stack.main.stack.wrapper.col1.stack.rating",
+        "Root.TopLayer.item 2.stack.frame body.stack.main.stack.wrapper.col1.type",
+        "Root.TopLayer.item 2.stack.frame body.stack.wrapper.itemLevel",
         "Root.TopLayer.item 2.stack.frame body.stack.socket 0.text",
         "Root.TopLayer.item 2.stack.frame body.stack.socket 1.text",
         "Root.TopLayer.item 2.stack.frame body.stack.socket 2.text",
@@ -63,12 +68,31 @@ namespace Diablo
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchItemList.PagingButtonsContainer.PageRightButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.SearchMenu.SearchMenuContent.SearchItemListContent.SearchButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.MenuContentContainer.CompletedMenu.CompletedMenuContainer.CompletedItemContainer.CompletedItemSendToButton",
+        "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchBidButton",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.TabContentContainer.SearchTabContent.SearchListContent.SearchBuyoutButton",
 
         "Root.TopLayer",
         "Root.TopLayer.BattleNetLightBox_main.LayoutRoot.LightBox",
         "Root.NormalLayer.BattleNetAuctionHouse_main.LayoutRoot.OverlayContainer.PageHeader",
     };
+
+    /*
+        1 while in AH mem search your total gold value. select lowest address one found.
+        2 pointer scan address found. static only. levels=2. offset=1024.
+        3 with pointer scan still open restart d3 goto AH and verify
+        4 if wrong value goto 1 and select next address
+    */
+    static const Process::Link _chain_gold[] = { 0x00F628E0 }; // _D3_MODULE
+    static const Process::Chain _CHAIN_GOLD(_chain_gold, ACOUNT(_chain_gold));
+
+    /*
+        1 while logged in mem search your account name. select lowest address one found.
+        2 pointer scan address found. static only. levels=3. offset=1024.
+        3 with pointer scan still open restart d3 login and verify
+        4 if wrong value goto 1 and select next address
+    */
+    static const Process::Link _chain_account[] = { 0x00D6FB80, 0x0D68 }; // _D3_MODULE
+    static const Process::Chain _CHAIN_ACCOUNT(_chain_account, ACOUNT(_chain_account));
 
     /*
         1 d3 search with buyout
@@ -88,7 +112,7 @@ namespace Diablo
         5 ensure valid in world, menus, and AH
         6 restart d3 goto 2
     */
-    static const ULong _BASEADDRESS_FRAMECOUNT =   0x00FC90FC; // _D3_MODULE
+    static const ULong _BASEADDRESS_FRAMECOUNT = 0x00FC90FC; // _D3_MODULE
     /*
         1 login and mem search 4byte = 1
         2 logout and mem search 4byte = 0
@@ -96,7 +120,7 @@ namespace Diablo
         4 ensure value = 1 in world, menus, and AH
         5 restart d3 goto 1
     */
-    static const ULong _BASEADDRESS_LOGGEDIN =     0x007132F4; // _BNET_MODULE
+    static const ULong _BASEADDRESS_LOGGEDIN = 0x00F629D0; // _D3_MODULE
 
     //------------------------------------------------------------------------
     struct _UiObjectChild
@@ -108,9 +132,7 @@ namespace Diablo
 
     struct _UiHoverHeader
     {
-        Byte    _1      [0x50];
-        Char    raretype[0x28];     // 050
-        Char    dpsarmor[0x20];     // 078
+        Char    text    [0x28];
     };
 
     struct _UiHoverStats
@@ -152,6 +174,11 @@ namespace Diablo
         Byte    _8      [0x010];
     };
 
+    struct _AhGlobal1
+    {
+        Byte    _1      [0x06C];
+        ULong   gold;               // 06C
+    };
 
     // public
     //------------------------------------------------------------------------
@@ -398,6 +425,25 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool Trainer::ReadHoverStatus( Bool& status )
+    {
+        _UiObject ui_object;
+
+        // must be trained
+        if(!_trained)
+            return false;
+
+        // read ui object
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_NAME))
+            return false;
+
+        // determine status
+        status = (ui_object.visible != 0);
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
     Bool Trainer::ReadHoverItem( Item& item )
     {
         // must be trained
@@ -405,7 +451,8 @@ namespace Diablo
             return false;
 
         // name rarity type dps/armor
-        _ReadHoverItemHeaders(item);
+        if(!_ReadHoverItemHeaders(item))
+            return false;
 
         // stats (can be empty)
         if(!_ReadHoverItemStats(item.stats))
@@ -416,7 +463,7 @@ namespace Diablo
             return false;
 
         // must have something!
-        return (*item.name || item.dpsarmor || item.stats.GetCount() || item.sockets.GetCount());
+        return (*item.rarity || item.dpsarmor || item.stats.GetCount() || item.sockets.GetCount());
     }
 
     //------------------------------------------------------------------------
@@ -424,6 +471,15 @@ namespace Diablo
     {
         // must be trained
         if(!_trained)
+            return false;
+
+        // hide key objects
+        if( !_WriteUiObject(OBJECT_TOOLTIP_STATS, false) ||
+            !_WriteUiObject(OBJECT_TOOLTIP_DPSARMOR, false) ||
+            !_WriteUiObject(OBJECT_TOOLTIP_SOCKET0, false) ||
+            !_WriteUiObject(OBJECT_TOOLTIP_SOCKET1, false) ||
+            !_WriteUiObject(OBJECT_TOOLTIP_SOCKET2, false) ||
+            !_WriteUiObject(OBJECT_TOOLTIP_NAME, false))
             return false;
 
         // headers
@@ -481,7 +537,8 @@ namespace Diablo
         item.rtime = expire > current ? static_cast<ULong>(expire - current) : 0;
         item.xtime = static_cast<ULong>(expire / 1000);
 
-        return true;
+        // verify
+        return (item.current_bid && item.id && item.xtime);
     }
 
     //------------------------------------------------------------------------
@@ -574,7 +631,7 @@ namespace Diablo
         ULong status;
         
         // get login status
-        if(!_process.ReadMemory( _bnet_base + _BASEADDRESS_LOGGEDIN, &status, sizeof(ULong) ))
+        if(!_process.ReadMemory( _d3_base + _BASEADDRESS_LOGGEDIN, &status, sizeof(ULong) ))
             return false;
 
         // set status
@@ -605,6 +662,40 @@ namespace Diablo
         return _process.ReadMemory( _d3_base + _BASEADDRESS_FRAMECOUNT, &count, sizeof(ULong) );
     }
 
+    //------------------------------------------------------------------------
+    Bool Trainer::ReadGold( ULong& amount )
+    {
+        _AhGlobal1 ah_global;
+
+        // get list root object from static chain
+        ULong address = _process.ReadChainAddress( _d3_base, _CHAIN_GOLD );
+        if(address == 0)
+            return false;
+
+        // read list object
+        if(!_process.ReadMemory(address, &ah_global, sizeof(ah_global)))
+            return false;
+
+        // get total gold amount
+        amount = ah_global.gold;
+
+        return true;
+    }
+
+    //------------------------------------------------------------------------
+    Bool Trainer::ReadAccount( TextString account )
+    {
+        // get list root object from static chain
+        ULong address = _process.ReadChainAddress( _d3_base, _CHAIN_ACCOUNT );
+        if(address == 0)
+            return false;
+
+        // read list object
+        if(!_process.ReadMemory(address, account, sizeof(TextString)))
+            return false;
+
+        return true;
+    }
 
     // private
     //------------------------------------------------------------------------
@@ -613,37 +704,52 @@ namespace Diablo
         _UiObject       ui_object;
         _UiHoverHeader  ui_header;
         _UiHoverName    ui_name;
-        TextString      color;
+        TextString      dummy;
         ULong           count;
 
-        // read ui object
-        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_NAME))
+        // read item name
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_NAME) || !ui_object.visible)
             return false;
-
-        // read hover name
         if(!_process.ReadMemory(ui_object.addr2_value, &ui_name, sizeof(ui_name)))
             return false;
-
-        // parse name
-        if( *ui_name.text == 0 ||
-            !Tools::StrFormatRead(count, ui_name.text, _FORMAT_ITEM_NAME, color, item.name) ||
+        if( *ui_name.text == 0 || *ui_name.text == _CLEAR_CHAR ||
+            !Tools::StrFormatRead(count, ui_name.text, _FORMAT_ITEM_NAME, dummy, item.name) ||
             count != 2 )
             return false;
 
-        // read ui object
-        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_DPSARMOR))
+        // read rarity/type
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_TYPE) || !ui_object.visible)
             return false;
-
-        // read hover header
         if(!_process.ReadMemory(ui_object.addr2_value, &ui_header, sizeof(ui_header)))
             return false;
+        if( *ui_header.text == 0 || *ui_header.text == _CLEAR_CHAR )
+            return false;
+        Tools::StrFormatRead(count, ui_header.text, _FORMAT_ITEM_RARITYTYPE, dummy, item.rarity, item.type);
 
-        // parse dps/armor
-        Tools::StrToNumber(item.dpsarmor, ui_header.dpsarmor);
+        // read item dps/armor
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_DPSARMOR))
+            return false;
+        if(ui_object.visible)
+        {
+            if(!_process.ReadMemory(ui_object.addr2_value, &ui_header, sizeof(ui_header)))
+                return false;
+            if( *ui_header.text != 0 && *ui_header.text != _CLEAR_CHAR )
+                Tools::StrToNumber(item.dpsarmor, ui_header.text);
+        }
 
-        // parse rarity/type
-        if( *ui_header.raretype )
-            Tools::StrFormatRead(count, ui_header.raretype, _FORMAT_ITEM_RARITYTYPE, color, item.rarity, item.type);
+        // read ilevel
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_ILEVEL))
+            return false;
+        if(!_process.ReadMemory(ui_object.addr2_value, &ui_name, sizeof(ui_name)))
+            return false;
+
+        // parse ilevel
+        if(ui_object.visible)
+        {
+            if( *ui_name.text == 0 || *ui_name.text == _CLEAR_CHAR )
+                return false;
+            Tools::StrFormatRead(count, ui_name.text, _FORMAT_ITEM_ILEVEL, dummy, &item.ilevel);
+        }
 
         return true;
     }
@@ -657,7 +763,7 @@ namespace Diablo
         const Char*     ptext;
 
         // read ui object
-        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_STATS))
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_STATS) || !ui_object.visible)
             return false;
 
         // read stats
@@ -689,19 +795,23 @@ namespace Diablo
             if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_SOCKET0 + i))
                 return false;
 
-            // read socket
-            if(!_process.ReadMemory(ui_object.addr2_value, &ui_socket, sizeof(ui_socket)))
-                return false;
+            // only if visible
+            if(ui_object.visible)
+            {
+                // read socket
+                if(!_process.ReadMemory(ui_object.addr2_value, &ui_socket, sizeof(ui_socket)))
+                    return false;
 
-            // ignore nulls
-            if(*ui_socket.text == 0)
-                continue;
+                // ignore nulls
+                if(*ui_socket.text == 0 || *ui_socket.text == _CLEAR_CHAR)
+                    continue;
 
-            // parse
-            if(_ParseItemStatLine(item_stat, ui_socket.text, true) != NULL)
-                sockets.Push(item_stat);
-            else
-                return false;
+                // parse
+                if(_ParseItemStatLine(item_stat, ui_socket.text, true) != NULL)
+                    sockets.Push(item_stat);
+                else
+                    return false;
+            }
         }
 
         return true;
@@ -712,22 +822,32 @@ namespace Diablo
     {
         _UiObject ui_object;
 
-        // read ui object
+        // clear rare/type
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_TYPE))
+            return false;
+        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverHeader, text), _CLEAR_CHAR))
+            return false;
+
+        // clear dps/armor
         if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_DPSARMOR))
             return false;
-
-        // write null chars
-        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverHeader, dpsarmor), 0))
-            return false;
-        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverHeader, raretype), 0))
+        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverHeader, text), _CLEAR_CHAR))
             return false;
 
-        // read ui object
+        // clear name
         if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_NAME))
             return false;
+        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverName, text), _CLEAR_CHAR))
+            return false;
 
-        // write null char
-        return _process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverName, text), 0);
+        // clear ilevel
+        if(!_ReadUiObject(ui_object, OBJECT_TOOLTIP_ILEVEL))
+            return false;
+        if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverName, text), _CLEAR_CHAR))
+            return false;
+
+
+        return true;
     }
 
     //------------------------------------------------------------------------
@@ -740,7 +860,7 @@ namespace Diablo
             return false;
 
         // write null char
-        return _process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverStats, text), 0);
+        return _process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverStats, text), _CLEAR_CHAR);
     }
 
     //------------------------------------------------------------------------
@@ -756,7 +876,7 @@ namespace Diablo
                 return false;
 
             // write null char
-            if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverSocket, text), 0))
+            if(!_process.WriteByte(ui_object.addr2_value + FIELD_OFFSET(_UiHoverSocket, text), _CLEAR_CHAR))
                 return false;
         }
 
@@ -823,6 +943,15 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    Bool Trainer::_WriteUiObject( Id id, Bool visible )
+    {
+        ULong value = visible;
+
+        // write visibility
+        return _process.WriteMemory(_address[id] + FIELD_OFFSET(_UiObject, visible), &value, sizeof(value));
+    }
+
+    //------------------------------------------------------------------------
     Bool Trainer::_IsValidUiObject( const _UiObject& object )
     {
         return
@@ -863,24 +992,42 @@ namespace Diablo
     //------------------------------------------------------------------------
     void Trainer::_ParseItemStatString( Item::Stat& stat, const Char* text ) const
     {
-        // copy text
-        Tools::StrNCpy(stat.text, text, sizeof(stat.text));
-
         // collect values
         stat.values.Empty();
-        while(*text)
+        for( const Char* ptext = text; *ptext; )
         {
             Number      number;
-            const Char* next = Tools::StrToNumber(number, text, false);
-            if(next > text)
+            const Char* next = Tools::StrToNumber(number, ptext, false);
+            if(next > ptext)
             {
                 if(stat.values.GetCount() < stat.values.GetLimit())
                     stat.values.Push(number);
-                text = next;
+                ptext = next;
             }
             else
-                text++;
+                ptext++;
         }
+
+        ULong state = 0;
+        Char* stext = stat.text;
+        const Char* stext_end = stext + sizeof(stat.text) - 1;
+
+        // copy stripped text (exclude numerics and leading/trailing spaces)
+        for( const Char* ptext = text; *ptext && *ptext != '(' && stext != stext_end; ptext++ )
+        {
+            Char c = *ptext;
+
+            if(isalpha(c))
+            {
+                if(state == 2)
+                    *(stext++) = ' ';
+                *(stext++) = c;
+                state = 1;
+            }
+            else if(state)
+                state = 2;
+        }
+        *stext = 0;
     }
 
     //------------------------------------------------------------------------
@@ -893,7 +1040,7 @@ namespace Diablo
         Index       i;
 
         // stop at null or newline
-        if(*text == 0 || *text == '\n')
+        if(*text == 0 || *text == '\n' || *text == _CLEAR_CHAR)
             return NULL;
 
         // if socket
@@ -915,10 +1062,6 @@ namespace Diablo
             {
                 return NULL;
             }
-
-            // remove leading whitespace
-            for(; *pstat_text && isspace(*pstat_text); pstat_text++);
-
         }
 
         // parse stat text

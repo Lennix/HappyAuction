@@ -13,12 +13,15 @@ namespace HappyAuction
         SCRIPT_HAFILTERBUYOUT,
         SCRIPT_HAFILTERCHAR,
         SCRIPT_HAFILTERLEVEL,
+        SCRIPT_HAFILTERPRIMARY,
         SCRIPT_HAFILTERRARITY,
+        SCRIPT_HAFILTERSECONDARY,
         SCRIPT_HAFILTERSTAT,
         SCRIPT_HAFILTERSTATCLEAR,
         SCRIPT_HAFILTERTYPE,
         SCRIPT_HAFILTERUNIQUE,
-        SCRIPT_HALISTNEXT,
+        SCRIPT_HALISTAT,
+        SCRIPT_HALISTITERATE,
         SCRIPT_HALISTSELECT,
         SCRIPT_HASEARCH,
         SCRIPT_HASORTBUYOUT,
@@ -27,7 +30,8 @@ namespace HappyAuction
 
         // auction/sell
         SCRIPT_HASELL,
-        SCRIPT_HASTASHNEXT,
+        SCRIPT_HASTASHAT,
+        SCRIPT_HASTASHITERATE,
         SCRIPT_HASTASHSELECT,
 
         // auction/completed
@@ -37,8 +41,11 @@ namespace HappyAuction
         SCRIPT_HAITEM,
         SCRIPT_HAITEMSTAT,
 
-        // settings
+        // etc
+        SCRIPT_HAGETACCOUNT,
+        SCRIPT_HAGETGOLD,
         SCRIPT_HAGETINSTANCE,
+        SCRIPT_HALOGOUT,
         SCRIPT_HASETGLOBALDELAY,
         SCRIPT_HASETLOGIN,
 
@@ -51,6 +58,8 @@ namespace HappyAuction
         SCRIPT_HAUPTIME,
 
         // deprecated
+        SCRIPT_HALISTNEXT,
+        SCRIPT_HASTASHNEXT,
         SCRIPT_HARELOGIN,
         SCRIPT_HAACTIONBID,
         SCRIPT_HAACTIONBUYOUT,

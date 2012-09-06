@@ -76,47 +76,47 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    void Game::MouseClickAbsolute( ULong x, ULong y )
+    void Game::MouseClick( const Coordinate& coord, Bits options )
     {
+        ULong   x, y;
+
+        _CoordToAbsolute(x, y, coord, options);
         _window.SendMouseButton(x, y);
-        SleepFrames(2);
-        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
-
+        _CommonDelay(options);
     }
 
-    void Game::MouseClick( Double x, Double y, Bool centered, Bool random )
+    void Game::MouseClickGround( Bits options )
     {
-        MouseClickAbsolute(centered ? X(x, random) : Y(x, random), Y(y, random));
-    }
-
-    void Game::MouseClickGround()
-    {
-        MouseClick(UI_COORDS[UI_OTHER_GROUND].x, UI_COORDS[UI_OTHER_GROUND].y);
+        MouseClick(UI_COORDS[UI_OTHER_GROUND], options);
     }
 
     //------------------------------------------------------------------------
-    void Game::MouseMove( Double x, Double y, Bool direct )
+    void Game::MouseMove( const Coordinate& coord, Bits options )
     {
-        _window.SendMouseMove(X(x), Y(y), direct);
-        SleepFrames(2);
-        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
+        Bool    direct = (options & INPUT_DIRECT)!=0;
+        ULong   x, y;
+
+        _CoordToAbsolute(x, y, coord, options);
+        _window.SendMouseMove(x, y, direct);
+        _CommonDelay(options);
     }
 
-    void Game::MouseMoveGround()
+    void Game::MouseMoveGround( Bits options )
     {
-        MouseMove(UI_COORDS[UI_OTHER_GROUND].x, UI_COORDS[UI_OTHER_GROUND].y);
+        MouseMove(UI_COORDS[UI_OTHER_GROUND], options);
     }
 
     //------------------------------------------------------------------------
-    void Game::SendInputKeys( const Char* text, Bool specials )
+    void Game::SendInputKeys( const Char* text, Bits options )
     {
+        Bool specials = (options & INPUT_SPECIALS)!=0;
+
         _window.SendInputKeys(text, specials);
-        SleepFrames(2);
-        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
+        _CommonDelay(options);
     }
 
     //------------------------------------------------------------------------
-    void Game::SendInputText( Double x, Double y, const Char* format, ... )
+    void Game::SendInputText( const Coordinate& coord, const Char* format, ... )
     {
         va_list     args;
         TextString  out;
@@ -128,47 +128,47 @@ namespace Diablo
         va_end(args);
     
         // select input
-        MouseClick(x, y);
+        MouseClick(coord);
 
         // if not empty string
         if(*out)
         {
             // send special to select-all old text to be replaced by new text
-            SendInputKeys("^CA^c", true);
+            SendInputKeys("^CA^c", INPUT_SPECIALS|INPUT_NODELAY);
 
             // send new text
-            SendInputKeys(out, false);
+            SendInputKeys(out);
         }
         // else send special to select-all old text and delete
         else
-            SendInputKeys("^CA^c^D", true);
+            SendInputKeys("^CA^c^D", INPUT_SPECIALS);
     }
 
-    void Game::SendInputNumber( Double x, Double y, Number number )
+    void Game::SendInputNumber( const Coordinate& coord, Number number )
     {
         TextString nstring;
 
         // number
         if(number >= 0)
-            SendInputText(x, y, Tools::NumberToStr(nstring, number));
+            SendInputText(coord, Tools::NumberToStr(nstring, number));
         else
-            SendInputText(x, y, "");
+            SendInputText(coord, "");
     }
 
     //------------------------------------------------------------------------
-    Bool Game::ReadInputText( Double x, Double y, Char* text, ULong limit )
+    Bool Game::ReadInputText( const Coordinate& coord, Char* text, ULong limit )
     {
         // clipboard mutex
         static Mutex mutex;
 
         // select input
-        MouseClick(x, y);
+        MouseClick(coord);
 
         // lock clipboard
         mutex.Lock();
 
         // copy text to clipboard
-        SendInputKeys("^CAC^c", true);
+        SendInputKeys("^CAC^c", INPUT_SPECIALS);
 
         // get clipboard text
         Bool status = System::GetClipBoard(text, limit);
@@ -179,12 +179,12 @@ namespace Diablo
         return status;
     }
 
-    Bool Game::ReadInputNumber( Double x, Double y, Number& number )
+    Bool Game::ReadInputNumber( const Coordinate& coord, Number& number )
     {
         TextString out;
 
         *out = 0;
-        if(!ReadInputText(x, y, out, sizeof(out)) || *out == 0)
+        if(!ReadInputText(coord, out, sizeof(out)) || *out == 0)
             number = -1;
         else
             Tools::StrToNumber(number, out);
@@ -210,8 +210,7 @@ namespace Diablo
             ( UI_COMBO_REZMAP[Tools::Max(window_height, UI_COMBO_REZMAP_MIN) - UI_COMBO_REZMAP_MIN] / window_height );
 
         // determine open point
-        Double open_x = coordinate.x + row_size.x / 2;
-        Double open_y = coordinate.y - row_size_y * .8;
+        Coordinate open_coord(coordinate.x + row_size.x / 2, coordinate.y - row_size_y * .8);
 
         // if pattern
         if(pattern && *pattern)
@@ -222,7 +221,7 @@ namespace Diablo
             row_index = INVALID_INDEX;
 
             // open combo
-            MouseClick(open_x, open_y);
+            MouseClick(open_coord);
 
             // update combo state
             if(!_trainer.ReadComboRowBegin())
@@ -261,7 +260,7 @@ namespace Diablo
                 return false;
 
             // open combo
-            MouseClick(open_x, open_y);
+            MouseClick(open_coord);
 
             // calculate screen index
             screen_index = (row_count > drop_count) ?
@@ -278,15 +277,16 @@ namespace Diablo
                 return false;
 
             // open combo
-            MouseClick(open_x, open_y);
+            MouseClick(open_coord);
         }
 
         // calculated constrained combo y (due to resolution)
-        Double combo_bottom = coordinate.y + (row_size_y * drop_count);
-        Double constrained_y = (combo_bottom > 1.0) ? coordinate.y - (combo_bottom - 1.0) : coordinate.y;
+        Double      combo_bottom = coordinate.y + (row_size_y * drop_count);
+        Double      constrained_y = (combo_bottom > 1.0) ? coordinate.y - (combo_bottom - 1.0) : coordinate.y;
+        Coordinate  constrained_coord(open_coord.x, constrained_y + (screen_index * row_size_y) + (row_size_y / 2));
 
         // click selection
-        MouseClick(open_x, constrained_y + (screen_index * row_size_y) + (row_size_y / 2));
+        MouseClick(constrained_coord);
 
         return true;
     }
@@ -350,26 +350,66 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
-    ULong Game::X( Double x, Bool random )
+    void Game::Logout()
     {
-        ULong out = (ULong)(x * (Double)_window.GetHeight() + (Double)_window.GetWidth() / 2);
-        return random ? _RandomizeXY(out) : out;
-    }
+        // click options
+        MouseClick(UI_COORDS[UI_BUTTON_OPTIONS]);
 
-    ULong Game::Y( Double y, Bool random )
-    {
-        ULong out = (ULong)(y * (Double)_window.GetHeight());
-        return random ? _RandomizeXY(out) : out;
+        // click logout
+        MouseClick(UI_COORDS[UI_BUTTON_OPTIONSLOGOUT]);
+
+        // logout delay
+        Sleep(GAME_LOGOUT_DELAY);
     }
 
     // private
     //------------------------------------------------------------------------
-    ULong Game::_RandomizeXY( ULong xy )
+    void Game::_CoordToAbsolute( ULong& x, ULong& y, const Coordinate& coord, Bits options )
+    {
+        Double w = static_cast<Double>(_window.GetWidth());
+        Double h = static_cast<Double>(_window.GetHeight());
+
+        // convert x
+        switch(coord.type)
+        {
+        case Coordinate::CENTER:
+            x = static_cast<ULong>(coord.x * h + w / 2);
+            break;
+
+        case Coordinate::LEFT:
+            x = static_cast<ULong>(coord.x * h);
+            break;
+
+        case Coordinate::RIGHT:
+            x = static_cast<ULong>(w - (coord.x * h));
+            break;
+        }
+
+        // convert y
+        y = static_cast<ULong>(coord.y * h);
+
+        // randomize
+        if(!(options & INPUT_EXACT))
+        {
+            _AxisRandomize(x);
+            _AxisRandomize(y);
+        }
+    }
+
+    //------------------------------------------------------------------------
+    void Game::_CommonDelay( Bits options )
+    {
+        if(!(options & INPUT_NODELAY))
+            SleepFrames(2);
+
+        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
+    }
+
+    //------------------------------------------------------------------------
+    void Game::_AxisRandomize( ULong& xyz )
     {
         ULong range = UI_COORD_SPREAD * 2;
         ULong random = rand() % (range + 1);
-        ULong out = xy - UI_COORD_SPREAD + random;
-
-        return out;
+        xyz  = xyz - UI_COORD_SPREAD + random;
     }
 }

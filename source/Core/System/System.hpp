@@ -32,8 +32,5 @@ namespace Core
 
         /**/
         static UHuge    GetTimeMs();
-
-        /**/
-        static void     Log( LogId id, const Char* format, ... );
     };
 }

@@ -28,7 +28,8 @@ namespace HappyAuction
 
 
     //------------------------------------------------------------------------
-    const Char* SCRIPT_PATH = "Lua/Main.lua";
+    const Char* SCRIPT_LOG_PATH = "User%u.log";
+    const Char* SCRIPT_MAIN_PATH = "Lua/Main.lua";
     const Char* SCRIPT_FUNCTIONS[SCRIPT_COUNT] =
     {
         // auction/search
@@ -37,12 +38,15 @@ namespace HappyAuction
         "haFilterBuyout",
         "haFilterChar",
         "haFilterLevel",
+        "haFilterPrimary",
         "haFilterRarity",
+        "haFilterSecondary",
         "haFilterStat",
         "haFilterStatClear",
         "haFilterType",
         "haFilterUnique",
-        "haListNext",
+        "haListAt",
+        "haListIterate",
         "haListSelect",
         "haSearch",
         "haSortBuyout",
@@ -51,7 +55,8 @@ namespace HappyAuction
 
         // auction/sell
         "haSell",
-        "haStashNext",
+        "haStashAt",
+        "haStashIterate",
         "haStashSelect",
 
         // auction/completed
@@ -61,8 +66,11 @@ namespace HappyAuction
         "haItem",
         "haItemStat",
 
-        // settings
+        // other
+        "haGetAccount",
+        "haGetGold",
         "haGetInstance",
+        "haLogout",
         "haSetGlobalDelay",
         "haSetLogin",
 
@@ -75,6 +83,8 @@ namespace HappyAuction
         "haUpTime",
 
         // deprecated
+        "haListNext",
+        "haStashNext",
         "haReLogin",
         "haActionBid",
         "haActionBuyout",

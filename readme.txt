@@ -1,21 +1,19 @@
-HappyAuction v0.9.13
+HappyAuction v0.9.19
 
 DESCRIPTION
 ------------------------------------------------------------------------------
-HappyAuction is a C++ open source LUA scriptable Diablo 3 auction house bot.
-It offers full control over the AH. Multiple clients are supported. Some
-popular bot scripts are included. Happy botting! :D
+HappyAuction is a C++ open source LUA scripted Diablo 3 auction house bot.
+It offers full scripted control over the AH. Multiple clients are supported.
+Some popular bot sample scripts are included. Happy botting! :D
 
 
 INSTRUCTIONS
 ------------------------------------------------------------------------------
 1. Run bin/HappyAuction.exe
 2. In Diablo 3 visit the auction house
-3. Hit CTRL-F12 to start/stop the main script. The taskbar icon will change
-   color while script is active.
-4. The default sample script will run the basic buyout loop you see in other
-   AH bots.
-5. See bin/Lua/Main.lua for further details.
+3. Hit CTRL-F12 to start/stop the main script (SnipeBuyout bot by default).
+   The taskbar icon will change color while script is active.
+4. Edit bin/Lua/Main.lua to enable other sample scripts.
 
 
 INCLUDED BOTS
@@ -32,22 +30,44 @@ INCLUDED BOTS
 NOTES
 ------------------------------------------------------------------------------
 - HappyAuction can run with D3 in the background (not minimized) while you do
-  other stuff. The only exception is if you use haStashSelect or haStashNext.
+  other stuff. The only exception is if you use haStash* functions.
 - There will be a brief 2-3 second delay before running a script the first
   time. This is necessary to run a memory scan of Diablo 3 to detect
   everything HappyAuction needs to operate.
 - Beyond network latency performance depends on your FPS. Disabling vertical
   sync should also help.
 - Do not use Video/Letterbox option.
-- Multiple client support is enabled by adding additional hotkeys:
-- Hotkeys are configured through the generated file: bin/Settings.cfg.
-    - The hotkey format is MOD.KEY or KEY. Examples:
-        HotKey1=C.F12       first instance hotkey set to CONTROL-F12
-        HotKey2=F11         second instance hotkey set to F11
-        HotKey3=CS.NUM0     third instance hotkey set to CONTROL-SHIFT-NUMPAD0
-    - supported Modifiers:  A:ALT, C:CONTROL, S:SHIFT, W:WINDOWSKEY
-    - supported Keys:       0-9, A-Z, F1-F12, NUM0-NUM9
-    - HappyAuction must be restarted (right click icon/exit) to update hotkeys
+
+
+HOTKEYS
+------------------------------------------------------------------------------
+- Hotkeys are configured using bin/Settings.cfg.
+    - This file is generated the first time you run HA
+- The hotkey format is MOD.KEY or KEY. Examples:
+    HotKey1=C.F12       first instance hotkey set to CONTROL-F12
+    HotKey2=F11         second instance hotkey set to F11
+    HotKey3=CS.NUM0     third instance hotkey set to CONTROL-SHIFT-NUMPAD0
+- Supported Modifiers:  A:ALT, C:CONTROL, S:SHIFT, W:WINDOWSKEY
+- Supported Keys:       0-9, A-Z, F1-F12, NUM0-NUM9
+- HappyAuction must be restarted (right click taskbar icon) to update hotkeys
+
+
+MULTIPLE CLIENTS (tutorial)
+------------------------------------------------------------------------------
+1. Edit settings.cfg and add a new hotkey for the 2nd D3 client (see HOTKEYS)
+2. Have 2 D3 clients running with both at the auction house
+3. Hit the configured hotkeys like you originally would a single one. They
+   will each run bin/Main.lua independently for each D3 instance.
+4. The taskbar icon should contain a "2" indicating two sessions are running.
+5. Use haGetInstance() or haGetAccount() to distinguish clients. The
+   following example will run Bot1 in user1@gmail.com's client and Bot2 in
+   user2@gmail.com's client:
+
+   if haGetAccount() == 'user1@gmail.com' then
+       require('Bots.Bot1')
+   elseif haGetAccount() == 'user2@gmail.com' then
+       require('Bots.Bot2')
+   end
 
 
 SECURITY
@@ -106,7 +126,7 @@ AUCTION/SEARCH:
     searches. It's necessary to use this option when calling haSearch more
     than once per minute (unless Blizzard changes this) or you'll get old
     search results.
-    - amount:       buyout amount. -1 represents empty.
+    - amount:       buyout amount. -1 to clear.
     - randomize:    if true adds small unique random value to amount.
     - status:       true if successful
 
@@ -119,12 +139,22 @@ AUCTION/SEARCH:
 - haFilterLevel(min,  max) -> status
     Sets item level filter.
     - min:      minimum level. -1 to clear.
-    - min:      maximum level. -1 to clear.
+    - max:      maximum level. -1 to clear.
+    - status:   true if successful
+
+- haFilterPrimary(id) -> status
+    Sets item primary filter. For automatic method see haFilterType.
+    - id:       substring identifier of primary type. example: 'Off-Hand'
     - status:   true if successful
 
 - haFilterRarity(id) -> status
     Sets item rarity filter.
     - id:       substring identifier of rarity. example: 'rare'
+    - status:   true if successful
+
+- haFilterSecondary(id) -> status
+    Sets item secondary filter. For automatic method see haFilterType.
+    - id:       substring identifier of secondary type. example: 'Quiver'
     - status:   true if successful
 
 - haFilterStat(index, id, value) -> status
@@ -141,27 +171,36 @@ AUCTION/SEARCH:
     - status:   true if successful
 
 - haFilterType(id) -> status
-    Sets item filter. This will also take care of character and primary item
-    types automatically. example:
+    Sets secondary item filter. Unlike haFilterSecondary this will
+    automatically change any dependencies. Example:
+        haFilterType('Wand')
+    will also set character to 'Wizard' and primary to '1-Hand'.
     - id:       substring identifier of secondary item type.
                 example: 'voodoo' will match 'Voodoo Mask'
     - status:   true if successful
 
+- haFilterUnique(name, row) -> status
 - haFilterUnique(name) -> status
 - haFilterUnique() -> name
     Sets or gets legendary or set item filter.
-    - name:     string idenfiying a legendary or set item.
+    - name:     string idenfiying a legendary or set item. '' to clear.
+    - row:      optional row number of popup to click. range: 1-5
     - status:   true if successful
 
-- haListNext() -> status
+- haListIterate() -> status
     Iterates through the entire search results list selecting every item
     until it reaches the last item of the last page.
     example:
         -- will buyout every item found
-        while haListNext() do
+        while haListIterate() do
             haBuyout()
         end
     - status:   true if successful
+
+- haListAt() -> [row, page]
+    Returns current list position
+    - row:      current list row.
+    - page:     current list page.
 
 - haListSelect(index) -> status
     Selects the current item given a row index from search results.
@@ -185,7 +224,6 @@ AUCTION/SEARCH:
     - status:   true if successful
 
 
-
 AUCTION/SELL:
 - haSell(starting, buyout) -> status
     Sells currently selected stash item for the given starting and optional
@@ -194,12 +232,18 @@ AUCTION/SELL:
     - buyout:   optional buyout price
     - status:   true if successful.
 
-- haStashNext() -> status
+- haStashAt() -> [column, row, bag]
+    Returns current stash position
+    - column:   current stash column.
+    - row:      current stash row.
+    - bag:      current stash bag.
+
+- haStashIterate() -> status
     Iterates through each slot of each bag in sell/stash. Assumes user owns
     all bags but will work regardless.
     example:
         -- will sell every stash item with over 20 intelligence for 1000/2000g
-        while haStashNext() do
+        while haStashIterate() do
             if haItemStat('Intelligence').value1 > 20 then
                 haSell(1000, 2000)
             end
@@ -209,13 +253,13 @@ AUCTION/SELL:
 
 - haStashSelect(column, row, bag) -> status
     Selects the current stash item given a column, row, and bag index. This is
-    a manual alternative to haStashNext() which also affects current stash
-    position. For example haStashSelect(1,1,2) will cause haStashNext() to
+    a manual alternative to haStashIterate() which also affects current stash
+    position. For example haStashSelect(1,1,2) will cause haStashIterate() to
     begin at bag 2.
     NOTE: D3 window must be in the foreground to use this function.
-    - column:   column index of item to select. range: 1-7
-    - row:      row index of item to select. range: 1-10
-    - bag:      bag index of item to select. range: 1-3
+    - column:   column index of stash item to select. range: 1-7
+    - row:      row index of stash item to select. range: 1-10
+    - bag:      bag index of stash item to select. range: 1-3
     - status:   true if successful
 
 
@@ -235,6 +279,7 @@ ITEM:
     as buyout on an item in your stash (using haStash functions).
     - item.name:    item name
     - item.id:      a unique id for this auction
+    - item.ilevel:  item level if available else 0
     - item.dps:     the DPS or armor value found in tooltip.
     - item.rarity:  item rarity. this also distinguishes set from legendary.
     - item.type:    item type. example: 'Helm'
@@ -243,7 +288,9 @@ ITEM:
                     less than mbid if there are bidders, otherwise equal.
     - item.buyout:  the buyout price or 0 if there is no buyout
     - item.stats:   a list of stat objects containing:
-        - text:     stat text as seen in tooltip. example: '+42 Intelligence'
+        - text:     stripped stat text from tooltip. example:
+                        if tooltip is:      '+295 Minimum Damage'
+                        stat.text will be:  'Minimum Damage'
         - value1-4: stat values. for most stats only value1 will be used.
     - item.sockets: a list of socket objects containing:
         - name:     gem stat name. example: 'Dexterity'
@@ -253,23 +300,42 @@ ITEM:
     - item.rtime:   auction remaining time in milliseconds.
     - item.xtime:   auction expire time in UTC seconds.
 
-- haItemStat(stat) -> stat
-    Convenience function for looking up an item stat quickly. Always returns
-    a stat object. Will contain 0 values if not found. This allows example:
+- haItemStat(pattern) -> stat
+- haItemStat(pattern, substring) -> stat
+    Convenience function for looking up an item stat quickly. Item stat text
+    searched is from item tooltip. This will always return a stat object and
+    will contain 0 values if the matched stat is not found.
         if haItemStat('dexterity').value1 > 200 then
-            -- i has item over 200 dex
+            -- item has stat with over 200 dex
         end
-    to always succeed even if the item has no dexterity stat.
-    - stat.name:     stat name. example: 'Attack Speed %'
+    - pattern:       pattern to search stat text. matched from beginning.
+    - substring:     do substring search instead of matching from beginning.
+    - stat.text:     stripped stat text from tooltip
     - stat.value1-4: stat values. for most stats only value1 will be used.
 
 
-SETTINGS:
+ETC:
+- haGetAccount() -> account
+    Returns the account name of the logged in account. Like haGetInstance()
+    this is useful to identify the D3 client in a multiple client setup.
+    - account:      active account name
+
+- haGetGold() -> gold
+    Returns your total gold balance.
+    - gold:         gold balance.
+    
 - haGetInstance() -> instance
     Returns a client instance number to distinguish one client from another
-    when running multiple D3 clients.
+    when running multiple D3 clients. The instance number will match the
+    hotkey number found in bin/Settings.cfg.
     - instance:     Unique from 1 to 32.
-    
+
+- haLogout()
+    Forces a logout. This will trigger haSetLogin() if it's enabled. Combining
+    this with the delay parameter in haSetLogin is a good way to have your
+    bot "cool down" once in a while to reduce risk of detection... assuming
+    input limit errors aren't forcing you to logout already.
+
 - haSetGlobalDelay(delay)
     Adds a global delay to every future action taken. This includes delays
     not available to haSleep such as the individual actions taken by
@@ -279,10 +345,13 @@ SETTINGS:
     - delay:    delay in milliseconds. range: 0-60000
 
 - haSetLogin(name, password)
+- haSetLogin(name, password, delay)
     Enables automatic relogin. If a disconnect error occurs will attempt to
     relogin, restore state, and continue script. see example in Main.lua.
+    Setting a delay is suggested to reduce detecion.
     - name:     account name
     - password: account password
+    - delay:    optional login delay in milliseconds. default: 0
 
 
 UTILITIES:
@@ -295,7 +364,8 @@ UTILITIES:
     Beep!
 
 - haLog(message)
-    Writes a message to the User.log file
+    Writes a message to the User#.log file where # is the instance number.
+    If you are not using multiple clients this will be 1.
     - message:  message string
 
 - haPrompt(message) -> status

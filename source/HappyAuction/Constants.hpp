@@ -18,7 +18,8 @@ namespace HappyAuction
     extern const Char*  EXCEPTION_OBSOLETED;
 
     //------------------------------------------------------------------------
-    extern const Char*  SCRIPT_PATH;
+    extern const Char*  SCRIPT_LOG_PATH;
+    extern const Char*  SCRIPT_MAIN_PATH;
     extern const Char*  SCRIPT_FUNCTIONS[];
 
     //------------------------------------------------------------------------

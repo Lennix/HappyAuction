@@ -10,8 +10,10 @@ namespace HappyAuction
     {
         TextString  name;
         TextString  password;
+        ULong       delay;
 
-        StateLogin()
+        StateLogin():
+            delay(0)
         {
             *name = 0;
             *password = 0;
@@ -37,19 +39,25 @@ namespace HappyAuction
         TextString          character;
         TextString          type;
         TextString          rarity;
+        TextString          primary;
+        TextString          secondary;
         Number              level_min;
         Number              level_max;
         Number              buyout;
         TextString          unique;
+        Index               unique_row;
         StateFiltersStat    stat[AH_PSTAT_LIMIT];
 
         StateFilters():
             level_min(NUMBER(-1,0)),
             level_max(NUMBER(-1,0)),
-            buyout(NUMBER(-1,0))
+            buyout(NUMBER(-1,0)),
+            unique_row(0)
         {
             *character = 0;
             *type = 0;
+            *primary = 0;
+            *secondary = 0;
             *rarity = 0;
             *unique = 0;
         }
@@ -76,11 +84,11 @@ namespace HappyAuction
     /**/
     struct StateStash
     {
-        Index       column;
         Index       row;
+        Index       column;
         Index       bag;
 
-        StateStash(): column(0), row(0), bag(0) {}
+        StateStash(): row(0), column(1), bag(1) {}
     };
 
     /**/

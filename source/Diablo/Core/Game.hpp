@@ -10,6 +10,15 @@ namespace Diablo
     /**/
     class Game
     {
+    public:
+        enum
+        {
+            INPUT_EXACT =       BIT(0),
+            INPUT_DIRECT =      BIT(1),
+            INPUT_NODELAY =     BIT(2),
+            INPUT_SPECIALS =    BIT(3),
+        };
+
     private:
         Window  _window;
         Process _process;
@@ -34,23 +43,19 @@ namespace Diablo
         Trainer& GetTrainer();
 
         /**/
-        void InputEnable( Bool enable );
+        void MouseClick( const Coordinate& coord, Bits options=0 );
+        void MouseClickGround( Bits options=0 );
+        void MouseMove( const Coordinate& coord, Bits options=0 );
+        void MouseMoveGround( Bits options=0 );
 
         /**/
-        void MouseClickAbsolute( ULong x, ULong y );
-        void MouseClick( Double x, Double y, Bool centered=true, Bool random=true );
-        void MouseClickGround();
-        void MouseMove( Double x, Double y, Bool direct=false );
-        void MouseMoveGround();
+        void SendInputKeys( const Char* text, Bits options=0 );
+        void SendInputText( const Coordinate& coord, const Char* format, ... );
+        void SendInputNumber( const Coordinate& coord, Number number );
 
         /**/
-        void SendInputKeys( const Char* text, Bool specials );
-        void SendInputText( Double x, Double y, const Char* format, ... );
-        void SendInputNumber( Double x, Double y, Number number );
-
-        /**/
-        Bool ReadInputText( Double x, Double y, Char* text, ULong limit );
-        Bool ReadInputNumber( Double x, Double y, Number& number );
+        Bool ReadInputText( const Coordinate& coord, Char* text, ULong limit );
+        Bool ReadInputNumber( const Coordinate& coord, Number& number );
 
         /**/
         Bool WriteCombo( ComboId combo_id, const Char* string=NULL );
@@ -61,11 +66,12 @@ namespace Diablo
         Bool SleepFrames( ULong count );
 
         /**/
-        ULong X( Double x, Bool random=true );
-        ULong Y( Double y, Bool random=true );
+        void Logout();
 
     private:
         /**/
-        ULong _RandomizeXY( ULong xy );
+        void _CommonDelay( Bits options );
+        void _CoordToAbsolute( ULong& x, ULong& y, const Coordinate& coord, Bits options );
+        void _AxisRandomize( ULong& xyz );
     };
 }

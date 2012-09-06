@@ -35,7 +35,10 @@ namespace Diablo
             OBJECT_INPUT_BUYOUT,
 
             OBJECT_TOOLTIP_STATS,
+            //OBJECT_TOOLTIP_ASDAMAGE,
             OBJECT_TOOLTIP_DPSARMOR,
+            OBJECT_TOOLTIP_TYPE,
+            OBJECT_TOOLTIP_ILEVEL,
             OBJECT_TOOLTIP_SOCKET0,
             OBJECT_TOOLTIP_SOCKET1,
             OBJECT_TOOLTIP_SOCKET2,
@@ -44,6 +47,7 @@ namespace Diablo
             OBJECT_LBUTTON_PAGENEXT,
             OBJECT_BUTTON_SEARCH,
             OBJECT_BUTTON_SENDTOSTASH,
+            OBJECT_BUTTON_BID,
             OBJECT_BUTTON_BUYOUT,
 
             OBJECT_TOP,
@@ -124,6 +128,7 @@ namespace Diablo
         Bool ReadInputText( Id id, TextString text );
 
         /**/
+        Bool ReadHoverStatus( Bool& status );
         Bool ReadHoverItem( Item& item );
         Bool ClearHoverItem();
 
@@ -142,6 +147,8 @@ namespace Diablo
 
         /**/
         Bool ReadFrameCount( ULong& count );
+        Bool ReadGold( ULong& amount );
+        Bool ReadAccount( TextString account );
 
     private:
         /**/
@@ -160,6 +167,7 @@ namespace Diablo
         /**/
         Bool _ReadUiObject( _UiObject& object, Id id );
         Bool _ReadUiChild( _UiObject& child, const Char* path, const _UiObject& parent );
+        Bool _WriteUiObject( Id id, Bool visible );
 
         /**/
         Bool _IsValidUiObject( const _UiObject& object );

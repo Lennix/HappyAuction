@@ -111,7 +111,7 @@ namespace Core
         /**/
         void SendMouseButton( ULong x, ULong y )
         {
-            SendMouseMove(x, y, false);
+            //SendMouseMove(x, y, false);
 
             LPARAM lparam = (x | (y << 16));
             PostMessage(_hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lparam);

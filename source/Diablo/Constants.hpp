@@ -13,6 +13,10 @@ namespace Diablo
     static const ULong              GAME_GLOBAL_DELAY_MAX =         60000;  // ms
     static const ULong              GAME_SLEEP_SLICE =              500;    // ms
     static const Number             GAME_LEVEL_MAX =                NUMBER(99, 0);
+    static const ULong              GAME_LOGOUT_DELAY =             1000;
+    static const ULong              GAME_LOGIN_LOOP_DELAY =         500;
+    static const ULong              GAME_LOGIN_LOBBY_DELAY =        1400;
+    static const ULong              GAME_MAIN_AUCTION_DELAY =       200;
 
     //------------------------------------------------------------------------
     static const ULong              ITEM_STAT_LIMIT =               16;
@@ -30,11 +34,11 @@ namespace Diablo
     //------------------------------------------------------------------------
     static const ULong              AH_PSTAT_LIMIT =                6;
     static const ULong              AH_BUYOUT_RANDOM_LIMIT =        4000;
+    static const ULong              AH_ITEMHOVER_WAIT_ITERATIONS =  100;
     static const ULong              AH_NETWORK_WAIT_ITERATIONS =    6000;
-    static const ULong              AH_RELOGIN_LOGOUT_DELAY =       500;
-    static const ULong              AH_RELOGIN_POSTLOGIN_DELAY =    500;
-    static const ULong              AH_RELOGIN_AUCTIONHOUSE_DELAY = 200;
+    static const ULong              AH_BUTTON_WAIT_ITERATIONS =     400;
     static const ULong              AH_RESULTS_ROW_LIMIT =          11;
+    static const ULong              AH_UNIQUE_ROW_LIMIT =           5;
     static const ULong              AH_STASH_COLUMNS =              7;
     static const ULong              AH_STASH_ROWS =                 10;
     static const ULong              AH_STASH_BAGS =                 3;

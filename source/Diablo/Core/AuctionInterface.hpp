@@ -31,7 +31,7 @@ namespace Diablo
         /**/
         Bool    WriteFilterBuyout( Number buyout, Bool randomize=false );
         Bool    ReadFilterBuyout( Number& value );
-        Bool    WriteFilterUnique( const Char* string );
+        Bool    WriteFilterUnique( const Char* string, Index row );
         Bool    ReadFilterUnique( TextString& string );
 
         /**/
@@ -59,24 +59,23 @@ namespace Diablo
         Bool    ActionBid( Index index, Number bid=0 );
         Bool    ActionBuyout( Index index );
         Bool    ActionSendToStash();
-        Bool    ActionReLogin( const Char* account, const Char* password );
+        Bool    ActionReLogin( const Char* account, const Char* password, ULong delay );
 
         /**/
-        Bool    HoverListItem( Index index, Bool select );
         Bool    ReadListCount( ULong& count );
-        Bool    ReadListItem( Index index, Item& item );
+        Bool    ReadListItem( Index index, Item& item, Bool ground, Bool select );
 
         /**/
         Bool    SellStashItem( Index column, Index row, Number starting, Number buyout );
-        Bool    HoverStashItem( Index x, Index y, Bool select );
-        Bool    ReadStashItem( Index x, Index y, Item& item );
+        Bool    ReadStashItem( Index column, Index row, Item& item, Bool ground, Bool select );
 
         /**/
         Bool    Tab( Id primary, Id secondary=INVALID_ID );
 
     private:
-        Bool    _ClearPopups();
+        Bool    _ClearPopups( Bool checked=true );
         Bool    _WaitSearch();
+        Bool    _WaitButton( Id id );
         Bool    _ReadInputNumber( Id id, Number& number );
         void    _Reset();
     };

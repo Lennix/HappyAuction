@@ -1,10 +1,11 @@
-- fix HA hogging CPU unnecessarily (should see it at 0% now)
-- support botting across multiple d3 clients. see README:Notes section
-- support different hotkey (autoassigned or configurable)
-- added haGetInstance() to distinguish one d3 client from another
+- fixed haLog not working a second run
+- fixed text input functions (was too fast and caused skipping)
+- fixed minor haStash* issues
+- fixed haBid waiting on buyout button instead of bid button
+- improved haBid/haBuyout reliability by waiting for bid/buyout button to be ready longer
+- deprecated haListNext(). renamed to haListIterate()
 
-- performance review
-- fix a relogin issue causing login process to get stuck on some systems
-- support logging for multiple instances
+- add russian client support
 - expose more manual control of search list (page prev/next, item count)
 - improve RMAH support
+- add support for active auctions list

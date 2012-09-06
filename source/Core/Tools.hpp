@@ -34,7 +34,7 @@ namespace Core
         }
 
         /**/
-        static const Char* StrSearch( const Char* needle, const Char* haystack )
+        static const Char* StrSearch( const Char* needle, const Char* haystack, Bool front=false )
         {
             for(; *haystack; haystack++ )
             {
@@ -45,6 +45,9 @@ namespace Core
 
                 if(*n == 0)
                     return haystack;
+
+                if(front)
+                    return NULL;
             }
 
             return NULL;
@@ -81,7 +84,10 @@ namespace Core
             Char    c;
 
             if(*string == '-' && negatives)
+            {
+                string++;
                 negative = true;
+            }
 
             for(;(c=*string) && c >= '0' && c <= '9'; string++)
                 whole = (c - '0') + (whole * 10);

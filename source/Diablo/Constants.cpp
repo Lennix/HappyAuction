@@ -9,9 +9,10 @@ namespace Diablo
     #define FIXED_REZ_X 2560
     #define FIXED_REZ_Y 1600
 
-    #define F2R_Y(y)    ((Double)y / (Double)FIXED_REZ_Y)
+    #define F2R_Y(y)    ((Double)(y) / (Double)FIXED_REZ_Y)
     #define F2R_X(x)    F2R_Y(x)
-    #define F2R_XC(x)   ((Double)(x - (FIXED_REZ_X / 2)) / (Double)FIXED_REZ_Y)
+    #define F2R_XR(x)   F2R_Y(FIXED_REZ_X - (x))
+    #define F2R_XC(x)   ((Double)((x) - (FIXED_REZ_X / 2)) / (Double)FIXED_REZ_Y)
 
     //------------------------------------------------------------------------
     static const ULong _C_ALL =     ~0;
@@ -173,110 +174,116 @@ namespace Diablo
     const Coordinate UI_COORDS[UI_COUNT] =
     {
         // UI_BUTTON_SEARCH
-        { F2R_XC(627),  F2R_Y(1245) },
+        Coordinate( F2R_XC(627),  F2R_Y(1245) ),
         // UI_BUTTON_BID
-        { F2R_XC(1646), F2R_Y(1300) },
+        Coordinate( F2R_XC(1646), F2R_Y(1300) ),
         // UI_BUTTON_BIDCONFIRM
-        { F2R_XC(1110), F2R_Y(1159) },
+        Coordinate( F2R_XC(1110), F2R_Y(1159) ),
         // UI_BUTTON_BUYOUT
-        { F2R_XC(2000), F2R_Y(1300) },
+        Coordinate( F2R_XC(2000), F2R_Y(1300) ),
         // UI_BUTTON_BUYOUTCONFIRM
-        { F2R_XC(1110), F2R_Y(1159) },
+        Coordinate( F2R_XC(1110), F2R_Y(1159) ),
         // UI_BUTTON_CREATEAUCTION
-        { F2R_XC(1278), F2R_Y(1299) },
+        Coordinate( F2R_XC(1278), F2R_Y(1299) ),
         // UI_BUTTON_SENDTOSTASH
-        { F2R_XC(629),  F2R_Y(664) },
+        Coordinate( F2R_XC(629),  F2R_Y(664) ),
         // UI_BUTTON_LOGIN
-        { F2R_XC(1280), F2R_Y(1265) },
-        // UI_BUTTON_MAINAUCTIONHOUSE
-        { F2R_X (345),  F2R_Y(949) },
+        Coordinate( F2R_XC(1280), F2R_Y(1265) ),
+        // UI_BUTTON_AUCTIONHOUSE
+        Coordinate( F2R_X (345),  F2R_Y(949), Coordinate::LEFT ),
+        // UI_BUTTON_OPTIONS
+        Coordinate( F2R_XR(2345), F2R_Y(1500), Coordinate::RIGHT ),
+        // UI_BUTTON_OPTIONSLOGOUT
+        Coordinate( F2R_XC(1280),  F2R_Y(767) ),
         // UI_BUTTON_PROFILECLOSE
-        { F2R_XC(2196), F2R_Y(165) },
+        Coordinate( F2R_XC(2196), F2R_Y(165) ),
 
         // UI_LBUTTON_PAGENEXT
-        { F2R_XC(1668), F2R_Y(1212) },
+        Coordinate( F2R_XC(1668), F2R_Y(1212) ),
         // UI_LBUTTON_SORTDPSARMOR
-        { F2R_XC(1662), F2R_Y(408) },
+        Coordinate( F2R_XC(1662), F2R_Y(408) ),
         // UI_LBUTTON_SORTBUYOUT
-        { F2R_XC(1962), F2R_Y(408) },
+        Coordinate( F2R_XC(1962), F2R_Y(408) ),
         // UI_LBUTTON_SORTTIMELEFT
-        { F2R_XC(2109), F2R_Y(408) },
+        Coordinate( F2R_XC(2109), F2R_Y(408) ),
 
         // UI_TAB_SEARCH
-        { F2R_XC(791),  F2R_Y(240) },
+        Coordinate( F2R_XC(791),  F2R_Y(240) ),
         // UI_TAB_SEARCH_EQUIPMENT
-        { F2R_XC(699),  F2R_Y(353) },
+        Coordinate( F2R_XC(699),  F2R_Y(353) ),
         // UI_TAB_SELL
-        { F2R_XC(1122), F2R_Y(240) },
+        Coordinate( F2R_XC(1122), F2R_Y(240) ),
         // UI_TAB_COMPLETED
-        { F2R_XC(1750), F2R_Y(240) },
+        Coordinate( F2R_XC(1750), F2R_Y(240) ),
         // UI_TAB_STASHBAG1-3
-        { F2R_XC(1066), F2R_Y(482) },
-        { F2R_XC(1066), F2R_Y(650) },
-        { F2R_XC(1066), F2R_Y(808) },
+        Coordinate( F2R_XC(1066), F2R_Y(482) ),
+        Coordinate( F2R_XC(1066), F2R_Y(650) ),
+        Coordinate( F2R_XC(1066), F2R_Y(808) ),
 
         // UI_CONTAINER_STASHBOXSIZE
-        { F2R_X(79.57), F2R_Y(82.3) },
+        Coordinate( F2R_X(79.57), F2R_Y(82.3) ),
         // UI_CONTAINER_STASHBOX00
-        { F2R_XC(472),  F2R_Y(445) },
+        Coordinate( F2R_XC(472),  F2R_Y(445) ),
         // UI_CONTAINER_LISTICON0
-        { F2R_XC(895),  F2R_Y(443) },
+        Coordinate( F2R_XC(895),  F2R_Y(443) ),
         // UI_CONTAINER_LISTICONSIZE
-        { F2R_X(66.91), F2R_Y(66.91) },
+        Coordinate( F2R_X(66.91), F2R_Y(66.91) ),
         // UI_CONTAINER_COMBOROWSIZE
-        { F2R_X(100),   F2R_Y(44.8) },
+        Coordinate( F2R_X(100),   F2R_Y(44.8) ),
+        // UI_CONTAINER_UNIQUEROWSIZE
+        Coordinate( F2R_X(100),   F2R_Y(51.4) ),
 
         // UI_INPUT_FILTERLEVELMIN
-        { F2R_XC(461),  F2R_Y(667) },
+        Coordinate( F2R_XC(461),  F2R_Y(667) ),
         // UI_INPUT_FILTERLEVELMAX
-        { F2R_XC(570),  F2R_Y(667) },
+        Coordinate( F2R_XC(570),  F2R_Y(667) ),
         // UI_INPUT_FILTERUNIQUE
-        { F2R_XC(622),  F2R_Y(736) },
+        Coordinate( F2R_XC(622),  F2R_Y(736) ),
         // UI_INPUT_FILTERBUYOUT
-        { F2R_XC(622),  F2R_Y(785) },
+        Coordinate( F2R_XC(622),  F2R_Y(785) ),
         // UI_INPUT_FILTERPSTAT0-5
-        { F2R_XC(786),  F2R_Y(880) },
-        { F2R_XC(786),  F2R_Y(935) },
-        { F2R_XC(786),  F2R_Y(991) },
-        { F2R_XC(786),  F2R_Y(1048) },
-        { F2R_XC(786),  F2R_Y(1104) },
-        { F2R_XC(786),  F2R_Y(1160) },
+        Coordinate( F2R_XC(786),  F2R_Y(880) ),
+        Coordinate( F2R_XC(786),  F2R_Y(935) ),
+        Coordinate( F2R_XC(786),  F2R_Y(991) ),
+        Coordinate( F2R_XC(786),  F2R_Y(1048) ),
+        Coordinate( F2R_XC(786),  F2R_Y(1104) ),
+        Coordinate( F2R_XC(786),  F2R_Y(1160) ),
         // UI_INPUT_MAXBID
-        { F2R_XC(1466), F2R_Y(629) },
+        Coordinate( F2R_XC(1466), F2R_Y(629) ),
         // UI_INPUT_SELLSTARTING
-        { F2R_XC(1278), F2R_Y(706) },
+        Coordinate( F2R_XC(1278), F2R_Y(706) ),
         // UI_INPUT_SELLBUYOUT
-        { F2R_XC(1278), F2R_Y(826) },
+        Coordinate( F2R_XC(1278), F2R_Y(826) ),
         // UI_INPUT_LOGINACCOUNT
-        { F2R_XC(1280), F2R_Y(880) },
+        Coordinate( F2R_XC(1280), F2R_Y(880) ),
         // UI_INPUT_LOGINPASSWORD
-        { F2R_XC(1280), F2R_Y(1047) },
+        Coordinate( F2R_XC(1280), F2R_Y(1047) ),
 
         // UI_COMBO_RARITY
-        { F2R_XC(651),  F2R_Y(706) },
+        Coordinate( F2R_XC(651),  F2R_Y(706) ),
         // UI_COMBO_CHARACTER
-        { F2R_XC(444),  F2R_Y(496) },
+        Coordinate( F2R_XC(444),  F2R_Y(496) ),
         // UI_COMBO_PRIMARY
-        { F2R_XC(444),  F2R_Y(552) },
+        Coordinate( F2R_XC(444),  F2R_Y(552) ),
         // UI_COMBO_SECONDARY
-        { F2R_XC(444),  F2R_Y(608) },
+        Coordinate( F2R_XC(444),  F2R_Y(608) ),
         // UI_COMBO_PSTAT0-5
-        { F2R_XC(444),  F2R_Y(921) },
-        { F2R_XC(444),  F2R_Y(977) },
-        { F2R_XC(444),  F2R_Y(1033) },
-        { F2R_XC(444),  F2R_Y(1089) },
-        { F2R_XC(444),  F2R_Y(1145) },
-        { F2R_XC(444),  F2R_Y(1201) },
+        Coordinate( F2R_XC(444),  F2R_Y(921) ),
+        Coordinate( F2R_XC(444),  F2R_Y(977) ),
+        Coordinate( F2R_XC(444),  F2R_Y(1033) ),
+        Coordinate( F2R_XC(444),  F2R_Y(1089) ),
+        Coordinate( F2R_XC(444),  F2R_Y(1145) ),
+        Coordinate( F2R_XC(444),  F2R_Y(1201) ),
 
         // UI_POPUP_ERROR
-        { F2R_XC(1280), F2R_Y(936) },
+        Coordinate( F2R_XC(1280), F2R_Y(936) ),
         // UI_POPUP_OK
-        { F2R_XC(1280), F2R_Y(687) },
+        Coordinate( F2R_XC(1280), F2R_Y(687) ),
         // UI_POPUP_UNIQUE
-        { F2R_XC(500),  F2R_Y(793) },
+        Coordinate( F2R_XC(500),  F2R_Y(798) ),
 
         // UI_OTHER_GROUND
-        { F2R_XC(1280), F2R_Y(4) },
+        Coordinate( F2R_XC(1280), F2R_Y(4) ),
     };
 
     const ULong UI_COMBO_DROP_COUNT[COMBO_COUNT] =

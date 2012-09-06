@@ -133,7 +133,7 @@ namespace HappyAuction
             const Char* nstring = lua_tostring( _lua, index );
             Number      number = 0;
 
-            if(nstring)
+            if(nstring && *nstring)
                 Tools::StrToNumber(number, nstring);
 
             return number;

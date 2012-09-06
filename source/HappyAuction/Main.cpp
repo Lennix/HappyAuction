@@ -22,8 +22,5 @@ int WINAPI WinMain(
         System::Message(false, exception);
     }
 
-    // close log
-    System::Log(LOG_ERROR, NULL);
-
     return 0;
 }

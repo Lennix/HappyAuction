@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Etc", "Etc", "{F1308CAC-CDE
 	ProjectSection(SolutionItems) = preProject
 		..\doc\notes.txt = ..\doc\notes.txt
 		..\readme.txt = ..\readme.txt
-		..\bin\User.log = ..\bin\User.log
+		..\bin\User1.log = ..\bin\User1.log
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyMemory", "HappyMemory\HappyMemory.vcproj", "{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}"

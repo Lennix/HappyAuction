@@ -398,36 +398,4 @@ namespace Core
         // convert to milliseconds
         return time / 10000;
     }
-
-    //------------------------------------------------------------------------
-    void System::Log( LogId id, const Char* format, ... )
-    {
-        static FILE* handle[LOG_COUNT] = { 0 };
-
-        FILE*& file = handle[id];
-
-        if(format == NULL)
-        {
-            if(file != NULL)
-            {
-                fclose(file);
-                file = NULL;
-            }
-        }
-        else
-        {
-            if(file == NULL)
-                file = fopen(TOOLS_LOG_PATH[id], "wt");
-
-            if(file)
-            {
-                va_list args;
-                va_start(args, format);
-                vfprintf(file, format, args);
-                va_end(args);
-
-                fflush(file);
-            }
-        }
-    }
 }
