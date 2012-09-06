@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{981637c4-755b-40c3-9059-97a798bae0ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{ed8b37d4-63b5-42d7-9cb5-5a66ec0667a7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\HappyAuction\Core\Application.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\HappyAuction\Core\Script.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\HappyAuction\Core\ScriptRunner.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\HappyAuction\Core\State.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\HappyAuction\Resource\resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\HappyAuction\Constants.hpp" />
+    <ClInclude Include="..\..\source\HappyAuction\Enums.hpp" />
+    <ClInclude Include="..\..\source\HappyAuction\Root.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\source\HappyAuction\Resource\IconIdle.ico">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\source\HappyAuction\Resource\IconStatus1.ico">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\source\HappyAuction\Resource\IconStatus2.ico">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\source\HappyAuction\Resource\IconStatus3.ico">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\source\HappyAuction\Resource\IconStatus4.ico">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\source\HappyAuction\Resource\IconStatus4p.ico">
+      <Filter>Resource</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\source\HappyAuction\Resource\System.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\HappyAuction\Constants.cpp" />
+    <ClCompile Include="..\..\source\HappyAuction\Main.cpp" />
+  </ItemGroup>
+</Project>
