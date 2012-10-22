@@ -96,6 +96,7 @@
     <ClInclude Include="..\..\source\Diablo\Enums.hpp" />
     <ClInclude Include="..\..\source\Diablo\Root.hpp" />
     <ClInclude Include="..\..\source\Diablo\Types.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Locale.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

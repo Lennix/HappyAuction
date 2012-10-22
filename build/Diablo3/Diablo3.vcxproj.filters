@@ -1,47 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Core">
-      <UniqueIdentifier>{f07ee1b0-9fcd-4731-a359-51f4be9b99f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Type">
-      <UniqueIdentifier>{bfd73466-7e34-4439-b302-52d48c393e91}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\source\Diablo\Core\AuctionInterface.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Diablo\Core\Game.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Diablo\Core\Trainer.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\source\Diablo\Core\AuctionInterface.cpp" />
+    <ClCompile Include="..\..\source\Diablo\Core\Game.cpp" />
+    <ClCompile Include="..\..\source\Diablo\Core\Trainer.cpp" />
     <ClCompile Include="..\..\source\Diablo\Constants.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\Diablo\Core\AuctionInterface.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Diablo\Core\Game.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Diablo\Core\Support.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Diablo\Core\Trainer.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Diablo\Type\EnumObjects.hpp">
-      <Filter>Type</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Diablo\Type\Item.hpp">
-      <Filter>Type</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\source\Diablo\Core\AuctionInterface.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Game.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Support.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Trainer.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Type\EnumObjects.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Type\Item.hpp" />
     <ClInclude Include="..\..\source\Diablo\Constants.hpp" />
     <ClInclude Include="..\..\source\Diablo\Enums.hpp" />
     <ClInclude Include="..\..\source\Diablo\Root.hpp" />
     <ClInclude Include="..\..\source\Diablo\Types.hpp" />
+    <ClInclude Include="..\..\source\Diablo\Core\Locale.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{314a36cc-20f9-41c4-bc01-64057f93a8f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Type">
+      <UniqueIdentifier>{302eadec-e9f1-4df3-a648-15b2ff5bb458}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

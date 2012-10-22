@@ -1,47 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="System">
-      <UniqueIdentifier>{5862ae93-37b4-420b-92c9-5d66a721b41e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Support">
-      <UniqueIdentifier>{50db9055-b260-46e1-afd8-aca4a0df0f39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Type">
-      <UniqueIdentifier>{f0babfb6-3748-4755-9619-2a3a207389d4}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="..\..\source\Core\System\System.cpp" />
+    <ClCompile Include="..\..\source\Core\System\Window.cpp" />
+    <ClCompile Include="..\..\source\Core\Constants.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\Core\System\MemoryScanner.hpp">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\System\Mutex.hpp">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\System\Process.hpp">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\System\System.hpp">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\System\Thread.hpp">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\System\Window.hpp">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\Support\Lua.hpp">
-      <Filter>Support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\Support\Settings.hpp">
-      <Filter>Support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\Type\Array.hpp">
-      <Filter>Type</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Core\Type\Enum.hpp">
-      <Filter>Type</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\source\Core\System\MemoryScanner.hpp" />
+    <ClInclude Include="..\..\source\Core\System\Mutex.hpp" />
+    <ClInclude Include="..\..\source\Core\System\Process.hpp" />
+    <ClInclude Include="..\..\source\Core\System\System.hpp" />
+    <ClInclude Include="..\..\source\Core\System\Thread.hpp" />
+    <ClInclude Include="..\..\source\Core\System\Window.hpp" />
+    <ClInclude Include="..\..\source\Core\Support\Lua.hpp" />
+    <ClInclude Include="..\..\source\Core\Support\Settings.hpp" />
+    <ClInclude Include="..\..\source\Core\Type\Array.hpp" />
+    <ClInclude Include="..\..\source\Core\Type\Enum.hpp" />
     <ClInclude Include="..\..\source\Core\Constants.hpp" />
     <ClInclude Include="..\..\source\Core\Enums.hpp" />
     <ClInclude Include="..\..\source\Core\Root.hpp" />
@@ -49,12 +23,14 @@
     <ClInclude Include="..\..\source\Core\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\Core\System\System.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Core\System\Window.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Core\Constants.cpp" />
+    <Filter Include="System">
+      <UniqueIdentifier>{a097a62d-4a9a-4e2a-bac1-b657eeb5bc88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support">
+      <UniqueIdentifier>{a7c32ca0-4a9c-43b4-b688-563aa68c898d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Type">
+      <UniqueIdentifier>{78303288-8ad8-4849-a6b8-864e731ec0ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
