@@ -63,7 +63,7 @@ namespace Diablo
             return false;
 
         // write unique text
-        _game.SendInputText(UI_COORDS[UI_INPUT_FILTERUNIQUE], "%s", string);
+        _game.SendInputTextDirect(UI_COORDS[UI_INPUT_FILTERUNIQUE], Trainer::OBJECT_INPUT_UNIQUE, string);
 
         // confirm dropdown popup
         if(row > 0)
@@ -207,12 +207,19 @@ namespace Diablo
         assert(index < AH_PSTAT_LIMIT);
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
-        // select stat
-        if(!_game.WriteCombo(static_cast<ComboId>(COMBO_PSTAT0 + index), name))
-            return false;
+        // if name null then clear
+        if(name)
+        {
+            // select stat
+            if(!_game.WriteCombo(static_cast<ComboId>(COMBO_PSTAT0 + index), name))
+                return false;
 
-        // set value
-        _game.SendInputNumber(UI_COORDS[index + UI_INPUT_FILTERPSTAT0], value);
+            // set value
+            _game.SendInputNumber(UI_COORDS[index + UI_INPUT_FILTERPSTAT0], value);
+        }
+        else
+            // clear
+            _game.MouseClick(UI_COORDS[index + UI_LBUTTON_CLEARPSTAT0]);
 
         return true;
     }
@@ -261,6 +268,9 @@ namespace Diablo
     Bool AuctionInterface::ActionSearch()
     {
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
+
+        // add small delay to ensure all filters were set
+        //_game.SleepFrames(1);
 
         // hit search button
         _game.MouseClick(UI_COORDS[UI_BUTTON_SEARCH]);
@@ -507,7 +517,7 @@ namespace Diablo
             _game.MouseMove(coord, Game::INPUT_NODELAY);
 
             // loop until success or limit
-            for( Index i = 0; !status && i < AH_ITEMHOVER_WAIT_ITERATIONS; i++ )
+            for( Index i = 0; _active && !status && i < AH_ITEMHOVER_WAIT_ITERATIONS; i++ )
             {
                 // wait a little
                 _game.Sleep(1);

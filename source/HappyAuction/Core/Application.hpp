@@ -2,6 +2,7 @@
 #include <HappyAuction/Constants.hpp>
 #include <HappyAuction/Core/ScriptRunner.hpp>
 #include <HappyAuction/Resource/resource.h>
+#include <Diablo/Core/Locale.hpp>
 #include <Core/System/System.hpp>
 #include <Core/Support/Settings.hpp>
 
@@ -14,8 +15,6 @@ namespace HappyAuction
         struct Applet
         {
             Bool            active;
-            ULong           modifier;
-            ULong           key;
             ScriptRunner*   runner;
         };
 
@@ -29,7 +28,7 @@ namespace HappyAuction
     private:
         /* singleton */
         Application():
-            _settings(SETTINGS_PATH, SETTINGS_ITEMS)
+            _settings(SETTINGS_ITEMS)
         {
             _applets.MemoryZero();
         }
@@ -68,41 +67,108 @@ namespace HappyAuction
 
     private:
         /**/
-        Bool _AppInitialize()
+        Bool _AppLoadLocale()
         {
-            Index i;
+            TextString  path;
+            Locale&     locale = Locale::GetInstance();
 
-            for( i = SETTINGS_HOTKEY1; i <= SETTINGS_HOTKEYLAST; i++ )
+            // load locale
+            sprintf(path, APPLICATION_LOCALE_PATH, Locale::GetInstance().GetLocale());
+            if(!Locale::GetInstance().Load(path))
             {
-                const Char* hotkey_string = _settings[i];
-                Bits        modifiers;
-                Id          key;
+                System::Message(false, EXCEPTION_LOCALE_FILE, path);
+                return false;
+            }
+
+            return true;
+        }
+
+        /**/
+        Bool _AppLoadHotKeys()
+        {
+            // read hotkeys and add applets
+            for( Index i = 0; i < APPLICATION_APPLET_LIMIT; i++ )
+            {
+                Index           hotkey_index = i + SETTINGS_HOTKEY1;
+                const Char*     hotkey_string = _settings[hotkey_index];
+                System::Keys    hotkey;
 
                 // stop at first empty hotkey
                 if(*hotkey_string == 0)
                     break;
 
                 // parse hotkey
-                if(!System::ParseHotKey( modifiers, key, hotkey_string))
+                if(!System::ParseHotKey( hotkey, hotkey_string))
                 {
                     System::Message(false, EXCEPTION_HOTKEY_PARSE, hotkey_string, SETTINGS_PATH);
                     return false;
                 }
 
-                // add applet
-                if(!_AddApplet(modifiers, key))
+                // set hotkey
+                if(!System::AddHotKey(hotkey_index, hotkey, _OnHotKey, reinterpret_cast<void*>(i)))
                 {
                     System::Message(false, EXCEPTION_HOTKEY_TAKEN, hotkey_string, SETTINGS_PATH);
                     return false;
                 }
+
+                // add applet
+                Applet& applet = _applets.Push();
+                applet.runner = new ScriptRunner(i);
+                applet.active = true;
             }
 
-            // fail if nothing assigned
-            if(i == SETTINGS_HOTKEY1)
+            // success if any applets created
+            return _applets.GetCount() > 0;
+        }
+
+        /**/
+        Bool _AppLoadPauseKeys()
+        {
+            for( Index i = 0; i < _applets.GetCount(); i++ )
             {
-                System::Message(false, EXCEPTION_APPLICATION);
-                return false;
+                Index           pausekey_index = i + SETTINGS_PAUSEKEY1;
+                const Char*     pausekey_string = _settings[pausekey_index];
+                System::Keys    pausekey;
+
+                // pausekey is optional
+                if(*pausekey_string != 0)
+                {
+                    // parse pausekey
+                    if(!System::ParseHotKey( pausekey, pausekey_string ))
+                    {
+                        System::Message(false, EXCEPTION_HOTKEY_PARSE, pausekey_string, SETTINGS_PATH);
+                        return false;
+                    }
+
+                    // set pausekey
+                    if(!System::AddHotKey(pausekey_index, pausekey, _OnPauseKey, reinterpret_cast<void*>(i)))
+                    {
+                        System::Message(false, EXCEPTION_HOTKEY_TAKEN, pausekey_string, SETTINGS_PATH);
+                        return false;
+                    }
+                }
             }
+
+            return true;
+        }
+
+        /**/
+        Bool _AppInitialize()
+        {
+            // load settings
+            _settings.Load(SETTINGS_PATH);
+            
+            // load locale
+            if(!_AppLoadLocale())
+                return false;
+
+            // load hotkeys
+            if(!_AppLoadHotKeys())
+                return false;
+
+            // load pause keys
+            if(!_AppLoadPauseKeys())
+                return false;
 
             return true;
         }
@@ -150,32 +216,7 @@ namespace HappyAuction
         }
 
         /**/
-        Bool _AddApplet( ULong hk_modifier, ULong hk_key )
-        {
-            Index index = _applets.GetCount();
-
-            // limit check
-            if(index >= _applets.GetLimit())
-                return false;
-
-            // set hotkey
-            if(!System::AddHotKey(index, hk_modifier, hk_key, _OnHotKey, reinterpret_cast<void*>(index)))
-                return false;
-
-            // add applet
-            Applet& applet = _applets.Push();
-
-            // initialize
-            applet.runner = new ScriptRunner(index);
-            applet.modifier = hk_modifier;
-            applet.key = hk_key;
-            applet.active = true;
-
-            return true;
-        }
-
-        /**/
-        void _ToggleBot( Index index )
+        void _ToggleRunning( Index index )
         {
             assert(_applets[index].active);
             ScriptRunner& runner = *_applets[index].runner;
@@ -188,9 +229,26 @@ namespace HappyAuction
         }
 
         /**/
+        void _TogglePaused( Index index )
+        {
+            assert(_applets[index].active);
+            ScriptRunner&   runner = *_applets[index].runner;
+
+            // toggle pause script
+            if(runner.IsActive())
+                runner.GetScript().Pause(!runner.GetScript().IsPaused());
+        }
+
+        /**/
         static void _OnHotKey( void* custom )
         {
-            Application::GetInstance()._ToggleBot(reinterpret_cast<Index>(custom));
+            Application::GetInstance()._ToggleRunning(reinterpret_cast<Index>(custom));
+        }
+
+        /**/
+        static void _OnPauseKey( void* custom )
+        {
+            Application::GetInstance()._TogglePaused(reinterpret_cast<Index>(custom));
         }
     };
 }

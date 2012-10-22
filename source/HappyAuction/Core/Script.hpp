@@ -3,8 +3,9 @@
 #include <HappyAuction/Constants.hpp>
 #include <HappyAuction/Core/State.hpp>
 #include <HappyAuction/Enums.hpp>
-#include <Diablo/Core/Game.hpp>
 #include <Diablo/Core/AuctionInterface.hpp>
+#include <Diablo/Core/Game.hpp>
+#include <Diablo/Core/Locale.hpp>
 #include <Diablo/Core/Support.hpp>
 #include <Diablo/Type/Item.hpp>
 #include <Core/Support/Lua.hpp>
@@ -20,6 +21,7 @@ namespace HappyAuction
         Game                _game;
         AuctionInterface    _ahi;
         Bool                _active;
+        Bool                _paused;
         State               _state;
         Index               _instance;
         FILE*               _log[APPLICATION_APPLET_LIMIT];
@@ -29,6 +31,7 @@ namespace HappyAuction
         Script( Index instance ):
             _ahi(_game),
             _active(false),
+            _paused(false),
             _instance(instance)
         {
             Tools::MemZero(_log, ACOUNT(_log));
@@ -37,16 +40,21 @@ namespace HappyAuction
         /**/
         void Start()
         {
-            _active = true;
-
             // reset state
+            _active = true;
+            _paused = false;
             _state = State();
+            _game.SetOverrideOptions(0);
 
             try
             {
                 // initialize game and auction interface
                 if(!_game.Start() || !_ahi.Start())
                     throw EXCEPTION_SCRIPT;
+
+                // set direct input if in focus
+                if(_game.GetWindow().HasFocus())
+                    _game.SetOverrideOptions(Game::INPUT_DIRECT);
 
                 // sync state
                 _StateSync();
@@ -69,12 +77,14 @@ namespace HappyAuction
         {
             FILE*& log = _log[_instance];
 
-            // close log
+            // close logs
             if(log != NULL)
             {
                 fclose(log);
                 log = NULL;
             }
+            if(_instance == 0)
+                System::Log(NULL);
 
             // stop everything
             _active = false;
@@ -83,7 +93,25 @@ namespace HappyAuction
             Lua::Stop();
         }
 
+        /**/
+        void Pause( Bool enable )
+        {
+            _paused = enable;
+        }
+
+        Bool IsPaused() const
+        {
+            return _paused;
+        }
+
     protected:
+        /**/
+        virtual void _OnInitialized()
+        {
+            for( Index i = 0; i < SCRIPT_COUNT; i++ )
+                _Register(i, SCRIPT_FUNCTIONS[i]);
+        }
+
         /**/
         void _StateSync()
         {
@@ -97,7 +125,7 @@ namespace HappyAuction
             _ahi.ReadFilterChar(filters.character);
 
             // filters:primary
-            _ahi.ReadFilterSecondary(filters.primary);
+            _ahi.ReadFilterPrimary(filters.primary);
 
             // filters:secondary
             _ahi.ReadFilterSecondary(filters.secondary);
@@ -135,22 +163,17 @@ namespace HappyAuction
             // disable global delay
             GAME_GLOBAL_DELAY = 0;
 
-            // filters:type
-            if(*filters.type)
-                _ahi.WriteFilterSecondaryAuto(filters.type);
-            else
-            {
-                // filters:primary
-                if(*filters.primary)
-                    _ahi.WriteFilterSecondaryAuto(filters.primary);
-                // filters:secondary
-                if(*filters.secondary)
-                    _ahi.WriteFilterSecondaryAuto(filters.secondary);
-            }
-
             // filters:character
             if(*filters.character)
                 _ahi.WriteFilterChar(filters.character);
+
+            // filters:primary
+            if(*filters.primary)
+                _ahi.WriteFilterPrimary(filters.primary);
+
+            // filters:secondary
+            if(*filters.secondary)
+                _ahi.WriteFilterSecondary(filters.secondary);
 
             // filters:rarity
             if(*filters.rarity)
@@ -183,7 +206,10 @@ namespace HappyAuction
             {
                 // sort
                 if(search.sort_id != INVALID_ID && search.sort_count)
-                    for( Index i = 0; i < search.sort_count && _ahi.ActionListSort(static_cast<UiId>(search.sort_id)); i++ );
+                {
+                    ULong count = (search.sort_count + 1) % 2;
+                    for( Index i = 0; i <= count && _ahi.ActionListSort(static_cast<UiId>(search.sort_id)); i++ );
+                }
 
                 // restore page
                 for( Index i = 0; i < _state.search.page && _ahi.ActionListNextPage(); i++ );
@@ -193,9 +219,13 @@ namespace HappyAuction
         }
 
         /**/
-        Bool _SessionRestore()
+        Bool _SessionCheck()
         {
             const StateLogin& login = _state.login;
+
+            // pause while paused and active state
+            while(_paused && _active)
+                _game.Sleep(SCRIPT_PAUSE_SLICE);
 
             // relogin check
             if(*login.name && *login.password && _ahi.ActionReLogin(login.name, login.password, login.delay))
@@ -209,19 +239,24 @@ namespace HappyAuction
         }
 
         /**/
-        virtual void _OnInitialized()
+        Bool _LocaleCheck( Id id )
         {
-            for( Index i = 0; i < SCRIPT_COUNT; i++ )
-                _Register(i, SCRIPT_FUNCTIONS[i]);
-        }
+            if(Locale::GetInstance().IsDefault())
+                return true;
 
+            System::Message(false, EXCEPTION_LOCALE_NOTSUPPORTED, SCRIPT_FUNCTIONS[id], Locale::GetInstance().GetLocale());
+            Lua::Stop(false);
+
+            return false;
+        }
+            
         /**/
         ULong _OnFunction( Id id )
         {
             ULong pushed = _CallFunction(id);
 
-            // session restore
-            _SessionRestore();
+            // session check
+            _SessionCheck();
 
             return pushed;
         }
@@ -377,11 +412,14 @@ namespace HappyAuction
                 return _haSetGlobalDelay();
 
             // haSetLogin(name, password) -> status
-            // haSetLogin(name, password, delay) -> status
             case SCRIPT_HASETLOGIN:
             case SCRIPT_HARELOGIN://DEPRECATED
             case SCRIPT_HAACTIONRELOGIN://DEPRECATED
                 return _haSetLogin();
+
+            // haSetLoginDelay(delay)
+            case SCRIPT_HASETLOGINDELAY:
+                return _haSetLoginDelay();
 
 
             //---- UTILITIES -------------------------------------------------
@@ -488,7 +526,9 @@ namespace HappyAuction
 
             if(name && _ahi.WriteFilterChar(name))
             {
+                // update state
                 Tools::StrNCpy(_state.filters.character, name, sizeof(_state.filters.character));
+                _ahi.ReadFilterSecondary(_state.filters.secondary);
                 status = true;
             }
 
@@ -509,6 +549,7 @@ namespace HappyAuction
                     max = min;
                 if(max >= NUMBER(-1,0) && max <= GAME_LEVEL_MAX && _ahi.WriteFilterLevelMax(max))
                 {
+                    // update state
                     _state.filters.level_min = min;
                     _state.filters.level_max = max;
                     status = true;
@@ -527,7 +568,9 @@ namespace HappyAuction
 
             if(name && _ahi.WriteFilterPrimary(name))
             {
+                // update state
                 Tools::StrNCpy(_state.filters.primary, name, sizeof(_state.filters.primary));
+                _ahi.ReadFilterSecondary(_state.filters.secondary);
                 status = true;
             }
 
@@ -543,6 +586,7 @@ namespace HappyAuction
 
             if(name && _ahi.WriteFilterRarity(name))
             {
+                // update state
                 Tools::StrNCpy(_state.filters.rarity, name, sizeof(_state.filters.rarity));
                 status = true;
             }
@@ -559,6 +603,7 @@ namespace HappyAuction
 
             if(name && _ahi.WriteFilterSecondary(name))
             {
+                // update state
                 Tools::StrNCpy(_state.filters.secondary, name, sizeof(_state.filters.secondary));
                 status = true;
             }
@@ -580,11 +625,19 @@ namespace HappyAuction
                 _ahi.WriteFilterStat(index, name, value))
             {
                 StateFiltersStat& stat = _state.filters.stat[index];
+
+                // update state
                 if(name)
+                {
                     Tools::StrNCpy(stat.name, name, sizeof(stat.name));
+                    stat.value = value;
+                }
                 else
+                {
                     *stat.name = 0;
-                stat.value = value;
+                    stat.value = NUMBER(-1,0);
+                }
+
                 status = true;
             }
 
@@ -598,7 +651,13 @@ namespace HappyAuction
             Bool status = true;
 
             for( Index index = 0; index < AH_PSTAT_LIMIT; index++ )
+            {
                 status &= _ahi.WriteFilterStat(index, NULL, NUMBER(-1,0));
+
+                // update state
+                for( Index i = 0; i < AH_PSTAT_LIMIT; i++ )
+                    *_state.filters.stat[i].name = 0;
+            }
 
             _PushStack(status);
             return 1;
@@ -610,9 +669,17 @@ namespace HappyAuction
             const Char* name = _GetStackString(1);
             Bool        status = false;
 
+            // locale check
+            if(!_LocaleCheck(SCRIPT_HAFILTERTYPE))
+                return 0;
+
+            // write auto filter
             if(name && _ahi.WriteFilterSecondaryAuto(name))
             {
-                Tools::StrNCpy(_state.filters.type, name, sizeof(_state.filters.type));
+                // update state
+                _ahi.ReadFilterChar(_state.filters.character);
+                _ahi.ReadFilterPrimary(_state.filters.primary);
+                _ahi.ReadFilterSecondary(_state.filters.secondary);
                 status = true;
             }
 
@@ -630,6 +697,7 @@ namespace HappyAuction
             {
                 Bool status = _ahi.WriteFilterUnique(unique, row);
 
+                // update state
                 if(status)
                 {
                     Tools::StrNCpy(_state.filters.unique, unique, sizeof(_state.filters.unique));
@@ -681,7 +749,7 @@ namespace HappyAuction
                     _state.search.page++;
 
                     // go to next next page
-                    if(!_ahi.ActionListNextPage() && !_SessionRestore())
+                    if(!_ahi.ActionListNextPage() && !_SessionCheck())
                     {
                         _state.search.row = 0;
                         _state.search.page = 0;
@@ -738,12 +806,10 @@ namespace HappyAuction
             {
                 _state.search.row = 0;
                 _state.search.page = 0;
-                _state.search.sort_id = INVALID_ID;
-                _state.search.sort_count = 0;
                 status = true;
             }
             else
-                status = _SessionRestore();
+                status = _SessionCheck();
 
             _PushStack(status);
             return 1;
@@ -779,10 +845,11 @@ namespace HappyAuction
             Bool    status = false;
 
             // must have starting price
-            if(starting > 0 && _state.item.IsValid())
+            if( starting > 0 && _state.item.IsValid() &&
+                _state.stash.column > 0 && _state.stash.row > 0)
             {
                 // call sell sequence
-                if(_ahi.SellStashItem(_state.stash.column, _state.stash.row, starting, buyout))
+                if(_ahi.SellStashItem(_state.stash.column - 1, _state.stash.row - 1, starting, buyout))
                     status = true;
             }
 
@@ -852,22 +919,24 @@ namespace HappyAuction
         /**/
         ULong _haStashSelect()
         {
-            Index   column = _GetStackULong(1) - 1;
-            Index   row = _GetStackULong(2) - 1;
-            Index   bag = _GetStackULong(3) - 1;
+            Index   column = _GetStackULong(1);
+            Index   row = _GetStackULong(2);
+            Index   bag = _GetStackULong(3);
             Bool    status = false;
 
             // check range
-            if(column < AH_STASH_COLUMNS && row < AH_STASH_ROWS && bag < AH_STASH_BAGS)
+            if( column > 0 &&   column <= AH_STASH_COLUMNS &&
+                row > 0 &&      row <= AH_STASH_ROWS &&
+                bag > 0 &&      bag <= AH_STASH_BAGS )
             {
                 // select tab
-                if(_ahi.Tab(UI_TAB_SELL, UI_TAB_STASHBAG1 + bag))
+                if(_ahi.Tab(UI_TAB_SELL, UI_TAB_STASHBAG1 + bag - 1))
                 {
                     // ground hover to reset duplicate selection
                     Bool ground = (_state.stash.column == column && _state.stash.row == row);
 
                     // select and read stash item
-                    if(_ahi.ReadStashItem(column, row, _state.item, ground, false))
+                    if(_ahi.ReadStashItem(column - 1, row - 1, _state.item, ground, false))
                     {
                         // update stash position
                         _state.stash.column = column;
@@ -942,18 +1011,28 @@ namespace HappyAuction
             _PushTable(0);
 
             // fields
-            _SetTable("dps",    _state.item.dpsarmor);
-            _SetTable("armor",  _state.item.dpsarmor);
-            _SetTable("mbid",   _state.item.max_bid);
-            _SetTable("cbid",   _state.item.current_bid);
-            _SetTable("buyout", _state.item.buyout);
-            _SetTable("rtime",  _state.item.rtime);
-            _SetTable("xtime",  _state.item.xtime);
             _SetTable("name",   _state.item.name);
-            _SetTable("ilevel", _state.item.ilevel);
             _SetTable("id",     _state.item.id);
+            _SetTable("ilevel", _state.item.ilevel);
+
             _SetTable("rarity", _state.item.rarity);
             _SetTable("type",   _state.item.type);
+
+            _SetTable("dps",    _state.item.dpsarmor);
+            _SetTable("armor",  _state.item.dpsarmor);
+            _SetTable("cblock", _state.item.block_chance);
+            _SetTable("mblock", _state.item.block_min);
+            _SetTable("xblock", _state.item.block_max);
+            _SetTable("aps",    _state.item.damage_aps);
+            _SetTable("mdamage",_state.item.damage_min);
+            _SetTable("xdamage",_state.item.damage_max);
+
+            _SetTable("cbid",   _state.item.bid_current);
+            _SetTable("mbid",   _state.item.bid_max);
+            _SetTable("buyout", _state.item.buyout);
+
+            _SetTable("rtime",  _state.item.time_remaining);
+            _SetTable("xtime",  _state.item.time_expiring);
 
             // objects
             _PushTable("stats");
@@ -1040,13 +1119,20 @@ namespace HappyAuction
 
                 Tools::StrNCpy(login.name, name, sizeof(login.name));
                 Tools::StrNCpy(login.password, password, sizeof(login.password));
-                login.delay = _GetStackULong(3);
+                login.delay = _GetStackULong(3);//DEPRECATED
 
                 status = true;
             }
 
             _PushStack(status);
             return 1;
+        }
+
+        /**/
+        ULong _haSetLoginDelay()
+        {
+            _state.login.delay = _GetStackULong(1);
+            return 0;
         }
 
 

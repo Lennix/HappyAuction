@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/Type/Enum.hpp>
+#include <Core/Support/Settings.hpp>
 #include <Diablo/Type/EnumObjects.hpp>
 #include <Diablo/Types.hpp>
 #include <Diablo/Enums.hpp>
@@ -7,7 +8,13 @@
 namespace Diablo
 {
     //------------------------------------------------------------------------
-    extern const Char*              GAME_WINDOW_TITLE;
+    extern Settings::ItemCollection LOCALE_ITEMS;
+    extern const Char*              LOCALE_REGISTRY_PATH;
+    extern const Char*              LOCALE_REGISTRY_KEY;
+    extern const Char*              LOCALE_DEFAULT1;
+    extern const Char*              LOCALE_DEFAULT2;
+
+    //------------------------------------------------------------------------
     extern const Char*              GAME_WINDOW_CLASS;
     extern ULong                    GAME_GLOBAL_DELAY;
     static const ULong              GAME_GLOBAL_DELAY_MAX =         60000;  // ms
@@ -16,7 +23,7 @@ namespace Diablo
     static const ULong              GAME_LOGOUT_DELAY =             1000;
     static const ULong              GAME_LOGIN_LOOP_DELAY =         500;
     static const ULong              GAME_LOGIN_LOBBY_DELAY =        1400;
-    static const ULong              GAME_MAIN_AUCTION_DELAY =       200;
+    static const ULong              GAME_MAIN_AUCTION_DELAY =       300;
 
     //------------------------------------------------------------------------
     static const ULong              ITEM_STAT_LIMIT =               16;
@@ -34,9 +41,9 @@ namespace Diablo
     //------------------------------------------------------------------------
     static const ULong              AH_PSTAT_LIMIT =                6;
     static const ULong              AH_BUYOUT_RANDOM_LIMIT =        4000;
-    static const ULong              AH_ITEMHOVER_WAIT_ITERATIONS =  100;
+    static const ULong              AH_ITEMHOVER_WAIT_ITERATIONS =  200;
     static const ULong              AH_NETWORK_WAIT_ITERATIONS =    6000;
-    static const ULong              AH_BUTTON_WAIT_ITERATIONS =     400;
+    static const ULong              AH_BUTTON_WAIT_ITERATIONS =     40;
     static const ULong              AH_RESULTS_ROW_LIMIT =          11;
     static const ULong              AH_UNIQUE_ROW_LIMIT =           5;
     static const ULong              AH_STASH_COLUMNS =              7;
@@ -50,8 +57,6 @@ namespace Diablo
     static const ULong              UI_COORD_SPREAD =               2;
     extern const Coordinate         UI_COORDS[UI_COUNT];
     static const ULong              UI_COMBO_ROW_LIMIT =            1000;
-    extern const ULong              UI_COMBO_DROP_COUNT[COMBO_COUNT];
     static const ULong              UI_COMBO_REZMAP_MIN =           600;
     static const ULong              UI_COMBO_REZMAP_MAX =           1200;
-    extern const Double             UI_COMBO_REZMAP[];
 }

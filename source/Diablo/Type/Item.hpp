@@ -37,14 +37,24 @@ namespace Diablo
         TextString          name;
         ULong               id;
         Number              ilevel;
-        Number              dpsarmor;
-        Number              current_bid;
-        Number              max_bid;
-        Number              buyout;
-        ULong               rtime;
-        ULong               xtime;
+
         TextString          rarity;
         TextString          type;
+
+        Number              dpsarmor;
+        Number              block_chance;
+        Number              block_min;
+        Number              block_max;
+        Number              damage_aps;
+        Number              damage_min;
+        Number              damage_max;
+
+        Number              bid_current;
+        Number              bid_max;
+        Number              buyout;
+
+        ULong               time_remaining;
+        ULong               time_expiring;
 
         StatCollection      stats;
         SocketCollection    sockets;
@@ -62,14 +72,25 @@ namespace Diablo
             *name = 0;
             id = 0;
             ilevel = 0;
-            dpsarmor = 0;
-            current_bid = 0;
-            max_bid = 0;
-            buyout = 0;
-            rtime = 0;
-            xtime = 0;
+
             *rarity = 0;
             *type = 0;
+
+            dpsarmor = 0;
+            block_chance = 0;
+            block_min = 0;
+            block_max = 0;
+            damage_aps = 0;
+            damage_min = 0;
+            damage_max = 0;
+
+            bid_current = 0;
+            bid_max = 0;
+            buyout = 0;
+
+            time_remaining = 0;
+            time_expiring = 0;
+
             stats.Empty();
             sockets.Empty();
         }

@@ -274,13 +274,13 @@ namespace Core
     }
 
     //------------------------------------------------------------------------
-    Bool System::AddHotKey( Index index, Bits modifiers, Id key, System::HotKeyHandler handler, void* custom )
+    Bool System::AddHotKey( Index index, const Keys& keys, System::HotKeyHandler handler, void* custom )
     {
         assert(index < SYSTEM_HOTKEY_LIMIT);
         HotKeyEntry& entry = _hotkeys[index];
 
         // register hotkey
-        if(!RegisterHotKey(_hwnd, index, modifiers, key))
+        if(!RegisterHotKey(_hwnd, index, keys.modifiers, keys.key))
             return false;
 
         // set hotkey entry
@@ -303,15 +303,15 @@ namespace Core
         return true;
     }
 
-    Bool System::ParseHotKey( Bits& modifiers, Id& key, const Char* string )
+    Bool System::ParseHotKey( System::Keys& keys, const Char* string )
     {
         TextString  s1;
         TextString  s2;
         const Char* ps;
         ULong       scount;
 
-        key = 0;
-        modifiers = 0;
+        keys.key = 0;
+        keys.modifiers = 0;
 
         if( *string == 0 )
             return false;
@@ -332,7 +332,7 @@ namespace Core
                 if(!SYSTEM_HOTKEY_MODIFIERS.FindObject(modifier, modifier_pattern))
                     return false;
 
-                modifiers |= modifier;
+                keys.modifiers |= modifier;
             }
 
             ps = s2;
@@ -341,7 +341,7 @@ namespace Core
             ps = s1;
 
         // parse key
-        if(!SYSTEM_HOTKEY_KEYS.FindObject(key, ps))
+        if(!SYSTEM_HOTKEY_KEYS.FindObject(keys.key, ps))
             return false;
 
         return true;
@@ -360,14 +360,48 @@ namespace Core
         va_end(args);
         message[sizeof(message) - 1] = 0;
 
+        // convert to unicode using utf8
+        WTextString wmessage;
+        MultiByteToWideChar(CP_UTF8, 0, message, -1, wmessage, sizeof(wmessage));
+
         // show message box
         Bits flags = MB_OK|MB_SETFOREGROUND;
         if(prompt)
             flags |= MB_YESNO;
-        Int status = MessageBox(NULL, message, SYSTEM_MESSAGE_TITLE, flags);
-
+        Int status = MessageBoxW(NULL, wmessage, SYSTEM_MESSAGE_TITLE, flags);
+ 
         // success if user hit yes or did not fail
         return status != 0 && status != IDNO;
+    }
+
+    //------------------------------------------------------------------------
+    void System::Log( const Char* format, ... )
+    {
+        static FILE* file = NULL;
+
+        if(format == NULL)
+        {
+            if(file != NULL)
+            {
+                fclose(file);
+                file = NULL;
+            }
+        }
+        else
+        {
+            if(file == NULL)
+                file = fopen(SYSTEM_LOG_PATH, "wt");
+
+            if(file)
+            {
+                va_list args;
+                va_start(args, format);
+                vfprintf(file, format, args);
+                va_end(args);
+
+                fflush(file);
+            }
+        }
     }
 
     //------------------------------------------------------------------------
@@ -378,10 +412,26 @@ namespace Core
 
         const Char* text = (const Char*)GetClipboardData(CF_TEXT);
         if(text)
-            strncpy(buffer, text, limit);
+            Tools::StrNCpy(buffer, text, limit);
         CloseClipboard();
 
         return text != NULL;
+    }
+
+    //------------------------------------------------------------------------
+    Bool System::GetRegistryString( Char* string, ULong length, const Char* path, const Char* key )
+    {
+        HKEY    hkey;
+        DWORD   size = length;
+
+        if(RegOpenKeyEx(HKEY_CURRENT_USER, path, 0, KEY_QUERY_VALUE, &hkey) != ERROR_SUCCESS)
+            return false;
+
+        if(RegQueryValueEx(hkey, key, NULL, NULL, (Byte*)string, &size) != ERROR_SUCCESS)
+            return false;
+        string[size] = 0;
+
+        return true;
     }
 
     //------------------------------------------------------------------------

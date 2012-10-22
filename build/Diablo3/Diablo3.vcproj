@@ -168,6 +168,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\Diablo\Core\Locale.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\Diablo\Core\Support.hpp"
 				>
 			</File>

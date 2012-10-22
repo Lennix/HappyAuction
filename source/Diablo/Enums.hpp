@@ -79,6 +79,12 @@ namespace Diablo
         UI_LBUTTON_SORTDPSARMOR,
         UI_LBUTTON_SORTBUYOUT,
         UI_LBUTTON_SORTTIMELEFT,
+        UI_LBUTTON_CLEARPSTAT0,
+        UI_LBUTTON_CLEARPSTAT1,
+        UI_LBUTTON_CLEARPSTAT2,
+        UI_LBUTTON_CLEARPSTAT3,
+        UI_LBUTTON_CLEARPSTAT4,
+        UI_LBUTTON_CLEARPSTAT5,
 
         UI_TAB_SEARCH,
         UI_TAB_SEARCH_EQUIPMENT,
@@ -146,5 +152,12 @@ namespace Diablo
         COMBO_PSTAT5,
 
         COMBO_COUNT,
+    };
+
+    /**/
+    enum LocaleGroup
+    {
+        LOCALE_GEMSTAT,
+        LOCALE_GEMTYPE,
     };
 }

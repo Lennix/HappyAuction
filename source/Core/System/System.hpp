@@ -8,6 +8,13 @@ namespace Core
     class System
     {
     public:
+        struct Keys
+        {
+            Bits    modifiers;
+            Id      key;
+        };
+
+    public:
         typedef void (*HotKeyHandler)( void* custom );
 
     public:
@@ -22,13 +29,19 @@ namespace Core
         static Index    GetStatus();
 
         /**/
-        static Bool     AddHotKey( Index index, Bits modifiers, Id key, System::HotKeyHandler handler, void* custom );
+        static Bool     AddHotKey( Index index, const Keys& keys, System::HotKeyHandler handler, void* custom );
         static Bool     RemoveHotKey( Index index );
-        static Bool     ParseHotKey( Bits& modifiers, Id& key, const Char* string );
+        static Bool     ParseHotKey( System::Keys& keys, const Char* string );
 
         /**/
         static Bool     Message( Bool cancel, const Char* format, ... );
+        static void     Log( const Char* format, ... );
+
+        /**/
         static Bool     GetClipBoard( Char* buffer, ULong limit );
+
+        /**/
+        static Bool     GetRegistryString( Char* string, ULong length, const Char* path, const Char* key );
 
         /**/
         static UHuge    GetTimeMs();

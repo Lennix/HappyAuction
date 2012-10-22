@@ -1,17 +1,28 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyAuction", "HappyAuction\HappyAuction.vcproj", "{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Etc", "Etc", "{F1308CAC-CDEF-421D-B5A1-12D5EE9605A4}"
 	ProjectSection(SolutionItems) = preProject
+		..\changes.txt = ..\changes.txt
 		..\doc\notes.txt = ..\doc\notes.txt
 		..\readme.txt = ..\readme.txt
 		..\bin\User1.log = ..\bin\User1.log
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyMemory", "HappyMemory\HappyMemory.vcproj", "{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcproj", "{3FAD6019-260B-4E68-B56F-426D419F4A79}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{ACFBAF4F-E0E1-48B8-9075-6823D2E9CD6A}"
 	ProjectSection(SolutionItems) = preProject
 		..\bin\Lua\Main.lua = ..\bin\Lua\Main.lua
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcproj", "{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Diablo3", "Diablo3\Diablo3.vcproj", "{1139D600-A05C-4756-AD5B-4E40CA28AC60}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bots", "Bots", "{731DD03F-5FAC-4ED2-87DE-7C2CACC0EFA4}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,15 +43,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{BEBB
 		..\bin\Lua\Support\LogItem.lua = ..\bin\Lua\Support\LogItem.lua
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyAuction", "HappyAuction\HappyAuction.vcxproj", "{35C8D42E-B20C-47A7-AAC3-3EBD3CC2A029}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyMemory", "HappyMemory\HappyMemory.vcxproj", "{E4C614D1-E8D5-49D2-A5DA-BD68547D3F25}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcxproj", "{3FAD6019-260B-4E68-B56F-426D419F4A79}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{538E8D5C-8FBB-4C0F-992E-4E6BD7BA719F}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Diablo3", "Diablo3\Diablo3.vcxproj", "{1139D600-A05C-4756-AD5B-4E40CA28AC60}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Locale", "Locale", "{AC91D914-D9FA-468E-9675-1144144DA05E}"
+	ProjectSection(SolutionItems) = preProject
+		..\bin\Locale\enGB.txt = ..\bin\Locale\enGB.txt
+		..\bin\Locale\enUS.txt = ..\bin\Locale\enUS.txt
+		..\bin\Locale\ruRU.txt = ..\bin\Locale\ruRU.txt
+		..\bin\Locale\zhTW.txt = ..\bin\Locale\zhTW.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

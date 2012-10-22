@@ -13,6 +13,12 @@ namespace Core
     class Window
     {
     public:
+        enum
+        {
+            KEY_UP = BIT(0),
+            KEY_DOWN = BIT(1),
+        };
+
         struct Color
         {
             Byte b, g ,r, a;
@@ -98,6 +104,30 @@ namespace Core
         }
 
         /**/
+        void Focus( Bool begin )
+        {
+            // lock focus
+            if(begin)
+            {
+                _mutex.Lock();
+                if(!HasFocus())
+                {
+                    SetForegroundWindow(_hwnd);
+                    for( Index i = 0; !HasFocus() && i < 10; i++ )
+                        Thread::Sleep(10);
+                }
+            }
+            // unlock focus
+            else
+                _mutex.UnLock();
+        }
+
+        Bool HasFocus() const
+        {
+            return GetForegroundWindow() == _hwnd;
+        }
+
+        /**/
         ULong GetWidth() const
         {
             return _width;
@@ -145,53 +175,43 @@ namespace Core
         }
 
         /**/
-        void SendChar( Char c )
-        {
-            _SendKey(c, false);
-        }
-
-        /**/
         void SendInputKeys( const Char* text, Bool specials )
         {
-            Bool special = false;
-
-            for(; *text; text++ )
+            if(specials)
             {
-                Char c = *text;
-
-                if(special)
+                for(; *text; text++ )
                 {
-                    special = false;
+                    Char c = *text;
 
                     switch(c)
                     {
                     case 'C': // down
                     case 'c': // up
                         _key_ctrl = (c == 'C');
-                        _SendKey(VK_CONTROL, true, !_key_ctrl);
+                        _SendKey(VK_CONTROL, true, _key_ctrl ? KEY_DOWN : KEY_UP);
                         break;
 
                     case 'D':
-                        _SendKey(VK_DELETE, true);
-                        _SendKey(VK_DELETE, true, true);
+                        _SendKey(VK_DELETE, true, KEY_DOWN|KEY_UP);
+                        break;
+
+                    case 'B':
+                        _SendKey(VK_BACK, true, KEY_DOWN|KEY_UP);
                         break;
 
                     case 'E':
-                        _SendKey(VK_ESCAPE, true);
-                        _SendKey(VK_ESCAPE, true, true);
+                        _SendKey(VK_ESCAPE, true, KEY_DOWN|KEY_UP);
                         break;
 
                     default:
-                        SendChar(c);
+                        _SendKey(c, false, 0);
                     }
                 }
-                else
-                {
-                    if(specials && c == '^')
-                        special = true;
-                    else
-                        SendChar(c);
-                }
+            }
+            else
+            {
+                for(; *text; text++ )
+                    _SendKey(*text, false, 0);
             }
         }
 
@@ -292,13 +312,13 @@ namespace Core
         }
 
         /**/
-        void _SendKey( ULong key, Bool extended, Bool up=false )
+        void _SendKey( ULong key, Bool extended, Bits flags )
         {
             if(extended)
             {
-                if(up)
+                if(flags & KEY_UP)
                     PostMessage(_hwnd, WM_KEYUP, key, 0xC01D0001);
-                else
+                if(flags & KEY_DOWN)
                     PostMessage(_hwnd, WM_KEYDOWN, key, 0x001D0001);
             }
             else

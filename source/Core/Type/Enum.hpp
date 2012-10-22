@@ -19,7 +19,7 @@ namespace Core
     {
     public:
         typedef EnumItem<TYPE>                      Item;
-        typedef Array<const Item>                   ItemCollection;
+        typedef Array<Item>                         ItemCollection;
         typedef typename ItemCollection::Iterator   ItemIterator;
 
     private:
@@ -27,9 +27,24 @@ namespace Core
 
     public:
         /**/
-        Enum( const Item* items, UShort count ):
+        Enum( Item* items, UShort count ):
             _items(items, count)
         {
+        }
+
+        /**/
+        Bool ReplaceName( const TYPE& object, const Char* name ) const
+        {
+            for(ItemIterator i = _items.Begin(); i != _items.End(); i++)
+            {
+                if( object == i->object )
+                {
+                    i->name = name;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /**/

@@ -35,7 +35,7 @@ namespace Diablo
             OBJECT_INPUT_BUYOUT,
 
             OBJECT_TOOLTIP_STATS,
-            //OBJECT_TOOLTIP_ASDAMAGE,
+            OBJECT_TOOLTIP_ASDAMAGE,
             OBJECT_TOOLTIP_DPSARMOR,
             OBJECT_TOOLTIP_TYPE,
             OBJECT_TOOLTIP_ILEVEL,
@@ -51,7 +51,8 @@ namespace Diablo
             OBJECT_BUTTON_BUYOUT,
 
             OBJECT_TOP,
-            OBJECT_MAIN_POPUP,
+            OBJECT_MAIN_POPUP1,
+            OBJECT_MAIN_POPUP2,
             OBJECT_MAIN_AUCTION,
 
             OBJECT_COUNT,
@@ -80,12 +81,17 @@ namespace Diablo
             ULong   n3[4];          // 47c
             Byte    _5[0x058];
             ULong   n4;             // 4e4
-            Byte    _6[0x5E0];
-            ULong   addr2_value;    // ac8
-            Byte    _7[0x00c];
-            ULong   addr3_child;    // ad8
-            Byte    _8[0x210];
-            ULong   n5[4];          // cec
+            Byte    _6[0x020];
+            Float   x1;             // 508
+            Float   y1;             // 50c
+            Float   x2;             // 510
+            Float   y2;             // 514
+            Byte    _7[0x5C8];
+            ULong   addr2_value;    // ae0
+            Byte    _8[0x00c];
+            ULong   addr3_child;    // af0
+            Byte    _9[0x418];
+            ULong   n5[4];          // f0c
         };
 
         struct _AhList
@@ -120,7 +126,7 @@ namespace Diablo
 
         Bool ReadComboString( Id id, TextString string, Bool strip=true );
         Bool ReadComboRowBegin();
-        Bool ReadComboRow( Index index, TextString string );
+        Bool ReadComboRow( Index index, TextString string, Double& y );
         Bool ReadComboRowCount( ULong& count );
 
         /**/

@@ -30,7 +30,7 @@ namespace Core
         /**/
         static inline Char UpperCase( Char c )
         {
-            return c > 'Z' ? c - ('a'-'A') : c;
+            return (c >= 'a' && c <= 'z') ? c - ('a'-'A') : c;
         }
 
         /**/

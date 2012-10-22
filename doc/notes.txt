@@ -1,11 +1,12 @@
-- fixed haLog not working a second run
-- fixed text input functions (was too fast and caused skipping)
-- fixed minor haStash* issues
-- fixed haBid waiting on buyout button instead of bid button
-- improved haBid/haBuyout reliability by waiting for bid/buyout button to be ready longer
-- deprecated haListNext(). renamed to haListIterate()
+- fixed restoring state of primary item type upon relogin
+- fixed haSell to fail+close popup if reached 10 auction limit.
 
-- add russian client support
+- add support for active auctions list
+- add functions to return current sort state
+- add timeout(function, milliseconds)
+- add haGetRegion 
+- add socket/gem support for locales: Korean, French, German.
 - expose more manual control of search list (page prev/next, item count)
 - improve RMAH support
-- add support for active auctions list
+- create more sample scripts
+- review relogin/recovery on cable disconnect (which doesnt timeout search)

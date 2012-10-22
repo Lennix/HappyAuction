@@ -24,6 +24,7 @@ namespace Diablo
         Process _process;
         Trainer _trainer;
         Mutex   _mutex;
+        Bits    _override_options;
         Bool    _active;
 
     public:
@@ -43,6 +44,9 @@ namespace Diablo
         Trainer& GetTrainer();
 
         /**/
+        void SetOverrideOptions( Bits options );
+
+        /**/
         void MouseClick( const Coordinate& coord, Bits options=0 );
         void MouseClickGround( Bits options=0 );
         void MouseMove( const Coordinate& coord, Bits options=0 );
@@ -51,6 +55,7 @@ namespace Diablo
         /**/
         void SendInputKeys( const Char* text, Bits options=0 );
         void SendInputText( const Coordinate& coord, const Char* format, ... );
+        void SendInputTextDirect( const Coordinate& coord, Id id, const Char* text );
         void SendInputNumber( const Coordinate& coord, Number number );
 
         /**/

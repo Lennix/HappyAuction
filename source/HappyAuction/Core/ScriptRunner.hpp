@@ -23,6 +23,12 @@ namespace HappyAuction
         }
 
         /**/
+        Script& GetScript()
+        {
+            return _script;
+        }
+
+        /**/
         Bool IsActive() const
         {
             return _active;

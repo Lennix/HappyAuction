@@ -1,0 +1,65 @@
+0.9.27
+- fixed restoring state of primary item type upon relogin
+- fixed haSell to fail+close popup if reached 10 auction limit.
+
+0.9.26
+- update to support D3 1.0.5
+- fixed haGetLogin for non english locales
+- enabled all locales. however item socket/gem information is not available on all yet (except en/ru/cn).
+- now uses a direct method to emulate input if D3 window is in focus. this should increase reliability. the input method is chosen when a script is started.
+
+0.9.25
+- fixed HA not loading for WinXP 32bit folks
+- fixed unique item input for different locales by writing UTF8 text directly into input box memory
+- fixed combbox selection for different locales. now more universal and resolution independent.
+- allow enGB locale to use haFilterType
+- added deDE (German) locale. however haItem().sockets support not available until next update (need to download another 3gig for this lol).
+
+0.9.24
+- added locale support for: russian and chinese
+    - save your scripts in UTF8 format if using unicode strings (most text editors should support this)
+    - all functions supported except haFilterType. use haFilterChar, haFilterPrimary, haFilterSecondary instead.
+    - adding support for other languages only requires adding a small file to bin/Locale/. Let me know your language and ill add :)
+    - a few things may work differently. for example i couldnt separate haItem().rarity/type text in chinese version so i just made both type.
+- fixed one last relogin state recovery bug ;)
+- made haStash* functions put D3 window into focus
+
+0.9.23
+- added following to haItem()
+    - cblock:  shield block chance
+    - mblock:  shield block min
+    - xblock:  shield block max
+    - aps:     attacks per second
+    - mdamage: min weapon damage
+    - xdamage: max weapon damage
+- fixed haStashSelect selecting the wrong bag (off by 1)
+- fixed several problems with restoring filters upon relogin
+
+0.9.22
+- fixed haStash* and haSell functions being misaligned
+
+0.9.21
+- fixed pausekeys so that they are optional, not required for each hotkey
+
+0.9.20
+- fixed reading items that have no stats. such as a magic item with just sockets or most white/gray gear.
+- fixed restoring state of list sorting on relogin.
+- added pause key support: default key is PAUSE. see README:HOTKEYS section to edit.
+- added haSetLoginDelay() to set login delay. deprecated the delay parameter in haSetLogin().
+- added changes.txt to show log of changes
+
+0.9.19
+- fixed haLog not working a second run
+- fixed text input functions (was too fast and caused skipping)
+- fixed minor haStash* issues
+- fixed haBid waiting on buyout button instead of bid button
+- improved haBid/haBuyout reliability by waiting for bid/buyout button to be ready longer
+- deprecated haListNext(). renamed to haListIterate()
+
+0.9.18
+- fixed haGetAccount() again ;)
+- fixed haItem().dps being 0 sometimes
+- fixed -1 input clear not working. example: haFilterBuyout(-1)
+- improved text input performance a little
+- updated relogin to close additional error popups
+- updated haLog to work for multiple clients

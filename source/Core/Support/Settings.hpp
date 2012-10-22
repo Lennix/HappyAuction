@@ -13,27 +13,41 @@ namespace Core
         {
             const Char* key;
             TextString  value;
+            Index       custom1;
+            Index       custom2;
         };
 
         typedef Array<Item>                 ItemCollection;
         typedef ItemCollection::Iterator    ItemIterator;
 
     private:
-        const Char*     _path;
         ItemCollection  _items;
         Bool            _ready;
         ULong           _accessed;
 
     public:
         /**/
-        Settings( const Char* path, ItemCollection& items ):
-            _path(path),
+        Settings( ItemCollection& items ):
             _items(items),
             _ready(false),
             _accessed(0)
         {
-            _ReadFile();
-            _WriteFile();
+        }
+
+        /**/
+        Bool Load( const Char* path, Bool readonly=false )
+        {
+            Bool status = _ReadFile(path);
+            if(readonly)
+                return status;
+            else
+                return _WriteFile(path);
+        }
+
+        /**/
+        const ItemCollection& GetItems() const
+        {
+            return _items;
         }
 
         /**/
@@ -63,12 +77,12 @@ namespace Core
         }
 
         /**/
-        Bool _ReadFile()
+        Bool _ReadFile( const Char* path )
         {
             Bool        status = true;
             TextString  line;
 
-            FILE* file = fopen(_path,"rt");
+            FILE* file = fopen(path,"rt");
             if(file == NULL)
                 return false;
 
@@ -95,9 +109,9 @@ namespace Core
         }
 
         /**/
-        Bool _WriteFile()
+        Bool _WriteFile( const Char* path )
         {
-            FILE* file = fopen(_path,"wt");
+            FILE* file = fopen(path,"wt");
             if(file == NULL)
                 return false;
 

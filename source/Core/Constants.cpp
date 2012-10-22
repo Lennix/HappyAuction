@@ -6,7 +6,7 @@ namespace Core
 {
     // private
     //------------------------------------------------------------------------
-    static const BitsEnum::Item _system_hotkey_modifiers[] =
+    static BitsEnum::Item _system_hotkey_modifiers[] =
     {
         { "A",  MOD_ALT },
         { "C",  MOD_CONTROL },
@@ -14,7 +14,7 @@ namespace Core
         { "W",  MOD_WIN },
     };
 
-    static const IdEnum::Item _system_hotkey_keys[] =
+    static IdEnum::Item _system_hotkey_keys[] =
     {
         { "0",      '0' },
         { "1",      '1' },
@@ -77,17 +77,15 @@ namespace Core
         { "NUM7",   VK_NUMPAD7 },
         { "NUM8",   VK_NUMPAD8 },
         { "NUM9",   VK_NUMPAD9 },
+
+        { "PAUSE",   VK_PAUSE },
     };
 
     // public
     //------------------------------------------------------------------------
-    const Char*  SYSTEM_MESSAGE_TITLE =     "Derp";
+    const WChar* SYSTEM_MESSAGE_TITLE =     L"Derp";
     const Char*  SYSTEM_CLASS_NAME =        "HappyCore";
-    const Char*  TOOLS_LOG_PATH[LOG_COUNT] =
-    {
-        "User.log",
-        "Error.log"
-    };
+    const Char*  SYSTEM_LOG_PATH =          "Debug.log";
 
     //------------------------------------------------------------------------
     const BitsEnum  SYSTEM_HOTKEY_MODIFIERS(_system_hotkey_modifiers,  ACOUNT(_system_hotkey_modifiers));

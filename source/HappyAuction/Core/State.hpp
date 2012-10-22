@@ -37,7 +37,6 @@ namespace HappyAuction
     struct StateFilters
     {
         TextString          character;
-        TextString          type;
         TextString          rarity;
         TextString          primary;
         TextString          secondary;
@@ -55,7 +54,6 @@ namespace HappyAuction
             unique_row(0)
         {
             *character = 0;
-            *type = 0;
             *primary = 0;
             *secondary = 0;
             *rarity = 0;

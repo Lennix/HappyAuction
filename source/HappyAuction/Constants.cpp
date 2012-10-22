@@ -5,31 +5,33 @@
 namespace HappyAuction
 {
     //------------------------------------------------------------------------
-    const Char* APPLICATION_NAME =          "HappyAuction";
+    const Char* APPLICATION_NAME =              "HappyAuction";
+    const Char* APPLICATION_LOCALE_PATH =       "Locale/%s.txt";
 
     //------------------------------------------------------------------------
-    const Char* EXCEPTION_SYSTEM =          "System Fail\n\n"
-                                            "Possible Causes:\n"
-                                            "- HappyAuction already running\n";
-    const Char* EXCEPTION_APPLICATION =     "Application Fail\n\n"
-                                            "Possible Causes:\n"
-                                            "- No hotkeys were assigned\n";
-    const Char* EXCEPTION_HOTKEY_TAKEN =    "HotKey (%s) is taken. Reassign in %s.";
-    const Char* EXCEPTION_HOTKEY_PARSE =    "HotKey (%s) is invalid. Recheck %s.";
-    const Char* EXCEPTION_SCRIPT =          "Script Fail\n\n"
-                                            "Possible Causes:\n"
-                                            "- Diablo 3 not running\n"
-                                            "- Diablo 3 minimized\n"
-                                            "- Not at auction house\n"
-                                            "- Not latest HappyAuction\n";
-    const Char* EXCEPTION_LUA =             "LUA Fail:\n%s";
-    const Char* EXCEPTION_OBSOLETED =       "Obsoleted Function:\n%s\n\n"
-                                            "See README for latest version";
-
+    const Char* EXCEPTION_SYSTEM =              "System Fail\n\n"
+                                                "Possible Causes:\n"
+                                                "- HappyAuction already running\n";
+    const Char* EXCEPTION_APPLICATION =         "Application Fail\n\n"
+                                                "Possible Causes:\n"
+                                                "- No hotkeys were assigned\n";
+    const Char* EXCEPTION_HOTKEY_TAKEN =        "HotKey (%s) is taken. Reassign in %s.";
+    const Char* EXCEPTION_HOTKEY_PARSE =        "HotKey (%s) is invalid. Recheck %s.";
+    const Char* EXCEPTION_SCRIPT =              "Script Fail\n\n"
+                                                "Possible Causes:\n"
+                                                "- Diablo 3 not running\n"
+                                                "- Diablo 3 minimized\n"
+                                                "- Not at auction house\n"
+                                                "- Not latest HappyAuction\n";
+    const Char* EXCEPTION_LUA =                 "LUA Fail:\n%s";
+    const Char* EXCEPTION_LOCALE_FILE =         "Locale File (%s) missing or invalid";
+    const Char* EXCEPTION_LOCALE_NOTSUPPORTED = "Function (%s) no supported for current locale (%s)";
+    const Char* EXCEPTION_OBSOLETED =           "Obsoleted Function:\n%s\n\n"
+                                                "See README for latest version";
 
     //------------------------------------------------------------------------
-    const Char* SCRIPT_LOG_PATH = "User%u.log";
-    const Char* SCRIPT_MAIN_PATH = "Lua/Main.lua";
+    const Char* SCRIPT_LOG_PATH =   "User%u.log";
+    const Char* SCRIPT_MAIN_PATH =  "Lua/Main.lua";
     const Char* SCRIPT_FUNCTIONS[SCRIPT_COUNT] =
     {
         // auction/search
@@ -73,6 +75,7 @@ namespace HappyAuction
         "haLogout",
         "haSetGlobalDelay",
         "haSetLogin",
+        "haSetLoginDelay",
 
         // utilities
         "haAlert",
@@ -122,6 +125,22 @@ namespace HappyAuction
         { "HotKey14" },
         { "HotKey15" },
         { "HotKey16" },
+        { "PauseKey1", "PAUSE" },
+        { "PauseKey2" },
+        { "PauseKey3" },
+        { "PauseKey4" },
+        { "PauseKey5" },
+        { "PauseKey6" },
+        { "PauseKey7" },
+        { "PauseKey8" },
+        { "PauseKey9" },
+        { "PauseKey10" },
+        { "PauseKey11" },
+        { "PauseKey12" },
+        { "PauseKey13" },
+        { "PauseKey14" },
+        { "PauseKey15" },
+        { "PauseKey16" },
     };
     Settings::ItemCollection SETTINGS_ITEMS(_settings, ACOUNT(_settings));
 }

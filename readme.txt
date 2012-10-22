@@ -1,10 +1,17 @@
-HappyAuction v0.9.19
+HappyAuction v0.9.26
 
 DESCRIPTION
 ------------------------------------------------------------------------------
 HappyAuction is a C++ open source LUA scripted Diablo 3 auction house bot.
-It offers full scripted control over the AH. Multiple clients are supported.
-Some popular bot sample scripts are included. Happy botting! :D
+Major features supported:
+
+- LUA functions exposing key AH operations
+- Works with D3 window in background (see NOTES)
+- Several sample bots included
+- Multiple client support
+- Multiple language support (english, russian, chinese)
+
+Happy botting! :D
 
 
 INSTRUCTIONS
@@ -29,8 +36,12 @@ INCLUDED BOTS
 
 NOTES
 ------------------------------------------------------------------------------
-- HappyAuction can run with D3 in the background (not minimized) while you do
-  other stuff. The only exception is if you use haStash* functions.
+- The PAUSE key will pause/unpause a script. See HOTKEYS section to change.
+- HappyAuction can run with D3 in the background (not minimized) IF you start
+  a script with D3 already in the background. The only exception is if you
+  use haStash* functions which always require D3 in foreground.
+- Interacting with D3 while a script is running is not supported and can 
+  cause unintended script operation.
 - There will be a brief 2-3 second delay before running a script the first
   time. This is necessary to run a memory scan of Diablo 3 to detect
   everything HappyAuction needs to operate.
@@ -41,14 +52,14 @@ NOTES
 
 HOTKEYS
 ------------------------------------------------------------------------------
-- Hotkeys are configured using bin/Settings.cfg.
+- Hotkeys and PauseKeys are configured using bin/Settings.cfg.
     - This file is generated the first time you run HA
 - The hotkey format is MOD.KEY or KEY. Examples:
     HotKey1=C.F12       first instance hotkey set to CONTROL-F12
     HotKey2=F11         second instance hotkey set to F11
     HotKey3=CS.NUM0     third instance hotkey set to CONTROL-SHIFT-NUMPAD0
 - Supported Modifiers:  A:ALT, C:CONTROL, S:SHIFT, W:WINDOWSKEY
-- Supported Keys:       0-9, A-Z, F1-F12, NUM0-NUM9
+- Supported Keys:       0-9, A-Z, F1-F12, NUM0-NUM9, PAUSE
 - HappyAuction must be restarted (right click taskbar icon) to update hotkeys
 
 
@@ -100,9 +111,13 @@ SCRIPTING NOTES
 - Always check function return status! Yes they can fail sometimes like when
   normal operation is interupted by some battle.net error. In which case use
   haSetLogin to enable automatic relogin.
+- Always test new scripts without haBuyout or haBid to avoid losing gold. I
+  use haAlert in their place to show a popup when a buy/bid would occur.
 - Use haSetGlobalDelay() to slow everything down (fastest by default!)
 - If functions are ever deprecated they will remain available for several
   updates before being removed permanently.
+- If using unicode text save your script file in UTF8 format (most text
+  editors should support this)
 
 
 SCRIPTING REFERENCE
@@ -158,7 +173,9 @@ AUCTION/SEARCH:
     - status:   true if successful
 
 - haFilterStat(index, id, value) -> status
-    Sets item preferred stat and minimum value filter.
+  haFilterStat(index) -> status
+    Sets item preferred stat and minimum value filter. Not specifying and id
+    and value will reset this filter to None.
     - index: specify which of the 3 stat filters to use. range: 1-3
     - id:       substring identifier of type. nil to clear.
                 example: 'level req' will match 'Reduced Level Requirement'
@@ -175,6 +192,7 @@ AUCTION/SEARCH:
     automatically change any dependencies. Example:
         haFilterType('Wand')
     will also set character to 'Wizard' and primary to '1-Hand'.
+    NOTE: Will only work with English locale
     - id:       substring identifier of secondary item type.
                 example: 'voodoo' will match 'Voodoo Mask'
     - status:   true if successful
@@ -276,29 +294,36 @@ ITEM:
 - haItem() -> item
     Returns information about the last selected item. Values will be 0 if no
     item is selected. Some values may be 0 if not in the right context such
-    as buyout on an item in your stash (using haStash functions).
+    as buyout on an item in your stash (if using haStash functions).
     - item.name:    item name
     - item.id:      a unique id for this auction
-    - item.ilevel:  item level if available else 0
-    - item.dps:     the DPS or armor value found in tooltip.
-    - item.rarity:  item rarity. this also distinguishes set from legendary.
+    - item.ilevel:  item level
+    - item.rarity:  item rarity. legendaries will be 'set' or 'legendary'
     - item.type:    item type. example: 'Helm'
-    - item.mbid:    the max bid price as shown in bid button/input box.
+    - item.dps:     DPS (damage per second derp)
+    - item.armor:   armor
+    - item.cblock:  shield block chance
+    - item.mblock:  shield block min
+    - item.xblock:  shield block max
+    - item.aps:     attacks per second
+    - item.mdamage: min weapon damage
+    - item.xdamage: max weapon damage
     - item.cbid:    the current bid price as shown in item list. this will be
                     less than mbid if there are bidders, otherwise equal.
+    - item.mbid:    the max bid price as shown in bid button/input box.
     - item.buyout:  the buyout price or 0 if there is no buyout
+    - item.rtime:   auction remaining time in milliseconds.
+    - item.xtime:   auction expire time in UTC seconds.
     - item.stats:   a list of stat objects containing:
         - text:     stripped stat text from tooltip. example:
                         if tooltip is:      '+295 Minimum Damage'
                         stat.text will be:  'Minimum Damage'
         - value1-4: stat values. for most stats only value1 will be used.
     - item.sockets: a list of socket objects containing:
-        - name:     gem stat name. example: 'Dexterity'
-        - gem:      gem name. example: 'Topaz'
+        - text:     gem stat text. example: 'Dexterity'
+        - gem:      gem type. example: 'Topaz'
         - rank:     gem rank. example: 14 for Radiant Star
         - value1-4: stat values. for most stats only value1 will be used.
-    - item.rtime:   auction remaining time in milliseconds.
-    - item.xtime:   auction expire time in UTC seconds.
 
 - haItemStat(pattern) -> stat
 - haItemStat(pattern, substring) -> stat
@@ -310,6 +335,7 @@ ITEM:
         end
     - pattern:       pattern to search stat text. matched from beginning.
     - substring:     do substring search instead of matching from beginning.
+                     range: true/false.
     - stat.text:     stripped stat text from tooltip
     - stat.value1-4: stat values. for most stats only value1 will be used.
 
@@ -332,9 +358,9 @@ ETC:
 
 - haLogout()
     Forces a logout. This will trigger haSetLogin() if it's enabled. Combining
-    this with the delay parameter in haSetLogin is a good way to have your
-    bot "cool down" once in a while to reduce risk of detection... assuming
-    input limit errors aren't forcing you to logout already.
+    this with haSetLoginDelay() is a good way to have your bot "cool down"
+    once in a while to reduce risk of detection... assuming input limit errors
+    aren't forcing you to logout already.
 
 - haSetGlobalDelay(delay)
     Adds a global delay to every future action taken. This includes delays
@@ -345,13 +371,17 @@ ETC:
     - delay:    delay in milliseconds. range: 0-60000
 
 - haSetLogin(name, password)
-- haSetLogin(name, password, delay)
     Enables automatic relogin. If a disconnect error occurs will attempt to
     relogin, restore state, and continue script. see example in Main.lua.
     Setting a delay is suggested to reduce detecion.
     - name:     account name
     - password: account password
     - delay:    optional login delay in milliseconds. default: 0
+
+- haSetLoginDelay(delay)
+    Adds a delay to the relogin sequence. Delay occurs at login screen before
+    user/password is entered. Setting a delay is suggested to reduce detecion.
+    - delay:    login delay in milliseconds. default: 0
 
 
 UTILITIES:

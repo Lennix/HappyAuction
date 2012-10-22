@@ -6,6 +6,7 @@ namespace Core
     /**/
     typedef bool                Bool;
     typedef char                Char;
+    typedef wchar_t             WChar;
     typedef unsigned char       Byte;
     typedef short               Short;
     typedef unsigned short      UShort;
@@ -29,7 +30,8 @@ namespace Core
     static const Index  INVALID_INDEX = INVALID_ID;
 
     /**/
-    typedef Char TextString[512];
+    typedef Char                TextString[1024];
+    typedef WChar               WTextString[1024];
 
     /**/
     #define NUMBER_ACCURACY     1000

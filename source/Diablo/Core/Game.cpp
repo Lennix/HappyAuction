@@ -10,6 +10,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     Game::Game():
         _trainer(_process),
+        _override_options(0),
         _active(false)
     {
     }
@@ -29,7 +30,7 @@ namespace Diablo
         _window.Close();
 
         // find window
-        if(_window.Open(GAME_WINDOW_TITLE, GAME_WINDOW_CLASS))
+        if(_window.Open(NULL, GAME_WINDOW_CLASS))
         {
             // refresh dimensions
             if(_window.RefreshDimensions())
@@ -76,8 +77,15 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    void Game::SetOverrideOptions( Bits options )
+    {
+        _override_options = options;
+    }
+
+    //------------------------------------------------------------------------
     void Game::MouseClick( const Coordinate& coord, Bits options )
     {
+                options |= _override_options;
         ULong   x, y;
 
         _CoordToAbsolute(x, y, coord, options);
@@ -93,11 +101,21 @@ namespace Diablo
     //------------------------------------------------------------------------
     void Game::MouseMove( const Coordinate& coord, Bits options )
     {
+                options |= _override_options;
         Bool    direct = (options & INPUT_DIRECT)!=0;
         ULong   x, y;
 
         _CoordToAbsolute(x, y, coord, options);
-        _window.SendMouseMove(x, y, direct);
+
+        if(direct)
+        {
+            _window.Focus(true);
+            _window.SendMouseMove(x, y, true);
+            _window.Focus(false);
+        }
+        else
+            _window.SendMouseMove(x, y, false);
+        
         _CommonDelay(options);
     }
 
@@ -109,6 +127,7 @@ namespace Diablo
     //------------------------------------------------------------------------
     void Game::SendInputKeys( const Char* text, Bits options )
     {
+             options |= _override_options;
         Bool specials = (options & INPUT_SPECIALS)!=0;
 
         _window.SendInputKeys(text, specials);
@@ -134,14 +153,24 @@ namespace Diablo
         if(*out)
         {
             // send special to select-all old text to be replaced by new text
-            SendInputKeys("^CA^c", INPUT_SPECIALS|INPUT_NODELAY);
+            SendInputKeys("CAc", INPUT_SPECIALS|INPUT_NODELAY);
 
             // send new text
             SendInputKeys(out);
         }
         // else send special to select-all old text and delete
         else
-            SendInputKeys("^CA^c^D", INPUT_SPECIALS);
+            SendInputKeys("CAcD", INPUT_SPECIALS);
+    }
+
+    void Game::SendInputTextDirect( const Coordinate& coord, Id id, const Char* text )
+    {
+        // write text directly
+        _trainer.WriteInputText(id, text);
+
+        // hack to refresh text
+        MouseClick(coord);
+        SendInputKeys("1B", INPUT_SPECIALS);
     }
 
     void Game::SendInputNumber( const Coordinate& coord, Number number )
@@ -168,7 +197,7 @@ namespace Diablo
         mutex.Lock();
 
         // copy text to clipboard
-        SendInputKeys("^CAC^c", INPUT_SPECIALS);
+        SendInputKeys("CACc", INPUT_SPECIALS);
 
         // get clipboard text
         Bool status = System::GetClipBoard(text, limit);
@@ -195,22 +224,10 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool Game::WriteCombo( ComboId combo_id, const Char* pattern )
     {
-        const Coordinate&   coordinate =    UI_COORDS[combo_id + UI_COMBO_RARITY];
-        const Coordinate&   row_size =      UI_COORDS[UI_CONTAINER_COMBOROWSIZE];
+        const Coordinate&   coordinate = UI_COORDS[combo_id + UI_COMBO_RARITY];
         TextString          row_string;
         Index               row_index;
-        ULong               row_count;
-        ULong               drop_count =    UI_COMBO_DROP_COUNT[combo_id];
-        Index               screen_index;
-        ULong               window_height = _window.GetHeight();
-
-        // determine box selector height
-        Double row_size_y = window_height > UI_COMBO_REZMAP_MAX ?
-            row_size.y :
-            ( UI_COMBO_REZMAP[Tools::Max(window_height, UI_COMBO_REZMAP_MIN) - UI_COMBO_REZMAP_MIN] / window_height );
-
-        // determine open point
-        Coordinate open_coord(coordinate.x + row_size.x / 2, coordinate.y - row_size_y * .8);
+        Double              select_y;
 
         // if pattern
         if(pattern && *pattern)
@@ -221,18 +238,14 @@ namespace Diablo
             row_index = INVALID_INDEX;
 
             // open combo
-            MouseClick(open_coord);
+            MouseClick(coordinate);
 
             // update combo state
             if(!_trainer.ReadComboRowBegin())
                 return false;
 
-            // get combo count
-            if(!_trainer.ReadComboRowCount(row_count))
-                return false;
-
             // search combo rows
-            for( Index i = 0; best_score && _trainer.ReadComboRow(i, row_string); i++ )
+            for( Index i = 0; best_score && _trainer.ReadComboRow(i, row_string, select_y); i++ )
             {
                 // substring search
                 if(Tools::StrSearch(pattern, row_string))
@@ -254,39 +267,27 @@ namespace Diablo
             // fail if not found
             if(row_index == INVALID_INDEX)
                 return false;
-
-            // write option index
-            if(!_trainer.WriteComboIndex(combo_id, row_index))
-                return false;
-
-            // open combo
-            MouseClick(open_coord);
-
-            // calculate screen index
-            screen_index = (row_count > drop_count) ?
-                drop_count - Tools::Min(row_count - row_index, drop_count) :
-                row_index;
         }
-        // else set default
         else
-        {
-            screen_index = 0;
+            row_index = 0;
 
-            // write 0 index
-            if(!_trainer.WriteComboIndex(combo_id, 0))
-                return false;
+        // write option index
+        if(!_trainer.WriteComboIndex(combo_id, row_index))
+            return false;
 
-            // open combo
-            MouseClick(open_coord);
-        }
+        // open combo
+        MouseClick(coordinate);
 
-        // calculated constrained combo y (due to resolution)
-        Double      combo_bottom = coordinate.y + (row_size_y * drop_count);
-        Double      constrained_y = (combo_bottom > 1.0) ? coordinate.y - (combo_bottom - 1.0) : coordinate.y;
-        Coordinate  constrained_coord(open_coord.x, constrained_y + (screen_index * row_size_y) + (row_size_y / 2));
+        // update combo state
+        if(!_trainer.ReadComboRowBegin())
+            return false;
+
+        // get select y
+        if(!_trainer.ReadComboRow(row_index, row_string, select_y))
+            return false;
 
         // click selection
-        MouseClick(constrained_coord);
+        MouseClick(Coordinate(coordinate.x, select_y));
 
         return true;
     }
@@ -314,7 +315,7 @@ namespace Diablo
         }
 
         // slice sleeps allowing termination
-        for( ; _active && delay > GAME_SLEEP_SLICE ; delay -= GAME_SLEEP_SLICE )
+        for( ; _active && delay > GAME_SLEEP_SLICE; delay -= GAME_SLEEP_SLICE )
             Thread::Sleep(GAME_SLEEP_SLICE);
         if(_active)
             Thread::Sleep(delay);
