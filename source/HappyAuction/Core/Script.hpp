@@ -359,6 +359,14 @@ namespace HappyAuction
             case SCRIPT_HASTASHSELL://DEPRECATED
                 return _haSell();
 
+            // haSellCancel() -> status
+            case SCRIPT_HASELLCANCEL:
+                return _haSellCancel();
+
+            // haSellIterate() -> status
+            case SCRIPT_HASELLITERATE:
+                return _haSellIterate();
+
             // haStashAt() -> [column, row, bag]
             case SCRIPT_HASTASHAT:
                 return _haStashAt();
@@ -858,6 +866,59 @@ namespace HappyAuction
         }
 
         /**/
+        ULong _haSellCancel()
+        {
+            Bool status = false;
+
+            // row must be valid
+            if(_state.sell.row > 0)
+            {
+                // cancel sale
+                status = _ahi.ReadSellCancel(_state.sell.row - 1);
+
+                // decrement row state
+                if(status)
+                    _state.sell.row--;
+            }
+
+            _PushStack(status);
+            return 1;
+        }
+
+        /**/
+        ULong _haSellIterate()
+        {
+            ULong   sell_count;
+            Bool    status = false;
+            Bool    reset = _state.sell.row == 0;
+
+            while(_active)
+            {
+                // read list count
+                if(!_ahi.ReadSellCount(sell_count))
+                    break;
+
+                // past list limit
+                if(_state.sell.row > sell_count)
+                {
+                    // reset index
+                    _state.sell.row = 0;
+                    break;
+                }
+
+                // read list item
+                if(_ahi.ReadSellItem(++_state.sell.row - 1, _state.item, reset))
+                {
+                    status = true;
+                    break;
+                }
+            }
+
+            _PushStack(status);
+            return 1;
+        }
+
+        /**/
         ULong _haStashAt()
         {
             _PushTable(0);
@@ -1027,6 +1088,7 @@ namespace HappyAuction
             _SetTable("mdamage",_state.item.damage_min);
             _SetTable("xdamage",_state.item.damage_max);
 
+            _SetTable("sbid",   _state.item.bid_start);
             _SetTable("cbid",   _state.item.bid_current);
             _SetTable("mbid",   _state.item.bid_max);
             _SetTable("buyout", _state.item.buyout);

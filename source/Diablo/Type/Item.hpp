@@ -49,6 +49,7 @@ namespace Diablo
         Number              damage_min;
         Number              damage_max;
 
+        Number              bid_start;
         Number              bid_current;
         Number              bid_max;
         Number              buyout;
@@ -84,6 +85,7 @@ namespace Diablo
             damage_min = 0;
             damage_max = 0;
 
+            bid_start = 0;
             bid_current = 0;
             bid_max = 0;
             buyout = 0;

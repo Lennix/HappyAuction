@@ -1,6 +1,4 @@
-- fixed restoring state of primary item type upon relogin
-- fixed haSell to fail+close popup if reached 10 auction limit.
-
+- make tutorial for noobz
 - add support for active auctions list
 - add functions to return current sort state
 - add timeout(function, milliseconds)

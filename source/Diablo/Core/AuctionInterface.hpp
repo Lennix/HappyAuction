@@ -66,6 +66,11 @@ namespace Diablo
         Bool    ReadListItem( Index index, Item& item, Bool ground, Bool select );
 
         /**/
+        Bool    ReadSellCount( ULong& count );
+        Bool    ReadSellItem( Index index, Item& item, Bool reset );
+        Bool    ReadSellCancel( Index index );
+
+        /**/
         Bool    SellStashItem( Index column, Index row, Number starting, Number buyout );
         Bool    ReadStashItem( Index column, Index row, Item& item, Bool ground, Bool select );
 
@@ -75,6 +80,7 @@ namespace Diablo
     private:
         Bool    _ClearPopups( Bool checked=true );
         Bool    _WaitSearch();
+        Bool    _WaitSell();
         Bool    _WaitButton( Id id );
         Bool    _ReadInputNumber( Id id, Number& number );
         void    _Reset();

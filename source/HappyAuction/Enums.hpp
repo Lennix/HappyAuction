@@ -30,6 +30,8 @@ namespace HappyAuction
 
         // auction/sell
         SCRIPT_HASELL,
+        SCRIPT_HASELLCANCEL,
+        SCRIPT_HASELLITERATE,
         SCRIPT_HASTASHAT,
         SCRIPT_HASTASHITERATE,
         SCRIPT_HASTASHSELECT,

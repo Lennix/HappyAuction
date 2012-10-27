@@ -45,6 +45,8 @@ namespace Diablo
     static const ULong              AH_NETWORK_WAIT_ITERATIONS =    6000;
     static const ULong              AH_BUTTON_WAIT_ITERATIONS =     40;
     static const ULong              AH_RESULTS_ROW_LIMIT =          11;
+    static const ULong              AH_SELL_VISIBLE_LIMIT =         5;
+    static const ULong              AH_SELL_ROW_LIMIT =             10;
     static const ULong              AH_UNIQUE_ROW_LIMIT =           5;
     static const ULong              AH_STASH_COLUMNS =              7;
     static const ULong              AH_STASH_ROWS =                 10;

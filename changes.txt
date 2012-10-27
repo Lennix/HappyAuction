@@ -1,3 +1,11 @@
+0.9.28
+- update to work with latest D3 hotfix
+- new functions. see README for details
+...- haSellIterate(): iterate through your selling auctions
+...- haSellCancel(): cancel an auction
+- added haItem().sbid to get starting bid (applies to your haSellIterate() only)
+- fix haSell always returning false
+
 0.9.27
 - fixed restoring state of primary item type upon relogin
 - fixed haSell to fail+close popup if reached 10 auction limit.

@@ -57,6 +57,8 @@ namespace HappyAuction
 
         // auction/sell
         "haSell",
+        "haSellCancel",
+        "haSellIterate",
         "haStashAt",
         "haStashIterate",
         "haStashSelect",

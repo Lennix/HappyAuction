@@ -538,6 +538,135 @@ namespace Diablo
         return status;
     }
 
+    // auction tab
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::ReadSellCount( ULong& count )
+    {
+        Tab(UI_TAB_AUCTIONS);
+
+        // wait ready
+        if(!_WaitSell())
+            return false;
+
+        return _trainer.ReadSellCount(count);
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::ReadSellItem( Index index, Item& item, Bool reset )
+    {
+        const Coordinate& icon = UI_COORDS[UI_CONTAINER_SELLICON0];
+        const Coordinate& size = UI_COORDS[UI_CONTAINER_SELLICONSIZE];
+        ULong count;
+        Bool  status = false;
+
+        Tab(UI_TAB_AUCTIONS);
+
+        // wait ready
+        if(!_WaitSell())
+            return false;
+
+        // get count and validate
+        if(!_trainer.ReadSellCount(count) || count == 0 || index >= count)
+            return false;
+
+        // ground clear
+        _game.MouseMoveGround();
+
+        // empty item
+        item.Empty();
+
+        // reset scroller
+        if(reset)
+        {
+            for( Index i = AH_SELL_VISIBLE_LIMIT; i < count; i++ )
+                _game.MouseClick(UI_COORDS[UI_LBUTTON_SELLSCROLLUP], Game::INPUT_NODELAY);
+        }
+
+        // adjust position
+        if(index >= AH_SELL_VISIBLE_LIMIT)
+        {
+            // scroll once
+            //for( Index i = AH_SELL_VISIBLE_LIMIT; i <= index; i++ )
+            _game.MouseClick(UI_COORDS[UI_LBUTTON_SELLSCROLLDOWN]);
+
+            // adjust to screen index
+            index = AH_SELL_VISIBLE_LIMIT - 1;
+        }
+
+        // clear hover item
+        if(_trainer.ClearHoverItem())
+        {
+            // calculate list icon position
+            Coordinate coord(icon.x, icon.y + index * size.y);
+
+            // hover to open tooltip
+            _game.MouseMove(coord, Game::INPUT_NODELAY);
+
+            // loop until success or limit
+            for( Index i = 0; _active && !status && i < AH_ITEMHOVER_WAIT_ITERATIONS; i++ )
+            {
+                // wait a little
+                _game.Sleep(1);
+
+                // read item listing and item stat
+                if(_trainer.ReadSellItem(index, item) && _trainer.ReadHoverItem(item))
+                {
+                    // success
+                    status = true;
+                }
+            }
+        }
+
+        return status;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::ReadSellCancel( Index index )
+    {
+        const Coordinate& button = UI_COORDS[UI_LBUTTON_SELLCANCEL0];
+        const Coordinate& size = UI_COORDS[UI_LBUTTON_SELLCANCELSIZE];
+        ULong count;
+
+        Tab(UI_TAB_AUCTIONS);
+
+        // wait ready
+        if(!_WaitSell())
+            return false;
+
+        // get count and validate
+        if(!_trainer.ReadSellCount(count) || count == 0 || index >= count)
+            return false;
+
+        // adjust to screen index
+        index = Tools::Min(index, AH_SELL_VISIBLE_LIMIT - 1);
+
+        // calculate button position
+        Coordinate coord(button.x, button.y + index * size.y);
+
+        // click cancel button
+        _game.MouseClick(coord);
+
+        // wait until sell count changes
+        for( Index i = 0; _active && i < AH_NETWORK_WAIT_ITERATIONS; i++ )
+        {
+            ULong new_count;
+
+            // read sell count
+            if(!_trainer.ReadSellCount(new_count))
+                return false;
+
+            // success if changed
+            if(new_count != count)
+                return true;
+
+            // poll delay
+            _game.SleepFrames(1);
+        }
+
+        return false;
+    }
+
+    // sell tab
     //------------------------------------------------------------------------
     Bool AuctionInterface::SellStashItem( Index column, Index row, Number starting, Number buyout )
     {
@@ -640,32 +769,43 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::_ClearPopups( Bool checked )
     {
-        static const UiId types[] = { UI_POPUP_ERROR, UI_POPUP_OK };
+        static const UiId popup_buttons[] = { UI_POPUP_ERROR, UI_POPUP_OK };
         Bool status;
 
-        // fail if nothing to close
-        if(checked && (!_trainer.ReadPopupStatus(status) || !status))
-            return false;
-
-        // click until closed
-        do
+        // checked: verify popups exist and closed
+        if(checked)
         {
-            // handle each popup type
-            for( Index i = 0; i < ACOUNT(types); i++ )
+            // fail if nothing to close
+            if(!_trainer.ReadPopupStatus(status) || !status)
+                return false;
+
+            // click known button locations until closed
+            do
             {
-                // click closer button
-                _game.MouseClick(UI_COORDS[types[i]]);
+                // for each popup button location
+                for( Index i = 0; i < ACOUNT(popup_buttons); i++ )
+                {
+                    // click button
+                    _game.MouseClick(UI_COORDS[popup_buttons[i]]);
 
-                // read status
-                if(checked && !_trainer.ReadPopupStatus(status))
-                    return false;
+                    // read status
+                    if(!_trainer.ReadPopupStatus(status))
+                        return false;
 
-                // success if false
-                if(checked && !status)
-                    return true;
+                    // success if false
+                    if(!status)
+                        return true;
+                }
             }
+            while(checked && _active);
         }
-        while(checked && _active);
+        // unchecked: dismiss popups blindly
+        else
+        {
+            // for each popup button location click popup button
+            for( Index i = 0; i < ACOUNT(popup_buttons); i++ )
+                _game.MouseClick(UI_COORDS[popup_buttons[i]]);
+        }
 
         return true;
     }
@@ -706,6 +846,31 @@ namespace Diablo
             // get button status
             if(!_trainer.ReadButtonStatus(status, Trainer::OBJECT_BUTTON_SEARCH))
                 return false;
+        }
+
+        return false;
+    }
+
+    //------------------------------------------------------------------------
+    Bool AuctionInterface::_WaitSell()
+    {
+        Tab(UI_TAB_AUCTIONS);
+
+        // poll listing status
+        for( Index i = 0; _active && i < AH_NETWORK_WAIT_ITERATIONS; i++ )
+        {
+            Bool status;
+
+            // read sell status
+            if(!_trainer.ReadSellStatus(status))
+                return false;
+
+            // check sell status
+            if(status)
+                return true;
+
+            // poll delay
+            _game.SleepFrames(1);
         }
 
         return false;

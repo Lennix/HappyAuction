@@ -80,6 +80,18 @@ namespace HappyAuction
     };
 
     /**/
+    struct StateSell
+    {
+        Bool        active;
+        Index       row;
+
+        StateSell():
+            active(false),
+            row(0)
+        {}
+    };
+
+    /**/
     struct StateStash
     {
         Index       row;
@@ -95,6 +107,7 @@ namespace HappyAuction
         StateLogin      login;
         StateFilters    filters;
         StateSearch     search;
+        StateSell       sell;
         StateStash      stash;
         Item            item;
     };

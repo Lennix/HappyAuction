@@ -54,6 +54,7 @@ namespace Diablo
             OBJECT_MAIN_POPUP1,
             OBJECT_MAIN_POPUP2,
             OBJECT_MAIN_AUCTION,
+            //OBJECT_MAIN_SELLING,
 
             OBJECT_COUNT,
         };
@@ -80,17 +81,17 @@ namespace Diablo
             Byte    _4[0x010];
             ULong   n3[4];          // 47c
             Byte    _5[0x058];
-            ULong   n4;             // 4e4
-            Byte    _6[0x020];
+            ULong   anim_state;     // 4e4
+            Byte    _7[0x020];
             Float   x1;             // 508
             Float   y1;             // 50c
             Float   x2;             // 510
             Float   y2;             // 514
-            Byte    _7[0x5C8];
+            Byte    _8[0x5C8];
             ULong   addr2_value;    // ae0
-            Byte    _8[0x00c];
+            Byte    _9[0x00c];
             ULong   addr3_child;    // af0
-            Byte    _9[0x418];
+            Byte    _10[0x418];
             ULong   n5[4];          // f0c
         };
 
@@ -100,6 +101,14 @@ namespace Diablo
             ULong   count;          // 014
             Byte    _2[0x04];
             ULong   addr_items;     // 01C
+        };
+
+        struct _AhSells
+        {
+            Byte    _1[0x10];
+            ULong   count;          // 010
+            Byte    _2[0x04];
+            ULong   addr_items;     // 018
         };
 
     private:
@@ -144,6 +153,11 @@ namespace Diablo
         Bool ReadListNextStatus( Bool& status );
         
         /**/
+        Bool ReadSellItem( Index index, Item& item );
+        Bool ReadSellCount( ULong& count );
+        Bool ReadSellStatus( Bool& active );
+
+        /**/
         Bool ReadButtonStatus( ButtonStatus& status, Id button_id );
 
         /**/
@@ -169,6 +183,7 @@ namespace Diablo
 
         /**/
         Bool _ReadListRoot( _AhList& object );
+        Bool _ReadSellRoot( _AhSells& object );
 
         /**/
         Bool _ReadUiObject( _UiObject& object, Id id );

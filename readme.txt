@@ -1,4 +1,4 @@
-HappyAuction v0.9.26
+HappyAuction v0.9.28
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -249,6 +249,21 @@ AUCTION/SELL:
     - starting: starting price
     - buyout:   optional buyout price
     - status:   true if successful.
+
+- haSellCancel() -> status
+    Cancels the last auction selected by haSellIterate().
+    - status:   true if successful.
+
+- haSellIterate()
+    Iterates through each of your selling auctions (auctions tab).
+    example:
+        -- will cancel all auctions expiring in less than 12 hours.
+        while haSellIterate() do
+            if haItem().rtime < (12 * 60 * 60 * 1000) then
+                haSellCancel()
+            end
+        end
+    - status:   true if more remaining.
 
 - haStashAt() -> [column, row, bag]
     Returns current stash position

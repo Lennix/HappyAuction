@@ -235,6 +235,14 @@ namespace Diablo
         Coordinate( F2R_XC(799),  F2R_Y(1048) ),
         Coordinate( F2R_XC(799),  F2R_Y(1104) ),
         Coordinate( F2R_XC(799),  F2R_Y(1160) ),
+        // UI_LBUTTON_SELLSCROLLUP
+        Coordinate( F2R_XC(2153), F2R_Y(457) ),
+        // UI_LBUTTON_SELLSCROLLDOWN
+        Coordinate( F2R_XC(2153), F2R_Y(748) ),
+        // UI_LBUTTON_SELLCANCEL0
+        Coordinate( F2R_XC(1907), F2R_Y(468) ),
+        // UI_LBUTTON_SELLCANCELSIZE
+        Coordinate( F2R_X(240.0), F2R_Y(66.5) ),
 
         // UI_TAB_SEARCH
         Coordinate( F2R_XC(791),  F2R_Y(240) ),
@@ -242,6 +250,8 @@ namespace Diablo
         Coordinate( F2R_XC(699),  F2R_Y(353) ),
         // UI_TAB_SELL
         Coordinate( F2R_XC(1122), F2R_Y(240) ),
+        // UI_TAB_AUCTIONS
+        Coordinate( F2R_XC(1430), F2R_Y(240) ),
         // UI_TAB_COMPLETED
         Coordinate( F2R_XC(1750), F2R_Y(240) ),
         // UI_TAB_STASHBAG1-3
@@ -256,6 +266,10 @@ namespace Diablo
         // UI_CONTAINER_LISTICON0
         Coordinate( F2R_XC(895),  F2R_Y(443) ),
         // UI_CONTAINER_LISTICONSIZE
+        Coordinate( F2R_X(66.91), F2R_Y(66.91) ),
+        // UI_CONTAINER_SELLICON0
+        Coordinate( F2R_XC(420),  F2R_Y(472) ),
+        // UI_CONTAINER_SELLICONSIZE
         Coordinate( F2R_X(66.91), F2R_Y(66.91) ),
         // UI_CONTAINER_COMBOROWSIZE
         Coordinate( F2R_X(100),   F2R_Y(44.8) ),
