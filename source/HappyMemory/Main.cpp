@@ -3,6 +3,7 @@
 #include <Core/Type/Array.hpp>
 #include <Diablo/Types.hpp>
 #include <Diablo/Core/Game.hpp>
+#include <Diablo/Core/Trainer.hpp>
 #include <Core/System/Process.hpp>
 #include <Core/System/MemoryScanner.hpp>
 #include <windows.h>
@@ -13,7 +14,7 @@ using namespace Core;
 
 
 static const ULong ALIGNMENT = 4;
-static const ULong DEPTH = 4;
+static const ULong DEPTH = 5;
 
 
 #pragma pack(2)
@@ -343,167 +344,7 @@ private:
 };
 
 
-#if 0
-/**/
-class SpiderProcess:
-    MemoryScanner::IScanHandler
-{
-private:
-    StructureSpider     _spider;
-    Process&            _process;
-    ProcessMemoryMap    _map;
 
-public:
-    /**/
-    SpiderProcess( Process& process ):
-        _process(process),
-        _map(process)
-    {
-    }
-
-    /**/
-    Bool Run()
-    {
-        #define ANA_COUNT 2
-
-        PointerAnalysis analysis_base;
-        PointerAnalysis analysis_compare[ANA_COUNT];
-
-        if(!_map.Build())
-            return false;
-
-        ULong offset =  4096;
-        ULong offset0 = offset;//offset;
-        ULong depth =   4;
-
-        _RunSpider( 0, analysis_base,       0x1b3cfcec, offset, offset0, depth );
-        _RunSpider( 1, analysis_compare[0], 0x178e4cec, offset, offset0, depth );
-        _RunSpider( 2, analysis_compare[1], 0x178e5cec, offset, offset0, depth );
-
-        puts("Comparing...");
-        analysis_base.PrintCompare(analysis_compare, ANA_COUNT);
-
-        return true;
-    }
-/*
-    BASES
-    -0xCEC   ah combo boxes
-    -0x028   item first socket      Root.TopLayer.item 2.stack.frame body.stack.socket 0
-
-    -0x000   item stats text        Root.TopLayer.item 2.stack.frame body.stack.enhancement
-                                ->  [Root.TopLayer.item 2.stack.frame body.stack.stats - 0x38 + 0xac8]
-                                ->  []
-*/
-private:
-    /**/
-    void _RunSpider( Id id, PointerAnalysis& analysis, ULong address, ULong offset, ULong offset0, ULong depth )
-    {
-        ULong               s_address = 0;
-        ULong               s_next = 0;
-        const Byte*         s_begin = NULL;
-        const Byte*         s_end = NULL;
-
-        // collect
-        printf("[%u] Spider: Collect\n", id);
-        _spider.CollectBegin();
-        
-
-        _map.Scan(*this);
-//        while(IterateSlim(s_next, s_address, s_begin, s_end))
-//            _OnScan(s_address, s_begin, s_end);
-
-        _spider.CollectComplete();
-
-        // analyze
-        printf("[%u] Spider: Analyze\n", id);
-        _spider.Analyze( analysis, address, offset, offset0, depth );
-
-        // print
-        printf("[%u] Spider: Results\n", id);
-        //analysis.Print();
-    }
-
-    /**/
-    Bool OnScan( ULong address, const Byte* memory )
-    {
-        ULong pointer = *(ULong*)memory;
-
-        // ensure pointer is in address range
-        if(_process.IsPossiblePointer(pointer))
-            _spider.CollectAdd(address, pointer);
-
-        return true;
-    }
-};
-
-
-
-/**/
-template<typename TYPE>
-class ComparePair:
-    MemoryScanner::IScanHandler
-{
-private:
-    TYPE    _value1;
-    TYPE    _value2;
-    ULong   _offset;
-
-    ULong   _last_address;
-    TYPE    _last_value;
-
-    Process&            _process;
-    ProcessMemoryMap    _map;
-
-public:
-    /**/
-    ComparePair( Process& process ):
-        _process(process),
-        _map(process),
-        _value1(0),
-        _value2(0),
-        _offset(0),
-        _last_address(0),
-        _last_value(0)
-    {
-    }
-
-    /**/
-    Bool Run()
-    {
-        _value1 = 0x198DCAB0;
-        _value2 = 0x1EA54AB0;
-        _offset = 32;
-        if(_map.Build())
-            _map.Scan(*this);
-
-        return true;
-    }
-
-
-private:
-    /**/
-    Bool OnScan( ULong address, const Byte* memory )
-    {
-        TYPE value = *(const TYPE*)memory;
-
-        if(value == _value1 || value == _value2)
-        {
-            if(_last_address && _last_value != value)
-            {
-                ULong diff = abs((Long)address - (Long)_last_address);
-                if(diff <= _offset)
-                    printf("[%0.8u @ %0.8x] ... %0.3u ... [%0.8u @ %0.8x]\n", _last_value, _last_address, diff, value, address);
-            }
-
-            _last_address = address;
-            _last_value = value;
-        }
-
-        return true;
-    }
-};
-
-#endif
 
 /**/
 class StructureMole
@@ -548,44 +389,45 @@ public:
     {
         ULong       offset = 4096;
         ULong       offset0 = offset;
-        ULong       depth = 3;
-        ULong       address1 = 0x235F6100;
-        ULong       address2 = 0x235F6100;
-        ULong       address3 = 0x235F6100;
-        ULong       address4 = 0x235F6100;
+        ULong       depth = 4;
+        ULong       address1 = 0x1ddc4000;
+        //ULong       address1 = 0x1c413700;
+        //ULong       address2 = 0x235F6100;
+        //ULong       address3 = 0x235F6100;
+        //ULong       address4 = 0x235F6100;
 
 //        Char        v1[128] = "Root.TopLayer.DropDown._content._stackpanel";
-        Char        v1[128] = "Root.TopLayer.DropDown._content._stackpanel._item0";
-        ULong       v1size = strlen(v1);
-        Char        v2[128] = "Root.TopLayer.DropDown._content._stackpanel._item1";
-        ULong       v2size = strlen(v2);
-        Char        v3[128] = "Root.TopLayer.DropDown._content._stackpanel._item2";
-        ULong       v3size = strlen(v3);
-        Char        v4[128] = "Root.TopLayer.DropDown._content._stackpanel._item3";
-        ULong       v4size = strlen(v4);
+        Char        v1[128] = "Only 10 auctions are allowed";
+        ULong       v1size = strlen(v1);// + 1;
+        //Char        v2[128] = "Root.TopLayer.DropDown._content._stackpanel._item1";
+        //ULong       v2size = strlen(v2);
+        //Char        v3[128] = "Root.TopLayer.DropDown._content._stackpanel._item2";
+        //ULong       v3size = strlen(v3);
+        //Char        v4[128] = "Root.TopLayer.DropDown._content._stackpanel._item3";
+        //ULong       v4size = strlen(v4);
 
         PointerAnalysis analysis1;
-        PointerAnalysis analysis2;
-        PointerAnalysis analysis3;
-        PointerAnalysis analysis4;
+        //PointerAnalysis analysis2;
+        //PointerAnalysis analysis3;
+        //PointerAnalysis analysis4;
 
 //        if(!_scanner.Scan(*this))
 //            return false;
 
         analysis1.SetDepth(depth);
-        analysis2.SetDepth(depth);
-        analysis3.SetDepth(depth);
-        analysis4.SetDepth(depth);
+        //analysis2.SetDepth(depth);
+        //analysis3.SetDepth(depth);
+        //analysis4.SetDepth(depth);
 
         _Mole( analysis1, address1, offset, offset0, v1, v1size, depth );
-        _Mole( analysis2, address2, offset, offset0, v2, v2size, depth );
-        _Mole( analysis3, address3, offset, offset0, v3, v3size, depth );
+        //_Mole( analysis2, address2, offset, offset0, v2, v2size, depth );
+        //_Mole( analysis3, address3, offset, offset0, v3, v3size, depth );
         //_Mole( analysis4, address4, offset, offset0, v4, v4size, depth );
 
         puts("Analyzing...");
         analysis1.Print();
-        analysis2.Print();
-        analysis3.Print();
+        //analysis2.Print();
+        //analysis3.Print();
         //analysis4.Print();
 
 //        puts("Comparing...");
@@ -658,101 +500,64 @@ private:
 
 
 
-
-
-
-static void _run_test_trainer()
+/**/
+class PatchTrainer:
+    MemoryScanner::IScanHandler
 {
-    Window          window;
-    Process         process;
+private:
+    const Char*     _path;
+    ULong           _address;
+    MemoryScanner   _scanner;
 
-    if(window.Find("Diablo III", "D3 Main Window Class") && process.FromWindow(window))
+public:
+    PatchTrainer(Process& process):
+        _scanner(process)
     {
-        //TestTrainer trainer(process);
+    }
 
-        process.SetLow( 0x01000000 );
-        process.SetHigh( 0x32000000 );
+    void Run()
+    {
 
-        //trainer.Run();
+        _path = "Root";
+        _address = 0;
+
+        _scanner.Scan(*this);
+    }
+
+private:
+    Bool OnScan( ULong address, const Byte* memory, ULong length )
+    {
+        const Trainer::UiObject& object = *reinterpret_cast<const Trainer::UiObject*>(memory);
+
+        if(sizeof(Trainer::UiObject) <= length && Trainer::IsValidUiObject(object))
+        {
+            if( strcmp(object.path, _path) == 0 )
+            {
+                // add address
+                _address = address;
+                printf("%x\n", address);
+                return false;
+            }
+        }
+
+        return true;
     }
 };
-
-
-
-
-/**/
-static Bool _ParseLine( PointerPath& path, const Char* line )
-{
-    path.depth = 0;
-    Index i = 0;
-    for( ; i < DEPTH; )
-    {
-        if(sscanf(line, "%x:%x", &path.pointers[i].address, &path.pointers[i].offset) != 2)
-            break;
-        i++;
-
-        if((line = strchr(line, ',')) == NULL)
-            break;
-        line++;
-    }
-    path.depth = i;
-    return i > 0;
-}
-
-static void _CompareFiles( const Char* path1, const Char* path2 )
-{
-    FILE*       f1 = fopen(path1, "rt");
-    FILE*       f2 = fopen(path2, "rt");
-    PointerPath p1;
-    PointerPath p2;
-    TextString  line;
-
-    if(f1 && f2)
-    {
-        while(fgets(line, sizeof(line), f1) && _ParseLine(p1, line))
-        {
-            while(fgets(line, sizeof(line), f2) && _ParseLine(p2, line))
-            {
-                Bool greater = false;
-
-                if(p1.depth > 0 && p1.depth == p2.depth)
-                {
-                    Index i = 0;
-
-                    for( ; i < p1.depth && p1.pointers[i].offset == p2.pointers[i].offset; i++ );
-
-                    if(i == p1.depth)
-                    {
-                        PointerAnalysis::PrintPointerPath(0, p1);
-                        PointerAnalysis::PrintPointerPath(1, p2);
-                        puts("");
-                    }
-                }
-            }
-            fseek(f2, 0, SEEK_SET);
-        }
-    }
-
-    fclose(f1);
-    fclose(f2);
-}
 
 
 /**/
 int main()
 {
-    //_run_test_trainer(); return 0;
-
-    //_CompareFiles("1.txt", "2.txt"); return 0;
     puts("Waiting...");
     //Sleep(1000);
 
     Window  window;
     Process process;
 
-    if(window.Find("Diablo III", "D3 Main Window Class") && process.FromWindow(window))
+    if(window.Open(NULL, GAME_WINDOW_CLASS) && process.FromWindow(window))
     {
-        StructureMole       application(process);
+        PatchTrainer        application(process);
+        //StructureMole       application(process);
         //ComparePair<ULong>  application(process);
         //SpiderProcess       application(process);
 

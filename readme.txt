@@ -1,4 +1,4 @@
-HappyAuction v0.9.28
+HappyAuction v0.9.29
 
 DESCRIPTION
 ------------------------------------------------------------------------------
@@ -174,9 +174,11 @@ AUCTION/SEARCH:
 
 - haFilterStat(index, id, value) -> status
   haFilterStat(index) -> status
-    Sets item preferred stat and minimum value filter. Not specifying and id
+    Sets item preferred stat and minimum value filter. Not specifying id
     and value will reset this filter to None.
-    - index: specify which of the 3 stat filters to use. range: 1-3
+    example:
+        haFilterStat(4, 'Critical Hit Chance', 60)
+    - index:    specify which of the 6 stat filters to use. range: 1-6
     - id:       substring identifier of type. nil to clear.
                 example: 'level req' will match 'Reduced Level Requirement'
     - value:    minimum value for this filter. range: 0-999. -1 to clear.

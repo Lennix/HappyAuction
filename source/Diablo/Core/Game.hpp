@@ -24,6 +24,7 @@ namespace Diablo
         Process _process;
         Trainer _trainer;
         Mutex   _mutex;
+        ULong   _delay;
         Bits    _override_options;
         Bool    _active;
 
@@ -45,6 +46,10 @@ namespace Diablo
 
         /**/
         void SetOverrideOptions( Bits options );
+
+        /**/
+        void SetGlobalDelay( ULong delay );
+        ULong GetGlobalDelay() const;
 
         /**/
         void MouseClick( const Coordinate& coord, Bits options=0 );

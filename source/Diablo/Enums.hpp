@@ -26,6 +26,19 @@ namespace Diablo
     };
 
     /**/
+    enum RarityId
+    {
+        RARITY_UNKNOWN,
+        RARITY_INFERIOR,
+        RARITY_NORMAL,
+        RARITY_SUPERIOR,
+        RARITY_MAGIC,
+        RARITY_RARE,
+        RARITY_LEGENDARY,
+        RARITY_SET,
+    };
+
+    /**/
     enum GemTypeId
     {
         GEM_TYPE_EMPTY,
@@ -135,8 +148,8 @@ namespace Diablo
         UI_COMBO_PSTAT4,
         UI_COMBO_PSTAT5,
 
+        UI_POPUP_AH,
         UI_POPUP_ERROR,
-        UI_POPUP_OK,
         UI_POPUP_UNIQUE,
 
         UI_OTHER_GROUND,

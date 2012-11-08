@@ -315,12 +315,32 @@ namespace Diablo
     //------------------------------------------------------------------------
     Bool AuctionInterface::ActionBid( Index index, Number bid )
     {
-        Item dummy;
+        Item item;
         Tab(UI_TAB_SEARCH, UI_TAB_SEARCH_EQUIPMENT);
 
         // select item index
-        if(!ReadListItem(index, dummy, true, true))
+        if(!ReadListItem(index, item, true, true))
             return false;
+
+        // if bid price set
+        if(bid)
+        {
+            // fail if requested bid under max bid
+            if(bid < item.bid_max)
+                return false;
+
+            // normalize if requested bid over buyout
+            if(item.buyout && bid > item.buyout)
+                bid = item.buyout;
+
+            // if user bid equal buyout then do buyout
+            if(bid == item.buyout)
+                return ActionBuyout(index);
+        }
+
+        // if max bid equal buyout then do buyout
+        if(item.bid_max == item.buyout)
+            return ActionBuyout(index);
 
         // wait button status
         if(!_WaitButton(Trainer::OBJECT_BUTTON_BID))
@@ -336,10 +356,8 @@ namespace Diablo
         // hit confirm button
         _game.MouseClick(UI_COORDS[UI_BUTTON_BIDCONFIRM]);
 
-        // clear ok popup
-        _ClearPopups();
-
-        return true;
+        // handle popup
+        return _HandlePopup(UI_POPUP_AH, AH_POPUP_SUCCESS_BID);
     }
 
     //------------------------------------------------------------------------
@@ -362,10 +380,8 @@ namespace Diablo
         // hit confirm button
         _game.MouseClick(UI_COORDS[UI_BUTTON_BUYOUTCONFIRM]);
 
-        // clear ok popup
-        _ClearPopups();
-
-        return true;
+        // handle popup
+        return _HandlePopup(UI_POPUP_AH, AH_POPUP_SUCCESS_BUYOUT);
     }
 
     //------------------------------------------------------------------------
@@ -402,12 +418,12 @@ namespace Diablo
         if(status)
             return false;
 
-        // clear popups
-        _ClearPopups(false);
-
         // wait until logged out
         while(_active)
         {
+            // clear popups
+            _HandlePopup(UI_POPUP_ERROR);
+
             // read login status
             if(!_trainer.ReadLoginStatus(status))
                 return false;
@@ -433,7 +449,7 @@ namespace Diablo
             _game.MouseClick(UI_COORDS[UI_BUTTON_LOGIN]);
 
             // close any popups
-            _ClearPopups(false);
+            _HandlePopup(UI_POPUP_ERROR);
 
             // loop delay
             _game.Sleep(GAME_LOGIN_LOOP_DELAY);
@@ -450,25 +466,18 @@ namespace Diablo
         // login lobby delay
         _game.Sleep(GAME_LOGIN_LOBBY_DELAY);
 
-        // wait until in auction house
-        while(_active)
-        {
-            // close character profile in case previous popup closer call opened it
-            _game.MouseClick(UI_COORDS[UI_BUTTON_PROFILECLOSE]);
+        // close character profile in case previous popup closer call opened it
+        _game.MouseClick(UI_COORDS[UI_BUTTON_PROFILECLOSE]);
 
-            // click auction house button
-            _game.MouseClick(UI_COORDS[UI_BUTTON_AUCTIONHOUSE]);
+        // click auction house button
+        _game.MouseClick(UI_COORDS[UI_BUTTON_AUCTIONHOUSE]);
 
-            // auction enter delay
-            _game.Sleep(GAME_MAIN_AUCTION_DELAY);
+        // auction enter delay
+        _game.Sleep(GAME_MAIN_AUCTION_DELAY);
 
-            // run retrain until success
-            if(_trainer.Train())
-                break;
-
-            // loop delay
-            _game.Sleep(GAME_LOGIN_LOOP_DELAY);
-        }
+        // run retrain until success
+        if(!_trainer.Train())
+            return false;
 
         // reset tabs
         _Reset();
@@ -556,8 +565,9 @@ namespace Diablo
     {
         const Coordinate& icon = UI_COORDS[UI_CONTAINER_SELLICON0];
         const Coordinate& size = UI_COORDS[UI_CONTAINER_SELLICONSIZE];
-        ULong count;
-        Bool  status = false;
+        ULong   count;
+        Index   screen_index;
+        Bool    status = false;
 
         Tab(UI_TAB_AUCTIONS);
 
@@ -589,15 +599,17 @@ namespace Diablo
             //for( Index i = AH_SELL_VISIBLE_LIMIT; i <= index; i++ )
             _game.MouseClick(UI_COORDS[UI_LBUTTON_SELLSCROLLDOWN]);
 
-            // adjust to screen index
-            index = AH_SELL_VISIBLE_LIMIT - 1;
+            // adjust screen index
+            screen_index = AH_SELL_VISIBLE_LIMIT - 1;
         }
+        else
+            screen_index = index;
 
         // clear hover item
         if(_trainer.ClearHoverItem())
         {
             // calculate list icon position
-            Coordinate coord(icon.x, icon.y + index * size.y);
+            Coordinate coord(icon.x, icon.y + screen_index * size.y);
 
             // hover to open tooltip
             _game.MouseMove(coord, Game::INPUT_NODELAY);
@@ -671,15 +683,17 @@ namespace Diablo
     Bool AuctionInterface::SellStashItem( Index column, Index row, Number starting, Number buyout )
     {
         Item dummy;
-
         Tab(UI_TAB_SELL);
 
         // select item
         if(!ReadStashItem(column, row, dummy, true, true))
             return false;
 
+        // wait a few frames
+        _game.SleepFrames(2);
+
         // if an error popup was cleared then fail
-        if(_ClearPopups())
+        if(_HandlePopup(UI_POPUP_ERROR))
             return false;
 
         // write starting price
@@ -692,13 +706,10 @@ namespace Diablo
         _game.MouseClick(UI_COORDS[UI_BUTTON_CREATEAUCTION]);
 
         // wait a few frames
-        _game.SleepFrames(4);
+        _game.SleepFrames(2);
 
-        // there should be a popup. fail otherwise
-        if(!_ClearPopups())
-            return false;
-
-        return true;
+        // handle popup
+        return _HandlePopup(UI_POPUP_AH, AH_POPUP_SUCCESS_CREATEAUCTION);
     }
 
     //------------------------------------------------------------------------
@@ -767,37 +778,44 @@ namespace Diablo
 
     // private
     //------------------------------------------------------------------------
-    Bool AuctionInterface::_ClearPopups( Bool checked )
+    Bool AuctionInterface::_HandlePopup( Id id, const Char* success_text )
     {
-        static const UiId popup_buttons[] = { UI_POPUP_ERROR, UI_POPUP_OK };
-        Bool status;
+        //static const UiId popup_buttons[] = { UI_POPUP_ERROR, UI_POPUP_OK };
+        Id          trainer_id = Trainer::OBJECT_POPUP_AH + (id - UI_POPUP_AH);
+        Bool        success = true;
+        Bool        status;
+        TextString  text;
+//            OBJECT_POPUP_AH,
+//            OBJECT_POPUP_ERROR,
 
         // checked: verify popups exist and closed
-        if(checked)
-        {
+        //if(checked)
+        //{
             // fail if nothing to close
-            if(!_trainer.ReadPopupStatus(status) || !status)
+            if(!_trainer.ReadPopupStatus(status, text, trainer_id) || !status)
                 return false;
+
+            // if success text
+            if(success_text)
+                success = (Tools::StrSearch(success_text, text) != NULL);
 
             // click known button locations until closed
             do
             {
-                // for each popup button location
-                for( Index i = 0; i < ACOUNT(popup_buttons); i++ )
-                {
-                    // click button
-                    _game.MouseClick(UI_COORDS[popup_buttons[i]]);
+                // click button
+                _game.MouseClick(UI_COORDS[id]);
 
-                    // read status
-                    if(!_trainer.ReadPopupStatus(status))
-                        return false;
+                // read status
+                if(!_trainer.ReadPopupStatus(status, text, trainer_id))
+                    return false;
 
-                    // success if false
-                    if(!status)
-                        return true;
-                }
+                // success if false
+                if(!status)
+                    return success;
             }
-            while(checked && _active);
+            while(_active);
+//            while(checked && _active);
+/*
         }
         // unchecked: dismiss popups blindly
         else
@@ -806,8 +824,8 @@ namespace Diablo
             for( Index i = 0; i < ACOUNT(popup_buttons); i++ )
                 _game.MouseClick(UI_COORDS[popup_buttons[i]]);
         }
-
-        return true;
+*/
+        return false;
     }
 
     //------------------------------------------------------------------------

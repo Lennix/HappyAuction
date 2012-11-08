@@ -78,7 +78,7 @@ namespace Diablo
         Bool    Tab( Id primary, Id secondary=INVALID_ID );
 
     private:
-        Bool    _ClearPopups( Bool checked=true );
+        Bool    _HandlePopup( Id id, const Char* success_text=NULL );
         Bool    _WaitSearch();
         Bool    _WaitSell();
         Bool    _WaitButton( Id id );

@@ -1,13 +1,13 @@
 #pragma once
 #include <Diablo/Type/Item.hpp>
-#include <Core/System/Process.hpp>
 #include <Core/System/MemoryScanner.hpp>
+#include <Core/System/Process.hpp>
 
 namespace Diablo
 {
     /**/
     class Trainer:
-        MemoryScanner::IScanHandler
+        public MemoryScanner::IScanHandler
     {
     public:
         enum
@@ -50,11 +50,11 @@ namespace Diablo
             OBJECT_BUTTON_BID,
             OBJECT_BUTTON_BUYOUT,
 
+            OBJECT_POPUP_AH,
+            OBJECT_POPUP_ERROR,
+
             OBJECT_TOP,
-            OBJECT_MAIN_POPUP1,
-            OBJECT_MAIN_POPUP2,
             OBJECT_MAIN_AUCTION,
-            //OBJECT_MAIN_SELLING,
 
             OBJECT_COUNT,
         };
@@ -67,8 +67,8 @@ namespace Diablo
             BUTTON_HIGHLIGHTED,
         };
 
-    private:
-        struct _UiObject
+    public:
+        struct UiObject
         {
             ULong   n1[10];
             ULong   visible;
@@ -95,7 +95,7 @@ namespace Diablo
             ULong   n5[4];          // f0c
         };
 
-        struct _AhList
+        struct AhSearchList
         {
             Byte    _1[0x14];
             ULong   count;          // 014
@@ -103,7 +103,7 @@ namespace Diablo
             ULong   addr_items;     // 01C
         };
 
-        struct _AhSells
+        struct AhSellList
         {
             Byte    _1[0x10];
             ULong   count;          // 010
@@ -113,12 +113,14 @@ namespace Diablo
 
     private:
         Process&        _process;
-        MemoryScanner   _memory;
+        MemoryScanner   _scanner;
         ULong           _address[OBJECT_COUNT];
         ULong           _d3_base;
         ULong           _bnet_base;
         ULong           _combo_count;
         ULong           _combo_addresses[UI_COMBO_ROW_LIMIT];
+        ULong           _ui_addresses[OBJECT_COUNT];
+        ULong           _ui_root;
         Bool            _trained;
 
     public:
@@ -161,7 +163,7 @@ namespace Diablo
         Bool ReadButtonStatus( ButtonStatus& status, Id button_id );
 
         /**/
-        Bool ReadPopupStatus( Bool& active );
+        Bool ReadPopupStatus( Bool& active, TextString text, Id popup_id );
         Bool ReadLoginStatus( Bool& active );
         Bool ReadAuctionMainStatus( Bool& active );
 
@@ -169,6 +171,9 @@ namespace Diablo
         Bool ReadFrameCount( ULong& count );
         Bool ReadGold( ULong& amount );
         Bool ReadAccount( TextString account );
+
+        /**/
+        static Bool IsValidUiObject( const UiObject& object );
 
     private:
         /**/
@@ -182,22 +187,23 @@ namespace Diablo
         Bool _ClearHoverItemSockets();
 
         /**/
-        Bool _ReadListRoot( _AhList& object );
-        Bool _ReadSellRoot( _AhSells& object );
+        Bool _ReadListRoot( AhSearchList& object );
+        Bool _ReadSellRoot( AhSellList& object );
 
         /**/
-        Bool _ReadUiObject( _UiObject& object, Id id );
-        Bool _ReadUiChild( _UiObject& child, const Char* path, const _UiObject& parent );
+        Bool _UpdateUiRoot();
+        Bool _RecurseUiObject( UiObject& object, ULong& found, ULong address, const Char* path, ULong depth );
+        Bool _RecurseUiObject( UiObject& object, ULong& found, Id id );
+        Bool _ReadUiObject( UiObject& object, Id id, ULong* address=NULL );
+        Bool _ReadUiChild( UiObject& child, const Char* path, const UiObject& parent );
         Bool _WriteUiObject( Id id, Bool visible );
-
-        /**/
-        Bool _IsValidUiObject( const _UiObject& object );
-
-        /**/
-        Bool OnScan( ULong address, const Byte* memory, ULong length );
 
         /**/
         void        _ParseItemStatString( Item::Stat& stat, const Char* text ) const;
         const Char* _ParseItemStatLine( Item::Stat& stat, const Char* text, Bool is_socket ) const;
+
+    private:
+        /**/
+        Bool OnScan( ULong address, const Byte* memory, ULong length );
     };
 }

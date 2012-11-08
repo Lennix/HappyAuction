@@ -31,7 +31,11 @@ namespace Core
             ULong   query_length;
             Bool    status = true;
 
-            for( ULong address = _process.GetLow(); _process.QueryMemory(address, query_length) && (address + query_length) <= _process.GetHigh(); address += query_length )
+            for( ULong address = _process.GetLow();
+                status &&
+                _process.QueryMemory(address, query_length) &&
+                (address + query_length) <= _process.GetHigh();
+                address += query_length )
             {
                 // update buffer
                 if(query_length > buffer_length)

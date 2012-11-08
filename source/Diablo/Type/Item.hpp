@@ -38,7 +38,7 @@ namespace Diablo
         ULong               id;
         Number              ilevel;
 
-        TextString          rarity;
+        Id                  rarity;
         TextString          type;
 
         Number              dpsarmor;
@@ -74,7 +74,7 @@ namespace Diablo
             id = 0;
             ilevel = 0;
 
-            *rarity = 0;
+            rarity = RARITY_UNKNOWN;
             *type = 0;
 
             dpsarmor = 0;

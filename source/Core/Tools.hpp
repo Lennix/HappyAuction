@@ -32,6 +32,11 @@ namespace Core
         {
             return (c >= 'a' && c <= 'z') ? c - ('a'-'A') : c;
         }
+        static void UpperCase( Char* string )
+        {
+            for(; *string; string++)
+                *string = UpperCase(*string);
+        }
 
         /**/
         static const Char* StrSearch( const Char* needle, const Char* haystack, Bool front=false )

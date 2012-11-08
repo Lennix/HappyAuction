@@ -132,6 +132,29 @@ namespace Diablo
         { "Topaz",      GEM_TYPE_TOPAZ },
     };
 
+    static IdEnum::Item _rarity_colors[] =
+    {
+        { "ff888888",   RARITY_INFERIOR },
+        { "ffffffff",   RARITY_NORMAL },
+        { "ffffffff",   RARITY_SUPERIOR },
+        { "ff6969ff",   RARITY_MAGIC },
+        { "ffffff00",   RARITY_RARE },
+        { "ffbf642f",   RARITY_LEGENDARY },
+        { "ff00ff00",   RARITY_SET },
+    };
+
+    static IdEnum::Item _rarity_strings[] =
+    {
+        { "unknown",    RARITY_UNKNOWN },
+        { "inferior",   RARITY_INFERIOR },
+        { "normal",     RARITY_NORMAL },
+        { "superior",   RARITY_SUPERIOR },
+        { "magic",      RARITY_MAGIC },
+        { "rare",       RARITY_RARE },
+        { "legendary",  RARITY_LEGENDARY },
+        { "set",        RARITY_SET },
+    };
+
     static Settings::Item _locale_items[] =
     {
         { "GEM_STAT_VITALITY",                  "", LOCALE_GEMSTAT, GEM_STAT_VITALITY },
@@ -177,7 +200,6 @@ namespace Diablo
 
     //------------------------------------------------------------------------
     const Char*             GAME_WINDOW_CLASS = "D3 Main Window Class";
-    ULong                   GAME_GLOBAL_DELAY = 0;      // ms
 
     //------------------------------------------------------------------------
     const ULongArray        ITEM_GEM_LIFEONHIT(_item_gem_lifeonhit, ACOUNT(_item_gem_lifeonhit));
@@ -186,11 +208,16 @@ namespace Diablo
     const ULongArray        ITEM_GEM_PHYSICALDAMAGETOATTACKER(_item_gem_physicaldamagetoattacker, ACOUNT(_item_gem_physicaldamagetoattacker));
     const IdEnum            ITEM_GEM_STAT_IDS(_gem_stats, ACOUNT(_gem_stats));
     const IdEnum            ITEM_GEM_TYPE_IDS(_gem_types, ACOUNT(_gem_types));
+    const IdEnum            ITEM_RARITY_COLORS(_rarity_colors, ACOUNT(_rarity_colors));
+    const IdEnum            ITEM_RARITY_STRINGS(_rarity_strings, ACOUNT(_rarity_strings));
 
     //------------------------------------------------------------------------
     const IdEnum            AH_COMBO_CHAR_IDS(_char_ids, ACOUNT(_char_ids));
     const IdEnum            AH_COMBO_PRIMARY_IDS(_primary_ids, ACOUNT(_primary_ids));
     const ComboSecDepEnum   AH_COMBO_SECONDARY_DEPS(_combo_secondary_deps, ACOUNT(_combo_secondary_deps));
+    const Char*             AH_POPUP_SUCCESS_CREATEAUCTION =    "auction created";
+    const Char*             AH_POPUP_SUCCESS_BUYOUT =           "buyout accepted";
+    const Char*             AH_POPUP_SUCCESS_BID =              "bid accepted";
 
     //------------------------------------------------------------------------
     const Coordinate UI_COORDS[UI_COUNT] =
@@ -281,9 +308,9 @@ namespace Diablo
         // UI_INPUT_FILTERLEVELMAX
         Coordinate( F2R_XC(570),  F2R_Y(667) ),
         // UI_INPUT_FILTERUNIQUE
-        Coordinate( F2R_XC(622),  F2R_Y(736) ),
+        Coordinate( F2R_XC(808),  F2R_Y(736) ),
         // UI_INPUT_FILTERBUYOUT
-        Coordinate( F2R_XC(622),  F2R_Y(785) ),
+        Coordinate( F2R_XC(808),  F2R_Y(785) ),
         // UI_INPUT_FILTERPSTAT0-5
         Coordinate( F2R_XC(739),  F2R_Y(880) ),
         Coordinate( F2R_XC(739),  F2R_Y(935) ),
@@ -318,10 +345,10 @@ namespace Diablo
         Coordinate( F2R_XC(484),  F2R_Y(1105) ),
         Coordinate( F2R_XC(484),  F2R_Y(1161) ),
 
+        // UI_POPUP_AH
+        Coordinate( F2R_XC(1280), F2R_Y(687) ),
         // UI_POPUP_ERROR
         Coordinate( F2R_XC(1280), F2R_Y(936) ),
-        // UI_POPUP_OK
-        Coordinate( F2R_XC(1280), F2R_Y(687) ),
         // UI_POPUP_UNIQUE
         Coordinate( F2R_XC(500),  F2R_Y(798) ),
 

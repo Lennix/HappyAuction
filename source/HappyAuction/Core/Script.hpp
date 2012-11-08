@@ -116,10 +116,10 @@ namespace HappyAuction
         void _StateSync()
         {
             StateFilters&   filters = _state.filters;
-            ULong           global_delay = GAME_GLOBAL_DELAY;
+            ULong           last_delay = _game.GetGlobalDelay();
 
             // disable global delay
-            GAME_GLOBAL_DELAY = 0;
+            _game.SetGlobalDelay(0);
 
             // filters:character
             _ahi.ReadFilterChar(filters.character);
@@ -150,7 +150,8 @@ namespace HappyAuction
             // filters:unique
             _ahi.ReadFilterUnique(filters.unique);
 
-            GAME_GLOBAL_DELAY = global_delay;
+            // restore global delay
+            _game.SetGlobalDelay(last_delay);
         }
 
         /**/
@@ -158,10 +159,10 @@ namespace HappyAuction
         {
             const StateFilters& filters = _state.filters;
             const StateSearch&  search = _state.search;
-            ULong               global_delay = GAME_GLOBAL_DELAY;
+            ULong               last_delay = _game.GetGlobalDelay();
 
             // disable global delay
-            GAME_GLOBAL_DELAY = 0;
+            _game.SetGlobalDelay(0);
 
             // filters:character
             if(*filters.character)
@@ -215,7 +216,8 @@ namespace HappyAuction
                 for( Index i = 0; i < _state.search.page && _ahi.ActionListNextPage(); i++ );
             }
 
-            GAME_GLOBAL_DELAY = global_delay;
+            // restore global delay
+            _game.SetGlobalDelay(last_delay);
         }
 
         /**/
@@ -857,8 +859,7 @@ namespace HappyAuction
                 _state.stash.column > 0 && _state.stash.row > 0)
             {
                 // call sell sequence
-                if(_ahi.SellStashItem(_state.stash.column - 1, _state.stash.row - 1, starting, buyout))
-                    status = true;
+                status = _ahi.SellStashItem(_state.stash.column - 1, _state.stash.row - 1, starting, buyout);
             }
 
             _PushStack(status);
@@ -1069,14 +1070,19 @@ namespace HappyAuction
         /**/
         ULong _haItem()
         {
+            TextString rarity;
+
             _PushTable(0);
+
+            // conversions
+            ITEM_RARITY_STRINGS.FindName(rarity, _state.item.rarity);
 
             // fields
             _SetTable("name",   _state.item.name);
             _SetTable("id",     _state.item.id);
             _SetTable("ilevel", _state.item.ilevel);
 
-            _SetTable("rarity", _state.item.rarity);
+            _SetTable("rarity", rarity);
             _SetTable("type",   _state.item.type);
 
             _SetTable("dps",    _state.item.dpsarmor);
@@ -1164,7 +1170,8 @@ namespace HappyAuction
         /**/
         ULong _haSetGlobalDelay()
         {
-            GAME_GLOBAL_DELAY = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_GLOBAL_DELAY_MAX);
+            ULong delay = Tools::Conform<ULong>(_GetStackULong(1), 0, GAME_GLOBAL_DELAY_MAX);
+            _game.SetGlobalDelay(delay);
             return 0;
         }
 
@@ -1181,7 +1188,6 @@ namespace HappyAuction
 
                 Tools::StrNCpy(login.name, name, sizeof(login.name));
                 Tools::StrNCpy(login.password, password, sizeof(login.password));
-                login.delay = _GetStackULong(3);//DEPRECATED
 
                 status = true;
             }
@@ -1275,11 +1281,10 @@ namespace HappyAuction
         /**/
         ULong _haTest()
         {
-            while(_active)
-            {
-                _game.GetTrainer().ClearHoverItem();
-                _game.Sleep(0);
-            }
+            TextString text;
+            Bool active;
+            _game.GetTrainer().ReadPopupStatus(active, text, Trainer::OBJECT_POPUP_AH);
+            _game.GetTrainer().ReadPopupStatus(active, text, Trainer::OBJECT_POPUP_ERROR);
             return 0;
         }
 

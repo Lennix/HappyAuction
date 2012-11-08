@@ -1,3 +1,14 @@
+0.9.29
+- FIX: haFilterUnique screwing up on longer names
+- FIX: haSellIterate() reading incorrect item data when scrolling past the 5th item
+- FIX: haSetGlobalDelay() will now be specific to the multiclient session instead of a shared setting between all sessions
+- FIX: haSell() sometimes returning success when an error occurred (such as 10 auction limit reached message)
+- FIX: haItem().rarity on several different locales and a few EN cases (rarity now derived from tooltip text color instead of text)
+- FIX: haSetLoginDelay() being reset to 0 when calling haSetLogin()
+- POSSIBLE FIX: stalling on "Input Limit Reached" error. I couldn't reproduce this but made a tiny change that may fix it :)
+- UPDATE: haBid(), haBuyout(), haSell(): additional error checks especially to haBid. should now only return true if actually successful in buying/selling item. this also fixes error message stalling issues.
+- UPDATE: reworked training to eliminate all but 1 memory scan thus greatly eliminating that lag during initial startup and and relogin.
+
 0.9.28
 - update to work with latest D3 hotfix
 - new functions. see README for details

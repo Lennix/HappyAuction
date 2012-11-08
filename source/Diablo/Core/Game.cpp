@@ -83,6 +83,16 @@ namespace Diablo
     }
 
     //------------------------------------------------------------------------
+    void Game::SetGlobalDelay( ULong delay )
+    {
+        _delay = delay;
+    }
+    ULong Game::GetGlobalDelay() const
+    {
+        return _delay;
+    }
+
+    //------------------------------------------------------------------------
     void Game::MouseClick( const Coordinate& coord, Bits options )
     {
                 options |= _override_options;
@@ -403,7 +413,7 @@ namespace Diablo
         if(!(options & INPUT_NODELAY))
             SleepFrames(2);
 
-        Sleep(GAME_GLOBAL_DELAY, GAME_GLOBAL_DELAY * 2);
+        Sleep(_delay, _delay * 2);
     }
 
     //------------------------------------------------------------------------
