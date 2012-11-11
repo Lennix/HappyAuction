@@ -90,4 +90,3 @@ namespace HappyAuction
         SETTINGS_COUNT
     };
 }
- 

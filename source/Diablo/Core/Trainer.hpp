@@ -55,6 +55,7 @@ namespace Diablo
 
             OBJECT_TOP,
             OBJECT_MAIN_AUCTION,
+            OBJECT_ROOT,
 
             OBJECT_COUNT,
         };
@@ -173,7 +174,7 @@ namespace Diablo
         Bool ReadAccount( TextString account );
 
         /**/
-        static Bool IsValidUiObject( const UiObject& object );
+        static Bool IsValidUiObject( const UiObject& object, Id id );
 
     private:
         /**/
@@ -192,7 +193,7 @@ namespace Diablo
 
         /**/
         Bool _UpdateUiRoot();
-        Bool _RecurseUiObject( UiObject& object, ULong& found, ULong address, const Char* path, ULong depth );
+        Bool _RecurseUiObject( UiObject& object, ULong& found, ULong address, Id id, ULong depth );
         Bool _RecurseUiObject( UiObject& object, ULong& found, Id id );
         Bool _ReadUiObject( UiObject& object, Id id, ULong* address=NULL );
         Bool _ReadUiChild( UiObject& child, const Char* path, const UiObject& parent );

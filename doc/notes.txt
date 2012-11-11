@@ -1,10 +1,22 @@
+- FIX: haFilterUnique screwing up on longer names
+- FIX: haSellIterate() reading incorrect item data when scrolling past the 5th item
+- FIX: haSetGlobalDelay() will now be specific to the multiclient session instead of a shared setting between all sessions
+- FIX: haSell() sometimes returning success when an error occurred (such as 10 auction limit reached message)
+- FIX: haItem().rarity on several different locales and a few EN cases (rarity now derived from tooltip text color instead of text)
+- FIX: haSetLoginDelay() being reset to 0 when calling haSetLogin()
+- POSSIBLE FIX: stalling on "Input Limit Reached" error. I couldn't reproduce this but made a tiny change that may fix it :)
+- UPDATE: haBid(), haBuyout(), haSell(): additional error checks especially to haBid. should now only return true if actually successful in buying/selling item. this also fixes error message stalling issues.
+- UPDATE: reworked training to eliminate all but 1 memory scan thus greatly eliminating that lag during initial startup and and relogin.
+
+
+
+- GAH/RMAH swap support and additional RMAH support. fix issue with decimal numbers.
 - make tutorial for noobz
-- add support for active auctions list
+- provide more information about send-to-stash in completed tab and expose auction history
 - add functions to return current sort state
 - add timeout(function, milliseconds)
 - add haGetRegion 
 - add socket/gem support for locales: Korean, French, German.
 - expose more manual control of search list (page prev/next, item count)
-- improve RMAH support
 - create more sample scripts
 - review relogin/recovery on cable disconnect (which doesnt timeout search)

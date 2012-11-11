@@ -529,15 +529,12 @@ private:
     {
         const Trainer::UiObject& object = *reinterpret_cast<const Trainer::UiObject*>(memory);
 
-        if(sizeof(Trainer::UiObject) <= length && Trainer::IsValidUiObject(object))
+        if(sizeof(Trainer::UiObject) <= length && Trainer::IsValidUiObject(object, Trainer::OBJECT_ROOT))
         {
-            if( strcmp(object.path, _path) == 0 )
-            {
-                // add address
-                _address = address;
-                printf("%x\n", address);
-                return false;
-            }
+            // add address
+            _address = address;
+            printf("%x\n", address);
+            return false;
         }
 
         return true;

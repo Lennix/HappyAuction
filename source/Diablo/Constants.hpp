@@ -25,11 +25,11 @@ namespace Diablo
     static const ULong              GAME_MAIN_AUCTION_DELAY =       300;
 
     //------------------------------------------------------------------------
-    static const ULong              TRAINER_UIOBJECT_LIMIT =        150;
-    static const ULong              TRAINER_UISEARCH_DEPTH =        18;
+    static const ULong              TRAINER_UIOBJECT_LIMIT =        200;
+    static const ULong              TRAINER_UISEARCH_DEPTH =        15;
 
     //------------------------------------------------------------------------
-    static const ULong              ITEM_STAT_LIMIT =               16;
+    static const ULong              ITEM_STAT_LIMIT =               14;
     static const Number             ITEM_STAT_VALUE_MAX =           NUMBER(99999, 0);
     static const ULong              ITEM_STAT_VALUE_LIMIT =         4;
     static const ULong              ITEM_SOCKET_LIMIT =             3;

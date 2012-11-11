@@ -124,6 +124,8 @@ namespace Core
         /**/
         Bool ReadMemory( ULong address, void* memory, ULong count )
         {
+            if(address < _low || address > _high)
+                return false;
             return ReadProcessMemory(_handle, (void*)address, memory, count, 0) == TRUE;
         }
 

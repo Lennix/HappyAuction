@@ -1,3 +1,7 @@
+0.9.30
+- FIX: crashes caused by last update
+- FIX: a few issues discovered while testing on WinXP through a VM
+
 0.9.29
 - FIX: haFilterUnique screwing up on longer names
 - FIX: haSellIterate() reading incorrect item data when scrolling past the 5th item
